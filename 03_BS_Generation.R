@@ -4,42 +4,20 @@ else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
   x %<>% mutate(., case = "Contract signature")
 }
 
-# Case Grouping: OBJKT transactions 
+
+  
+
+
+# OBJKT fulfill ask (collect)
 else if (
-  ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
-  ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
-  ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress)
+  (FALSE & "fulfill_ask" %in% x$parameterEntry) & 
+  (x$xtzSent[1] > 0) 
 ) {
-  
-  # Case: OBJKT bid
-  if ("bid" %in% x$parameterEntry) {
-    x %<>% 
-      top_n(., n=-1, wt=id) %>%
-      mutate(., 
-             xtzSent = xtzSent - xtzAmount, 
-             case = "OBJKT bid"
-      )
-  }
-  
-  # Case: OBJKT retract bid
-  else if ("retract_bid" %in% x$parameterEntry) {
-    x %<>% 
-      top_n(., n=-1, wt=id) %>%
-      mutate(., 
-             xtzReceived = 0, 
-             case = "OBJKT retract bid"
-      )
-  }
-  
-  # Case: OBJKT fulfill ask (collect)
-  else if (
-    ("fulfill_ask" %in% x$parameterEntry) & 
-    (x$xtzSent[1] > 0) 
-  ) {
-    x %<>% 
-      filter(., parameterEntry == "transfer") %>% 
-      mutate(., case = "OBJKT fulfill ask (collect)")
-  }
+  x %<>% 
+    filter(., parameterEntry == "transfer") %>% 
+    mutate(.,case = "OBJKT fulfill ask (collect)")
+}
+
   
   # Case: OBJKT fulfill ask (trade)
   else if (

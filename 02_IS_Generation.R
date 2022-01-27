@@ -73,7 +73,6 @@ operations %<>%
 # (2) Current filtering methodology requires whitelisting of contract addresses.
 #     Assumptioms could probably be loosened in some cases without much risk.
 #
-# (3) Revealing keys simultaneously to other transactions can create issues.
 #
 ################################################################################
 
@@ -84,11 +83,23 @@ is <- operations[0, ]
 operations_hash <- operations %>% distinct(., hash)
 for (i in 1:nrow(operations_hash)) {
   
+  # Define helper variables
   x <- operations %>% filter(., hash == operations_hash[i, ])
   y <- x
   x$xtzSent     <- sum(x$xtzSent)
   x$xtzReceived <- sum(x$xtzReceived)
   xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
+  
+  # Scrape token data, where applicable
+  if ("transfer" %in% x$parameterEntry) {
+    x <- y %>% 
+      mutate(., 
+        tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
+        tokenSender   = list_check(parameterValue, "from_"),
+        tokenReceiver = list_check(parameterValue, "to_"),
+        tokenAmount   = as.numeric(list_check(parameterValue, "amount"))
+      )
+  }
   
   # Failed/backtracked transaction
   if (
@@ -131,21 +142,21 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
-    # Case: Hic et Nunc swap
+    # Hic et Nunc swap
     else if ("swap" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "swap") %>% 
         mutate(., case = "Hic et Nunc swap")
     }
     
-    # Case: Hic et Nunc cancel swap
+    # Hic et Nunc cancel swap
     else if ("cancel_swap" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "cancel_swap") %>% 
         mutate(., case  = "Hic et Nunc cancel swap")
     }
     
-    # Case: Hic et Nunc trade
+    # Hic et Nunc trade
     else if (
       ("collect" %in% x$parameterEntry) & 
       (x$xtzSent[1] == 0)
@@ -153,61 +164,44 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-          tokenSender   = list_check(parameterValue, "from_"),
-          tokenReceiver = list_check(parameterValue, "to_"),
-          tokenAmount   = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
-          case          = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
+          tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+          case        = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
         )
     }
    
-    # Case: Hic et Nunc collect
+    # Hic et Nunc collect
     else if (
       ("collect" %in% x$parameterEntry) & 
       (x$xtzSent[1] > 0)
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
-        mutate(., 
-          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-          tokenSender   = list_check(parameterValue, "from_"),
-          tokenReceiver = list_check(parameterValue, "to_"),
-          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
-          case          = "Hic et Nunc collect"
-        )
+        mutate(., case = "Hic et Nunc collect")
     }
      
-    # Case: Hic et Nunc curate
+    # Hic et Nunc curate
     else if ("curate" %in% x$parameterEntry) {
       x %<>%
         top_n(., n=-1, wt=id) %>%
         mutate(., case  = "Hic et Nunc curate")
     }
     
-    # Case: Hic et Nunc registry
+    # Hic et Nunc registry
     else if ("registry" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "registry") %>% 
         mutate(., case  = "Hic et Nunc registry")
     }
     
-    # Case: Hic et Nunc transfer
+    # Hic et Nunc transfer
     else if ("transfer" %in% x$parameterEntry) {
-      x %<>% 
-        mutate(., 
-          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-          tokenSender   = list_check(parameterValue, "from_"),
-          tokenReceiver = list_check(parameterValue, "to_"),
-          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
-          case          = "Hic et Nunc transfer"
-        )
+      x %<>% mutate(., case = "Hic et Nunc transfer")
     }
     
-    # Case: Unidentified
+    # Unidentified
     else {
       x <- y
     }
-    
   }
   
   # QuipuSwap contracts
@@ -215,23 +209,18 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB" %in% x$targetAddress)
   ) {
     
-    # Case: QuipuSwap buy/sell
+    # QuipuSwap buy/sell
     if (
       ("tezToTokenPayment" %in% x$parameterEntry) |
       ("tokenToTezPayment" %in% x$parameterEntry)
     ) {
       x %<>%
         filter(., parameterEntry == "transfer") %>%
-        mutate(., 
-          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-          tokenSender   = list_check(parameterValue, "from_"),
-          tokenReceiver = list_check(parameterValue, "to_"),
-          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
-          case          = "QuipuSwap buy/sell"
+        mutate(., case = "QuipuSwap buy/sell"
         )
     }
-    
-    # Case: Unidentified
+
+    # Unidentified
     else {
       x <- y
     }
@@ -246,42 +235,75 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS" %in% x$targetAddress)
   ) {
     
-    # Case: Tezos Domains commit
+    # Tezos Domains commit
     if ("commit" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "commit") %>%
         mutate(., case = "Tezos Domains commit")
     }
     
-    # Case: Tezos Domains buy
+    # Tezos Domains buy
     else if ("buy" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "buy") %>%
         mutate(., case = "Tezos Domains buy")
     }
     
-    # Case: Tezos Domains update record
+    # Tezos Domains update record
     else if ("update_record" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "update_record") %>%
         mutate(., case = "Tezos Domains update record")
     }
     
-    # Case: Tezos Domains update reverse record
+    # Tezos Domains update reverse record
     else if ("update_reverse_record" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "update_reverse_record") %>%
         mutate(., case = "Tezos Domains update reverse record")
     }
     
-    # Case: Unidentified
+    # Unidentified
     else {
       x<- y
     }
     
   }
   
-  # Case: Unidentified
+  # OBJKT contracts
+  else if (
+    ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
+    ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
+    ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress)
+  ) {
+  
+    # OBJKT bid
+    if ("bid" %in% x$parameterEntry) {
+      x %<>% 
+        top_n(., n=-1, wt=id) %>%
+        mutate(., 
+          xtzSent = xtzSent - xtzAmount, 
+          case = "OBJKT bid"
+        )
+    }
+    
+    # OBJKT retract bid
+    else if ("retract_bid" %in% x$parameterEntry) {
+      x %<>% 
+        top_n(., n=-1, wt=id) %>%
+        mutate(., 
+          xtzReceived = 0, 
+          case = "OBJKT retract bid"
+        )
+    }
+    
+    # Unidentified
+    else {
+      x <- y
+    }
+  }
+    
+  # Unidentified
   else {
     x <- y
   }
@@ -293,4 +315,4 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Multiple address transaction")
+#is %<>% filter(., case == "Token transfer")
