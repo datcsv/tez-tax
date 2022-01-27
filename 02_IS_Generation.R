@@ -70,6 +70,9 @@ operations %<>%
 # (1) Tezos domains are not registered to income statement, but payments and
 #     gas fees are still logged.
 #
+# (2) Current filtering methodology requires whitelisting of contract addresses.
+#     Assumptioms could probably be loosened in some cases without much risk.
+#
 ################################################################################
 
 # Create empty income statement
@@ -83,7 +86,6 @@ operations_hash <- operations %>% distinct(., hash)
 for (i in 1:nrow(operations_hash)) {
   
   x <- operations %>% filter(., hash == operations_hash[i, ])
-  
   y <- x
   x$xtzSent     <- sum(x$xtzSent)
   x$xtzReceived <- sum(x$xtzReceived)
@@ -204,7 +206,43 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
+    # Case: Unidentified
+    else {
+      x <- y
+    }
+    
   }
+  
+  # QuipuSwap contracts
+  else if (
+    ("KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB" %in% x$targetAddress)
+  ) {
+    
+    # Case: QuipuSwap buy/sell
+    if (
+      ("tezToTokenPayment" %in% x$parameterEntry) |
+      ("tokenToTezPayment" %in% x$parameterEntry)
+    ) {
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
+          tokenSender   = list_check(parameterValue, "from_"),
+          tokenReceiver = list_check(parameterValue, "to_"),
+          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
+          case          = "QuipuSwap buy/sell"
+        )
+    }
+
+    
+    # Case: Unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  
   
   # Case: Unidentified
   else {
@@ -218,4 +256,4 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Hic et Nunc transfer")
+#is %<>% filter(., case == "QuipuSwap buy/sell")

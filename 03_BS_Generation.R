@@ -103,19 +103,7 @@ else if (
   
 }
 
-# Case: QuipuSwap buy
-else if ("tezToTokenPayment" %in% x$parameterEntry) {
-  x %<>%
-    filter(., parameterEntry == "transfer") %>%
-    mutate(., case = "QuipuSwap buy")
-}
 
-# Case: QuipuSwap sell
-else if ("tokenToTezPayment" %in% x$parameterEntry) {
-  x %<>%
-    filter(., parameterEntry == "transfer") %>%
-    mutate(., case = "QuipuSwap sell")
-}
 
 # Case: Tezos Domains commit
 else if (
