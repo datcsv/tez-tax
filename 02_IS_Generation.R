@@ -41,17 +41,16 @@ operations$quote            <- operations$quote$usd
 operations %<>% 
   distinct(., id, hash, .keep_all=TRUE) %>%
   mutate(., 
-    xtzAmount      = if_else(
-      status != "backtracked" & status != "failed",
-      if_else(!is.na(amount), amount / 1000000, 0),
-      0
+    xtzAmount      = ifelse(
+      (status != "backtracked") & (status != "failed") & (!is.na(amount)),
+      amount / 1000000, 0
     ),
     bakerFee       = ifelse(!is.na(bakerFee), bakerFee, 0),
     storageFee     = ifelse(!is.na(storageFee), storageFee, 0),
     allocationFee  = ifelse(!is.na(allocationFee), allocationFee, 0),
     xtzFee         = (bakerFee + storageFee + allocationFee) / 1000000,
-    xtzSent        = if_else(SenderAddress %in% addresses, xtzAmount+xtzFee, 0),
-    xtzReceived    = if_else(targetAddress %in% addresses, xtzAmount, 0),
+    xtzSent        = ifelse(SenderAddress %in% addresses, xtzAmount+xtzFee, 0),
+    xtzReceived    = ifelse(targetAddress %in% addresses, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
     tokenID        = NA,
     tokenAmount    = NA,
@@ -85,8 +84,7 @@ operations_hash <- operations %>% distinct(., hash)
 for (i in 1:nrow(operations_hash)) {
   
   x <- operations %>% filter(., hash == operations_hash[i, ])
-  y <- x 
-  x$xtzAmount   <- as.vector(x$xtzAmount)
+  y <- x
   x$xtzSent     <- sum(x$xtzSent)
   x$xtzReceived <- sum(x$xtzReceived)
   xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
@@ -219,5 +217,5 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
+#is %<>% filter(., is.na(case))
 #is %<>% filter(., case == "Hic et Nunc transfer")

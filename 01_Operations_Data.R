@@ -80,7 +80,7 @@ for (i in 1:nrow(operations_hash)) {
 
 # Combine and clean operations data
 operations %<>% 
-  bind_rows(., operations2)
+  bind_rows(., operations2) %>%
   arrange(., id, hash) %>%
   distinct(.)
 
