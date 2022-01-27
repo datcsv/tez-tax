@@ -82,22 +82,6 @@ for (i in 1:nrow(operations)) {
       operations[i, "tokenReceiver"] <- list_check(operations_i, "to_")
     }
     
-    # Adjust minting
-    if (operations[[i, "parameterEntry"]] == "mint") {
-      operations[i, "tokenReceiver"] <- operations[i, "initiatorAddress"]
-    }
-    
-    # Adjust failed/backtracked transactions
-    if (
-      (operations[i, "status"] == "backtracked") | 
-      (operations[i, "status"] == "failed")
-    ) {
-      operations[i, "tokenID"]       <- NA
-      operations[i, "tokenAmount"]   <- NA
-      operations[i, "tokenSender"]   <- NA
-      operations[i, "tokenReceiver"] <- NA
-    }
-    
   }
 }
 
@@ -130,7 +114,13 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     x %<>%
       top_n(., n=1, wt=id) %>%
-      mutate(., case = "Failed/backtracked transaction")
+      mutate(., 
+        tokenID = NA,
+        tokenAmount = NA,
+        tokenSender= NA,
+        tokenReceiver = NA,
+        case = "Failed/backtracked transaction"
+      )
   }
   
   # Case: Standard transaction
