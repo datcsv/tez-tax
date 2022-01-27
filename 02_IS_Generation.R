@@ -73,13 +73,12 @@ operations %<>%
 # (2) Current filtering methodology requires whitelisting of contract addresses.
 #     Assumptioms could probably be loosened in some cases without much risk.
 #
+# (3) Revealing keys simultaneously to other transactions can create issues.
+#
 ################################################################################
 
 # Create empty income statement
 is <- operations[0, ]
-
-# Debugging filter
-operations %<>% top_n(., n=-5100, wt=id)
 
 # For each operation hash, add a single row to the income statement
 operations_hash <- operations %>% distinct(., hash)
@@ -102,22 +101,13 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Standard transaction
-  else if (
-    (nrow(x) == 1) & 
-    (is.na(x$parameterEntry[1]))
-  ) {
-    x %<>% 
-      mutate(., case = "Standard transaction")
-  }
-  
-  # Case: Multiple address transaction (e.g., staking rewards)
   else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
     x %<>%
       filter(., 
         (SenderAddress %in% addresses) |
         (targetAddress %in% addresses)
       ) %>%
-      mutate(., case = "Multiple address transaction")
+      mutate(., case = "Standard transaction")
   }
   
   # Hic et Nunc contracts
@@ -202,10 +192,7 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # Case: Hic et Nunc transfer
-    else if (
-      (nrow(x) == 1) &
-      ("transfer" %in% x$parameterEntry)
-    ) {
+    else if ("transfer" %in% x$parameterEntry) {
       x %<>% 
         mutate(., 
           tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),

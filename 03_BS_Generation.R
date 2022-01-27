@@ -4,11 +4,6 @@ else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
   x %<>% mutate(., case = "Contract signature")
 }
 
-
-
-
-
-
 # Case Grouping: OBJKT transactions 
 else if (
   ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
