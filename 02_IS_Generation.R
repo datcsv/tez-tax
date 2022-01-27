@@ -1,9 +1,8 @@
-# Clear work space
+# Clear workspace
 rm(list=ls())
 
 # Load packages
 packages <- c("tidyverse", "jsonlite", "magrittr")
-
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages])
@@ -19,7 +18,7 @@ list_check <- function(x, check) {
   y <- NA
   if ((class(x) == "list" | class(x) == "data.frame") & length(x) > 0) {
     for (i in 1:length(x)) {
-      if ((!is.null(names(x)[i])) && (names(x)[i] %in% check)) y <- x[[i]][[1]]
+      if ((!is.null(names(x)[i])) & (names(x)[i] %in% check)) y <- x[[i]][[1]]
       else y <- list_check(x[[i]], check) 
       if (!is.na(y)) break
     }
@@ -379,4 +378,3 @@ for (i in 1:nrow(operations_hash)) {
 
 # Filter export for debugging
 #is %<>% filter(., row_number() > 3500)
-
