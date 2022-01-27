@@ -70,6 +70,8 @@ operations %<>%
 # (1) Tezos domains are not registered to income statement, but payments and
 #     gas fees are still logged.
 #
+# (2) MathMakesArt tx: ontMSLQXY6N1GAU65bfUqavfYu23d1c2dTfDqU9EF545W5tCG6F
+#     this is breaking the current methodlogy... need to look into.
 #
 ################################################################################
 
@@ -83,7 +85,10 @@ operations %<>% top_n(., n=-2500, wt=id)
 operations_hash <- operations %>% distinct(., hash)
 for (i in 1:nrow(operations_hash)) {
   
+  
   x <- operations %>% filter(., hash == operations_hash[i, ])
+  
+  
   y <- x
   x$xtzSent     <- sum(x$xtzSent)
   x$xtzReceived <- sum(x$xtzReceived)
@@ -148,6 +153,7 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (x$xtzSent[1] == 0)
     ) {
+      if (i == 907) print(x$hash)
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 

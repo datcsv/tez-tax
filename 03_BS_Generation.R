@@ -1,20 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Case: Contract signature
 else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
   x %<>% mutate(., case = "Contract signature")
@@ -182,7 +166,7 @@ else if (
 # (3) Add for hDAO/akaDAO airdrop info if FIFO requires consistency for all tx
 # (4) Functionalize currency
 # (5) Figure out how to work with exchange data
-#
+# (6) Swap operations API to transactions API as per suggestion from BCD?
 ################################################################################
 
 # Generate price and fee features
