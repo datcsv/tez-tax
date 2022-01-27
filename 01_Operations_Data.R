@@ -1,4 +1,4 @@
-# Clear work space
+# Clear workspace
 rm(list=ls())
 
 # Load packages
