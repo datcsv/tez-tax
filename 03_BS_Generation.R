@@ -105,45 +105,7 @@ else if (
 
 
 
-# Case: Tezos Domains commit
-else if (
-  ("commit" %in% x$parameterEntry) &
-  ("KT1P8n2qzJjwMPbHJfi4o8xu6Pe3gaU3u2A3" %in% x$targetAddress) 
-) {
-  x %<>%
-    filter(., parameterEntry == "commit") %>%
-    mutate(., case = "Tezos Domains commit")
-}
 
-# Case: Tezos Domains buy
-else if (
-  ("buy" %in% x$parameterEntry) &
-  ("KT191reDVKrLxU9rjTSxg53wRqj6zh8pnHgr" %in% x$targetAddress) 
-) {
-  x %<>%
-    filter(., parameterEntry == "buy") %>%
-    mutate(., case = "Tezos Domains buy")
-}
-
-# Case: Tezos Domains update record
-else if (
-  ("update_record" %in% x$parameterEntry) &
-  ("KT1H1MqmUM4aK9i1833EBmYCCEfkbt6ZdSBc" %in% x$targetAddress) 
-) {
-  x %<>%
-    filter(., parameterEntry == "update_record") %>%
-    mutate(., case = "Tezos Domains update record")
-}
-
-# Case: Tezos Domains update reverse record
-else if (
-  ("update_reverse_record" %in% x$parameterEntry) &
-  ("KT1J9VpjiH5cmcsskNb8gEXpBtjD4zrAx4Vo" %in% x$targetAddress) 
-) {
-  x %<>%
-    filter(., parameterEntry == "update_reverse_record") %>%
-    mutate(., case = "Tezos Domains update reverse record")
-}
 
 
 

@@ -233,7 +233,6 @@ for (i in 1:nrow(operations_hash)) {
           case          = "QuipuSwap buy/sell"
         )
     }
-
     
     # Case: Unidentified
     else {
@@ -241,8 +240,49 @@ for (i in 1:nrow(operations_hash)) {
     }
     
   }
-  
-  
+    
+  # Tezos Domains contracts
+  else if (
+    ("KT1P8n2qzJjwMPbHJfi4o8xu6Pe3gaU3u2A3" %in% x$targetAddress) |
+    ("KT191reDVKrLxU9rjTSxg53wRqj6zh8pnHgr" %in% x$targetAddress) |
+    ("KT1Mqx5meQbhufngJnUAGEGpa4ZRxhPSiCgB" %in% x$targetAddress) |
+    ("KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS" %in% x$targetAddress)
+  ) {
+    
+    # Case: Tezos Domains commit
+    if ("commit" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "commit") %>%
+        mutate(., case = "Tezos Domains commit")
+    }
+    
+    # Case: Tezos Domains buy
+    else if ("buy" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "buy") %>%
+        mutate(., case = "Tezos Domains buy")
+    }
+    
+    # Case: Tezos Domains update record
+    else if ("update_record" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "update_record") %>%
+        mutate(., case = "Tezos Domains update record")
+    }
+    
+    # Case: Tezos Domains update reverse record
+    else if ("update_reverse_record" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "update_reverse_record") %>%
+        mutate(., case = "Tezos Domains update reverse record")
+    }
+    
+    # Case: Unidentified
+    else {
+      x<- y
+    }
+    
+  }
   
   # Case: Unidentified
   else {
@@ -256,4 +296,4 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "QuipuSwap buy/sell")
+#is %<>% filter(., case == "Tezos Domains update reverse record")
