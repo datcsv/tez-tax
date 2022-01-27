@@ -5,15 +5,7 @@ else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
 }
 
 
-# Case: Multiple address transaction
-else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
-  x %<>%
-    filter(., 
-           (SenderAddress %in% addresses) |
-             (targetAddress %in% addresses)  
-    ) %>%
-    mutate(., case = "Multiple address transaction")
-}
+
 
 
 

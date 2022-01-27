@@ -79,7 +79,7 @@ operations %<>%
 is <- operations[0, ]
 
 # Debugging filter
-operations %<>% top_n(., n=-5000, wt=id)
+operations %<>% top_n(., n=-5100, wt=id)
 
 # For each operation hash, add a single row to the income statement
 operations_hash <- operations %>% distinct(., hash)
@@ -108,6 +108,16 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     x %<>% 
       mutate(., case = "Standard transaction")
+  }
+  
+  # Case: Multiple address transaction (e.g., staking rewards)
+  else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
+    x %<>%
+      filter(., 
+        (SenderAddress %in% addresses) |
+        (targetAddress %in% addresses)
+      ) %>%
+      mutate(., case = "Multiple address transaction")
   }
   
   # Hic et Nunc contracts
@@ -296,4 +306,4 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Tezos Domains update reverse record")
+#is %<>% filter(., case == "Multiple address transaction")
