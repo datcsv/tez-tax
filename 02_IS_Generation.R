@@ -115,10 +115,7 @@ for (i in 1:nrow(operations_hash)) {
     x %<>%
       top_n(., n=1, wt=id) %>%
       mutate(., 
-        tokenID = NA,
-        tokenAmount = NA,
-        tokenSender= NA,
-        tokenReceiver = NA,
+        tokenAmount = 0,
         case = "Failed/backtracked transaction"
       )
   }
