@@ -3,6 +3,7 @@ rm(list=ls())
 
 # Load packages
 packages <- c("tidyverse", "jsonlite", "magrittr")
+
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages])
@@ -64,6 +65,7 @@ operations %<>%
 
 # Generate operations contract features
 calls <- c("mint", "collect", "transfer")
+
 for (i in 1:nrow(operations)) {
   if (operations[[i, "parameterEntry"]] %in% calls) {
     

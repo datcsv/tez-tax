@@ -43,7 +43,7 @@ tzkt_operations_hash <- function(
 limit_ops <- 1000
 for (i in 1:length(addresses)) {
   operations_i <- tzkt_operations(address=addresses[i], limit=limit_ops)
-  while ((nrow(operations_i) %% 1000) == 0) {
+  while ((nrow(operations_i) %% limit_ops) == 0) {
     level <- min(operations_i$level + 1)
     operations_i <- bind_rows(
       operations_i,
@@ -63,6 +63,7 @@ operations %<>%
 operations_hash <- operations %>% 
   filter(., target[[2]] %in% addresses, amount > 0) %>%
   distinct(., hash)
+
 for (i in 1:nrow(operations_hash)) {
   operations_i <- tzkt_operations_hash(operations_hash[i, ])
   if ("storage" %in% names(operations_i)) operations_i %<>% select(., -storage)
@@ -78,12 +79,9 @@ for (i in 1:nrow(operations_hash)) {
   else operations2 %<>% bind_rows(., operations_i)
 }
 
-# Combine operations data
+# Combine and clean operations data
 operations %<>% 
   bind_rows(., operations2)
-
-# Clean operations data
-operations %<>% 
   arrange(., id, hash) %>%
   distinct(.)
 
