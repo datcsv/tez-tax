@@ -1,7 +1,7 @@
 # Clear workspace
 rm(list=ls())
 
-# Load packages
+# Import packages
 packages <- c("tidyverse", "jsonlite", "magrittr")
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {

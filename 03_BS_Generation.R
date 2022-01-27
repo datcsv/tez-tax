@@ -1,4 +1,180 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Case: Contract signature
+else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
+  x %<>% mutate(., case = "Contract signature")
+}
+
+
+# Case: Multiple address transaction
+else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
+  x %<>%
+    filter(., 
+           (SenderAddress %in% addresses) |
+             (targetAddress %in% addresses)  
+    ) %>%
+    mutate(., case = "Multiple address transaction")
+}
+
+
+
+# Case Grouping: OBJKT transactions 
+else if (
+  ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
+  ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
+  ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress)
+) {
+  
+  # Case: OBJKT bid
+  if ("bid" %in% x$parameterEntry) {
+    x %<>% 
+      top_n(., n=-1, wt=id) %>%
+      mutate(., 
+             xtzSent = xtzSent - xtzAmount, 
+             case = "OBJKT bid"
+      )
+  }
+  
+  # Case: OBJKT retract bid
+  else if ("retract_bid" %in% x$parameterEntry) {
+    x %<>% 
+      top_n(., n=-1, wt=id) %>%
+      mutate(., 
+             xtzReceived = 0, 
+             case = "OBJKT retract bid"
+      )
+  }
+  
+  # Case: OBJKT fulfill ask (collect)
+  else if (
+    ("fulfill_ask" %in% x$parameterEntry) & 
+    (x$xtzSent[1] > 0) 
+  ) {
+    x %<>% 
+      filter(., parameterEntry == "transfer") %>% 
+      mutate(., case = "OBJKT fulfill ask (collect)")
+  }
+  
+  # Case: OBJKT fulfill ask (trade)
+  else if (
+    ("fulfill_ask" %in% x$parameterEntry) & 
+    (x$xtzSent[1] == 0) 
+  ) {
+    x %<>% 
+      filter(., parameterEntry == "transfer") %>% 
+      mutate(., 
+             tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+             case = ifelse(
+               xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill ask (collect)"
+             ),
+      )
+  }
+  
+  # Case: OBJKT fulfill bid (collect)
+  else if (
+    ("fulfill_bid" %in% x$parameterEntry) & 
+    (x$xtzSent[1] > 0) 
+  ) {
+    x %<>% 
+      filter(., parameterEntry == "transfer") %>% 
+      mutate(., case = "OBJKT fulfill bid (collect)")
+  }
+  
+  # Case: OBJKT fulfill bid (trade)
+  else if (
+    ("fulfill_bid" %in% x$parameterEntry) & 
+    (x$xtzSent[1] == 0) 
+  ) {
+    x %<>% 
+      filter(., parameterEntry == "transfer") %>% 
+      mutate(., 
+             tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+             case = ifelse(
+               xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill bid (collect)"
+             ),
+      )
+  }
+  
+}
+
+# Case Grouping: AkaSwap transactions
+else if (
+  ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress)
+) {
+  
+}
+
+# Case: QuipuSwap buy
+else if ("tezToTokenPayment" %in% x$parameterEntry) {
+  x %<>%
+    filter(., parameterEntry == "transfer") %>%
+    mutate(., case = "QuipuSwap buy")
+}
+
+# Case: QuipuSwap sell
+else if ("tokenToTezPayment" %in% x$parameterEntry) {
+  x %<>%
+    filter(., parameterEntry == "transfer") %>%
+    mutate(., case = "QuipuSwap sell")
+}
+
+# Case: Tezos Domains commit
+else if (
+  ("commit" %in% x$parameterEntry) &
+  ("KT1P8n2qzJjwMPbHJfi4o8xu6Pe3gaU3u2A3" %in% x$targetAddress) 
+) {
+  x %<>%
+    filter(., parameterEntry == "commit") %>%
+    mutate(., case = "Tezos Domains commit")
+}
+
+# Case: Tezos Domains buy
+else if (
+  ("buy" %in% x$parameterEntry) &
+  ("KT191reDVKrLxU9rjTSxg53wRqj6zh8pnHgr" %in% x$targetAddress) 
+) {
+  x %<>%
+    filter(., parameterEntry == "buy") %>%
+    mutate(., case = "Tezos Domains buy")
+}
+
+# Case: Tezos Domains update record
+else if (
+  ("update_record" %in% x$parameterEntry) &
+  ("KT1H1MqmUM4aK9i1833EBmYCCEfkbt6ZdSBc" %in% x$targetAddress) 
+) {
+  x %<>%
+    filter(., parameterEntry == "update_record") %>%
+    mutate(., case = "Tezos Domains update record")
+}
+
+# Case: Tezos Domains update reverse record
+else if (
+  ("update_reverse_record" %in% x$parameterEntry) &
+  ("KT1J9VpjiH5cmcsskNb8gEXpBtjD4zrAx4Vo" %in% x$targetAddress) 
+) {
+  x %<>%
+    filter(., parameterEntry == "update_reverse_record") %>%
+    mutate(., case = "Tezos Domains update reverse record")
+}
+
+
+
 ################################################################################
 # Notes:
 # (1) Account for inter-address transfers
