@@ -1,4 +1,4 @@
-# Clear workspace
+# Clear work space
 rm(list=ls())
 
 # Load packages
@@ -41,30 +41,31 @@ operations$quote            <- operations$quote$usd
 operations %<>% 
   distinct(., id, hash, .keep_all=TRUE) %>%
   mutate(., 
-    xtzAmount      = if_else(
-      status != "backtracked" & status != "failed",
-      if_else(!is.na(amount), amount / 1000000, 0),
-      0
-    ),
-    bakerFee       = ifelse(!is.na(bakerFee), bakerFee, 0),
-    storageFee     = ifelse(!is.na(storageFee), storageFee, 0),
-    allocationFee  = ifelse(!is.na(allocationFee), allocationFee, 0),
-    xtzFee         = (bakerFee + storageFee + allocationFee) / 1000000,
-    xtzSent        = if_else(SenderAddress %in% addresses, xtzAmount+xtzFee, 0),
-    xtzReceived    = if_else(targetAddress %in% addresses, xtzAmount, 0),
-    parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue)
+         xtzAmount      = if_else(
+           status != "backtracked" & status != "failed",
+           if_else(!is.na(amount), amount / 1000000, 0),
+           0
+         ),
+         bakerFee       = ifelse(!is.na(bakerFee), bakerFee, 0),
+         storageFee     = ifelse(!is.na(storageFee), storageFee, 0),
+         allocationFee  = ifelse(!is.na(allocationFee), allocationFee, 0),
+         xtzFee         = (bakerFee + storageFee + allocationFee) / 1000000,
+         xtzSent        = if_else(SenderAddress %in% addresses, xtzAmount+xtzFee, 0),
+         xtzReceived    = if_else(targetAddress %in% addresses, xtzAmount, 0),
+         parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue)
   ) %>%
   select(., 
-    -initiator, -sender, -target, -quote, -parameter, -originatedContract, 
-    -newDelegate, -block, -nonce, -gasLimit, -gasUsed, -storageLimit, 
-    -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
-    -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameters, 
-    -initiatorAlias, -senderAlias, -targetAlias
+         -initiator, -sender, -target, -quote, -parameter, -originatedContract, 
+         -newDelegate, -block, -nonce, -gasLimit, -gasUsed, -storageLimit, 
+         -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
+         -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameters, 
+         -initiatorAlias, -senderAlias, -targetAlias
   )
 
 # Generate operations contract features
+calls <- c("mint", "collect", "transfer")
 for (i in 1:nrow(operations)) {
-  if (sum(!is.na(operations[[i, "parameterEntry"]])) > 0) {
+  if (operations[[i, "parameterEntry"]] %in% calls) {
     
     # Parse out standard contract variables
     operations_i <- operations[[i, "parameterValue"]]
@@ -72,7 +73,7 @@ for (i in 1:nrow(operations)) {
       operations[i, "targetAddress"], 
       "_", 
       list_check(operations_i, 
-      c("token_id", "objkt_id"))
+                 c("token_id", "objkt_id"))
     )
     if (!is.na(operations[i, "tokenID"])) {
       operations[i, "tokenAmount"]   <- as.numeric(
@@ -80,6 +81,19 @@ for (i in 1:nrow(operations)) {
       )
       operations[i, "tokenSender"]   <- list_check(operations_i, "from_")
       operations[i, "tokenReceiver"] <- list_check(operations_i, "to_")
+    }
+    
+    # Adjust minting
+    if (operations[[i, "parameterEntry"]] == "mint") {
+      operations[i, "tokenReceiver"] <- operations[i, "initiatorAddress"]
+    }
+    
+    # Adjust failed/backtracked transactions
+    if (operations[i, "status"] == "backtracked" | operations[i, "status"] == "failed") {
+      operations[i, "tokenID"]       <- NA
+      operations[i, "tokenAmount"]   <- NA
+      operations[i, "tokenSender"]   <- NA
+      operations[i, "tokenReceiver"] <- NA
     }
     
   }
@@ -93,6 +107,7 @@ is <- operations[0, ]
 # Notes:
 # (1) Tezos domains are not registered to income statement, but payments and
 #     gas fees are still logged.
+#
 #
 ################################################################################
 
@@ -114,10 +129,7 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     x %<>%
       top_n(., n=1, wt=id) %>%
-      mutate(., 
-        tokenAmount = 0,
-        case = "Failed/backtracked transaction"
-      )
+      mutate(., case = "Failed/backtracked transaction")
   }
   
   # Case: Standard transaction
@@ -142,8 +154,8 @@ for (i in 1:nrow(operations_hash)) {
   else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
     x %<>%
       filter(., 
-        (SenderAddress %in% addresses) |
-        (targetAddress %in% addresses)  
+             (SenderAddress %in% addresses) |
+               (targetAddress %in% addresses)  
       ) %>%
       mutate(., case = "Multiple address transaction")
   }
@@ -154,14 +166,14 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn" %in% x$targetAddress) |
     ("KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj" %in% x$targetAddress)
   ) {
-  
+    
     # Case: Hic et Nunc mint
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
         mutate(., 
-          tokenSender = "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton",
-          case = "Hic et Nunc mint"
+               tokenSender = "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton",
+               case = "Hic et Nunc mint"
         )
     }
     
@@ -191,8 +203,8 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          case = ifelse(xtzCollect > xtzReceived, "Hic et Nunc royalties", "Hic et Nunc trade")
+               tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+               case = ifelse(xtzCollect > xtzReceived, "Hic et Nunc royalties", "Hic et Nunc trade")
         )
     }
     
@@ -209,7 +221,7 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "registry") %>% 
         mutate(., case = "Hic et Nunc registry")
     }
-  
+    
   }
   
   # Case Grouping: OBJKT transactions 
@@ -224,8 +236,8 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzSent = xtzSent - xtzAmount, 
-          case = "OBJKT bid"
+               xtzSent = xtzSent - xtzAmount, 
+               case = "OBJKT bid"
         )
     }
     
@@ -234,8 +246,8 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzReceived = 0, 
-          case = "OBJKT retract bid"
+               xtzReceived = 0, 
+               case = "OBJKT retract bid"
         )
     }
     
@@ -257,10 +269,10 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          case = ifelse(
-            xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill ask (collect)"
-          ),
+               tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+               case = ifelse(
+                 xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill ask (collect)"
+               ),
         )
     }
     
@@ -282,10 +294,10 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          case = ifelse(
-            xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill bid (collect)"
-          ),
+               tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+               case = ifelse(
+                 xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill bid (collect)"
+               ),
         )
     }
     
@@ -352,6 +364,10 @@ for (i in 1:nrow(operations_hash)) {
       mutate(., case = "Tezos Domains update reverse record")
   }
   
+  
+  
+  
+  
   # Case: Unidentified
   else {
     x <- y
@@ -361,5 +377,12 @@ for (i in 1:nrow(operations_hash)) {
   
 }
 
+
 # Filter export for debugging
 #is %<>% filter(., row_number() > 3500)
+
+
+
+
+# Cost basis notes:
+# -Adjust for address to address transfers
