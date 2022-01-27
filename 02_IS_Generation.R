@@ -63,44 +63,40 @@ operations %<>%
   )
 
 # Generate operations contract features
-calls <- c("mint", "collect", "transfer")
-
 for (i in 1:nrow(operations)) {
-  if (operations[[i, "parameterEntry"]] %in% calls) {
-    
-    # Parse out standard contract variables
-    operations_i <- operations[[i, "parameterValue"]]
-    operations[i, "tokenID"] <- paste0(
-      operations[i, "targetAddress"], 
-      "_", 
-      list_check(operations_i, 
-      c("token_id", "objkt_id"))
+  
+  # Parse out standard contract variables
+  operations_i <- operations[[i, "parameterValue"]]
+  operations[i, "tokenID"] <- paste0(
+    operations[i, "targetAddress"], 
+    "_", 
+    list_check(operations_i, 
+    c("token_id", "objkt_id"))
+  )
+  if (!is.na(operations[i, "tokenID"])) {
+    operations[i, "tokenAmount"]   <- as.numeric(
+      list_check(operations_i, c("token_amt", "objkt_amount", "amount"))
     )
-    if (!is.na(operations[i, "tokenID"])) {
-      operations[i, "tokenAmount"]   <- as.numeric(
-        list_check(operations_i, c("token_amt", "objkt_amount", "amount"))
-      )
-      operations[i, "tokenSender"]   <- list_check(operations_i, "from_")
-      operations[i, "tokenReceiver"] <- list_check(operations_i, "to_")
-    }
-    
-    # Adjust minting
-    if (operations[[i, "parameterEntry"]] == "mint") {
-      operations[i, "tokenReceiver"] <- operations[i, "initiatorAddress"]
-    }
-    
-    # Adjust failed/backtracked transactions
-    if (
-      (operations[i, "status"] == "backtracked") | 
-      (operations[i, "status"] == "failed")
-    ) {
-      operations[i, "tokenID"]       <- NA
-      operations[i, "tokenAmount"]   <- NA
-      operations[i, "tokenSender"]   <- NA
-      operations[i, "tokenReceiver"] <- NA
-    }
-    
+    operations[i, "tokenSender"]   <- list_check(operations_i, "from_")
+    operations[i, "tokenReceiver"] <- list_check(operations_i, "to_")
   }
+  
+  # Adjust minting
+  if (operations[[i, "parameterEntry"]] == "mint") {
+    operations[i, "tokenReceiver"] <- operations[i, "initiatorAddress"]
+  }
+  
+  # Adjust failed/backtracked transactions
+  if (
+    (operations[i, "status"] == "backtracked") | 
+    (operations[i, "status"] == "failed")
+  ) {
+    operations[i, "tokenID"]       <- NA
+    operations[i, "tokenAmount"]   <- NA
+    operations[i, "tokenSender"]   <- NA
+    operations[i, "tokenReceiver"] <- NA
+  }
+  
 }
 
 # Generate income statement
