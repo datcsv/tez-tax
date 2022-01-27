@@ -1,3 +1,3 @@
-# Tez Tracker
+# Tez Tax
 
-Tezos tax tracking.
+Tezos tax tracking
