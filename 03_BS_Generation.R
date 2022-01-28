@@ -8,15 +8,7 @@ else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
   
 
 
-# OBJKT fulfill ask (collect)
-else if (
-  (FALSE & "fulfill_ask" %in% x$parameterEntry) & 
-  (x$xtzSent[1] > 0) 
-) {
-  x %<>% 
-    filter(., parameterEntry == "transfer") %>% 
-    mutate(.,case = "OBJKT fulfill ask (collect)")
-}
+
 
   
   # Case: OBJKT fulfill ask (trade)

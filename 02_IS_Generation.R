@@ -282,8 +282,9 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzSent = xtzSent - xtzAmount, 
-          case = "OBJKT bid"
+          xtzReceived = 0,
+          xtzSent = ifelse(SenderAddress %in% addresses, xtzSent - xtzAmount, 0),
+          case = ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
         )
     }
     
@@ -295,6 +296,19 @@ for (i in 1:nrow(operations_hash)) {
           xtzReceived = 0, 
           case = "OBJKT retract bid"
         )
+    }
+    
+    ###########################################################################
+    # NOTE: WIP, TOKEN_ID INCORRECTLY POPULATED
+    ###########################################################################
+    # OBJKT fulfill ask (collect)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (x$xtzSent[1] > 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(.,case = "OBJKT fulfill ask (collect)")
     }
     
     # Unidentified
@@ -315,4 +329,4 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Token transfer")
+is %<>% filter(., case == "OBJKT fulfill ask (collect)")
