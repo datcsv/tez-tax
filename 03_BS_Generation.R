@@ -4,13 +4,6 @@ else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
   x %<>% mutate(., case = "Contract signature")
 }
 
-
-  
-
-
-
-
-  
   # Case: OBJKT fulfill ask (trade)
   else if (
     ("fulfill_ask" %in% x$parameterEntry) & 

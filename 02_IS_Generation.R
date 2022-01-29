@@ -39,6 +39,7 @@ operations$quote            <- operations$quote$usd
 
 # Clean operations data
 operations %<>% 
+  filter(., type == "transaction") %>%
   distinct(., id, hash, .keep_all=TRUE) %>%
   mutate(., 
     xtzAmount      = ifelse(
@@ -68,7 +69,7 @@ operations %<>%
 ################################################################################
 # Notes:
 # (1) Tezos domains are not registered to income statement, but payments and
-#     gas fees are still logged.
+#     gas fees are.
 #
 # (2) Current filtering methodology requires whitelisting of contract addresses.
 #     Assumptioms could probably be loosened in some cases without much risk.
@@ -119,6 +120,20 @@ for (i in 1:nrow(operations_hash)) {
         (targetAddress %in% addresses)
       ) %>%
       mutate(., case = "Standard transaction")
+  }
+  
+  # Token transfer
+  else if (
+    (nrow(x) == 1) &
+    ("transfer" %in% x$parameterEntry)
+  ) {
+    x %<>% mutate(., 
+      tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
+      tokenSender   = targetAddress,
+      tokenReceiver = list_check(parameterValue, "to_"),
+      tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
+      case = "Token transfer"
+    )
   }
   
   # Hic et Nunc contracts
@@ -191,11 +206,6 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "registry") %>% 
         mutate(., case  = "Hic et Nunc registry")
-    }
-    
-    # Hic et Nunc transfer
-    else if ("transfer" %in% x$parameterEntry) {
-      x %<>% mutate(., case = "Hic et Nunc transfer")
     }
     
     # Unidentified
@@ -316,7 +326,7 @@ for (i in 1:nrow(operations_hash)) {
       x <- y
     }
   }
-    
+  
   # Unidentified
   else {
     x <- y
@@ -328,5 +338,5 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "OBJKT fulfill ask (collect)")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "OBJKT fulfill ask (collect)")
