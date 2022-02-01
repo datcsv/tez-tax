@@ -143,8 +143,7 @@ for (i in 1:nrow(operations_hash)) {
   else if (
     ("KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9" %in% x$targetAddress) |
     ("KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn" %in% x$targetAddress) |
-    ("KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj" %in% x$targetAddress) |
-    ("KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton" %in% x$targetAddress)
+    ("KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj" %in% x$targetAddress) 
   ) {
     
     # Hic et Nunc mint
@@ -339,6 +338,7 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_ask" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
+      
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., case = "OBJKT fulfill ask (collect)")
@@ -388,6 +388,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "OBJKT fulfill bid (collect)")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "OBJKT fulfill ask (collect)")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
