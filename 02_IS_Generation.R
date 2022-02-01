@@ -71,9 +71,6 @@ operations %<>%
 # (1) Tezos domains are not registered to income statement, but payments and
 #     gas fees are.
 #
-# (2) Current filtering methodology requires whitelisting of contract addresses.
-#     Assumptioms could probably be loosened in some cases without much risk.
-#
 #
 ################################################################################
 
@@ -87,20 +84,21 @@ for (i in 1:nrow(operations_hash)) {
   # Define helper variables
   x <- operations %>% filter(., hash == operations_hash[i, ])
   y <- x
-  x$xtzSent     <- sum(x$xtzSent)
-  x$xtzReceived <- sum(x$xtzReceived)
-  xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
   
   # Scrape token data, where applicable
   if ("transfer" %in% x$parameterEntry) {
     x <- y %>% 
-      mutate(., 
+      mutate(.,
         tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
         tokenSender   = list_check(parameterValue, "from_"),
         tokenReceiver = list_check(parameterValue, "to_"),
         tokenAmount   = as.numeric(list_check(parameterValue, "amount"))
       )
   }
+  
+  x$xtzSent     <- sum(x$xtzSent)
+  x$xtzReceived <- sum(x$xtzReceived)
+  xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
   
   # Failed/backtracked transaction
   if (
@@ -308,9 +306,6 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
-    ###########################################################################
-    # NOTE: WIP, TOKEN_ID INCORRECTLY POPULATED
-    ###########################################################################
     # OBJKT fulfill ask (collect)
     else if (
       ("fulfill_ask" %in% x$parameterEntry) & 
@@ -318,7 +313,7 @@ for (i in 1:nrow(operations_hash)) {
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
-        mutate(.,case = "OBJKT fulfill ask (collect)")
+        mutate(., case = "OBJKT fulfill ask (collect)")
     }
     
     # Unidentified
@@ -338,5 +333,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT fulfill ask (collect)")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "OBJKT fulfill ask (collect)")
+#t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
