@@ -85,9 +85,13 @@ for (i in 1:nrow(operations_hash)) {
   x <- operations %>% filter(., hash == operations_hash[i, ])
   y <- x
   
+  if("oo5xmWPtiuLoJqqLqCPnrZsj4UgxXkHLpJeVXpWHkPzJqSKDUU2" %in% x$hash) {
+    print(x$parameterValue)
+  }
+  
   # Scrape token data, where applicable
   if ("transfer" %in% x$parameterEntry) {
-    x <- y %>% 
+    x %<>% 
       mutate(.,
         tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
         tokenSender   = list_check(parameterValue, "from_"),
@@ -171,7 +175,7 @@ for (i in 1:nrow(operations_hash)) {
     else if ("cancel_swap" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "cancel_swap") %>% 
-        mutate(., case  = "Hic et Nunc cancel swap")
+        mutate(., case = "Hic et Nunc cancel swap")
     }
     
     # Hic et Nunc trade
@@ -183,7 +187,7 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
           tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
-          case        = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
+          case = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
         )
     }
    
@@ -194,7 +198,13 @@ for (i in 1:nrow(operations_hash)) {
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
-        mutate(., case = "Hic et Nunc collect")
+        mutate(., 
+          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
+          tokenSender   = list_check(parameterValue, "from_"),
+          tokenReceiver = list_check(parameterValue, "to_"),
+          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
+          case = "Hic et Nunc collect"
+        )
     }
      
     # Hic et Nunc curate
@@ -319,12 +329,12 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-               tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-               case = ifelse(
-                 xtzCollect > xtzReceived, 
-                 "OBJKT fulfill ask (royalties)", 
-                 "OBJKT fulfill ask (trade)"
-               ),
+          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          case = ifelse(
+            xtzCollect > xtzReceived, 
+            "OBJKT fulfill ask (royalties)", 
+            "OBJKT fulfill ask (trade)"
+          ),
         )
     }
     
@@ -356,5 +366,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Hic et Nunc trade")
+is %<>% filter(., case == "Hic et Nunc collect")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
