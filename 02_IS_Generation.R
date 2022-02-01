@@ -377,6 +377,24 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # AKAswap contract
+  else if (
+    ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress)
+  ) {
+    
+    
+    # Resume here
+    if () {
+      
+    }
+    
+    # Unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # Unidentified
   else {
     x <- y

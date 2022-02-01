@@ -1,16 +1,4 @@
 
-# Case: Contract signature
-else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
-  x %<>% mutate(., case = "Contract signature")
-}
-
-# Case Grouping: AkaSwap transactions
-else if (
-  ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress)
-) {
-  
-}
-
 ################################################################################
 # Notes:
 # (1) Account for inter-address transfers
