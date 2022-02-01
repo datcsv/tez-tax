@@ -4,21 +4,7 @@ else if (nrow(x) == 1 & "sign" %in% x$parameterEntry) {
   x %<>% mutate(., case = "Contract signature")
 }
 
-  # Case: OBJKT fulfill ask (trade)
-  else if (
-    ("fulfill_ask" %in% x$parameterEntry) & 
-    (x$xtzSent[1] == 0) 
-  ) {
-    x %<>% 
-      filter(., parameterEntry == "transfer") %>% 
-      mutate(., 
-             tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-             case = ifelse(
-               xtzCollect > xtzReceived, "OBJKT royalties", "OBJKT fulfill ask (collect)"
-             ),
-      )
-  }
-  
+
   # Case: OBJKT fulfill bid (collect)
   else if (
     ("fulfill_bid" %in% x$parameterEntry) & 

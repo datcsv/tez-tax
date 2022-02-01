@@ -177,7 +177,7 @@ for (i in 1:nrow(operations_hash)) {
     # Hic et Nunc trade
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (x$xtzSent[1] == 0)
+      (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
@@ -190,7 +190,7 @@ for (i in 1:nrow(operations_hash)) {
     # Hic et Nunc collect
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (x$xtzSent[1] > 0)
+      (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
@@ -311,31 +311,31 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
-    # OBJKT fulfill ask (collect)
-    else if (
-      ("fulfill_ask" %in% x$parameterEntry) & 
-      (x$xtzSent[1] > 0)
-    ) {
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., case = "OBJKT fulfill ask (collect)")
-    }
-    
     # Case: OBJKT fulfill ask (trade)
     else if (
       ("fulfill_ask" %in% x$parameterEntry) & 
-      (x$xtzSent[1] == 0) 
+      (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          case = ifelse(
-            xtzCollect > xtzReceived, 
-            "OBJKT fulfill ask (royalties)", 
-            "OBJKT fulfill ask (trade)"
-          ),
+               tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+               case = ifelse(
+                 xtzCollect > xtzReceived, 
+                 "OBJKT fulfill ask (royalties)", 
+                 "OBJKT fulfill ask (trade)"
+               ),
         )
+    }
+    
+    # OBJKT fulfill ask (collect)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., case = "OBJKT fulfill ask (collect)")
     }
     
     # Unidentified
@@ -356,5 +356,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT fulfill ask (royalties)")
+#is %<>% filter(., case == "Hic et Nunc trade")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
