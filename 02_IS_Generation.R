@@ -348,6 +348,33 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT fulfill ask (collect)")
     }
     
+    # Case: OBJKT fulfill bid (trade)
+    else if (
+      ("fulfill_bid" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          case = ifelse(
+            xtzCollect > xtzReceived, 
+            "OBJKT fulfill bid (royalties)", 
+            "OBJKT fulfill bid (collect)"
+          ),
+        )
+    }
+    
+    # Case: OBJKT fulfill bid (collect)
+    else if (
+      ("fulfill_bid" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., case = "OBJKT fulfill bid (collect)")
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -366,5 +393,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Hic et Nunc collect")
+#is %<>% filter(., case == "Hic et Nunc collect")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
