@@ -126,12 +126,17 @@ for (i in 1:nrow(operations_hash)) {
     ("transfer" %in% x$parameterEntry)
   ) {
     x %<>% mutate(., 
-      tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-      tokenSender   = targetAddress,
-      tokenReceiver = list_check(parameterValue, "to_"),
-      tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
+      tokenSender = targetAddress,
       case = "Token transfer"
     )
+  }
+  
+  # Contract signature
+  else if (
+    (nrow(x) == 1) &
+    ("sign" %in% x$parameterEntry)
+  ) {
+    x %<>% mutate(., case = "Contract signature")
   }
   
   # Hic et Nunc contracts
@@ -316,6 +321,23 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT fulfill ask (collect)")
     }
     
+    # Case: OBJKT fulfill ask (trade)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (x$xtzSent[1] == 0) 
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          case = ifelse(
+            xtzCollect > xtzReceived, 
+            "OBJKT fulfill ask (royalties)", 
+            "OBJKT fulfill ask (trade)"
+          ),
+        )
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -334,5 +356,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "OBJKT fulfill ask (collect)")
+#is %<>% filter(., case == "OBJKT fulfill ask (royalties)")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
