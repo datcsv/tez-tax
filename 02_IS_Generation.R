@@ -295,6 +295,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT ask")
     }
     
+    # OBJKT retract ask 
+    else if ("retract_ask" %in% x$parameterEntry) {
+      x %<>%
+        filter(parameterEntry == "retract_ask") %>%
+        mutate(., case = "OBJKT retract ask")
+    }
+    
     # OBJKT bid
     else if ("bid" %in% x$parameterEntry) {
       x %<>% 
@@ -432,5 +439,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT ask")
+#is %<>% filter(., case == "OBJKT retract ask")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
