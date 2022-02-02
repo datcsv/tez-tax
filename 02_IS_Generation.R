@@ -89,7 +89,11 @@ for (i in 1:nrow(operations_hash)) {
   if (sum(c("transfer", "mint") %in% x$parameterEntry) > 0) {
     for (i in 1:nrow(x)) {
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
-        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
+        x$tokenID[i]       <- ifelse(
+          is.na(list_check(x$parameterValue[i], "iteration")),
+          paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id")),
+          paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"), "_", list_check(x$parameterValue[i], "iteration"))
+        )
         x$tokenSender[i]   <- list_check(x$parameterValue[i], "from_")
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], "to_")
         x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
@@ -288,14 +292,14 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress)
   ) {
   
-    # OBJKT ask 
+    # OBJKT ask
     if ("ask" %in% x$parameterEntry) {
       x %<>%
         filter(parameterEntry == "ask") %>%
         mutate(., case = "OBJKT ask")
     }
     
-    # OBJKT retract ask 
+    # OBJKT retract ask
     else if ("retract_ask" %in% x$parameterEntry) {
       x %<>%
         filter(parameterEntry == "retract_ask") %>%
@@ -413,7 +417,6 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     
     tz <- as.numeric(x$parameterValue[[1]])
-    
     x %<>%
       filter(., 
         parameterEntry == "mint",
@@ -427,6 +430,25 @@ for (i in 1:nrow(operations_hash)) {
     
   }
   
+  # fxhash contracts
+  else if (
+    ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress)
+  ) {
+    
+    if ("mint" %in% x$parameterEntry) {
+      x %<>%
+        filter(., !row_number() == 1) %>%
+        mutate(., case = "fxhash mint")
+    }
+    
+    # Unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  
   # Unidentified
   else {
     x <- y
@@ -439,5 +461,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT retract ask")
+#is %<>% filter(., case == "fxhash mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
