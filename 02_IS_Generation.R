@@ -87,15 +87,15 @@ for (i in 1:nrow(operations_hash)) {
   
   # Scrape token data, where applicable
   if ("transfer" %in% x$parameterEntry) {
-    x %<>% 
-      mutate(.,
-        tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-        tokenSender   = list_check(parameterValue, "from_"),
-        tokenReceiver = list_check(parameterValue, "to_"),
-        tokenAmount   = as.numeric(list_check(parameterValue, "amount"))
-      )
+    for (i in 1:nrow(x)) {
+      if ("transfer" %in% x$parameterEntry[i]) {
+        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
+        x$tokenSender[i]   <- list_check(x$parameterValue[i], "from_")
+        x$tokenReceiver[i] <- list_check(x$parameterValue[i], "to_")
+        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
+      }
+    }
   }
-  
   x$xtzSent     <- sum(x$xtzSent)
   x$xtzReceived <- sum(x$xtzReceived)
   xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
@@ -193,13 +193,7 @@ for (i in 1:nrow(operations_hash)) {
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
-        mutate(., 
-          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
-          tokenSender   = list_check(parameterValue, "from_"),
-          tokenReceiver = list_check(parameterValue, "to_"),
-          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
-          case = "Hic et Nunc collect"
-        )
+        mutate(., case = "Hic et Nunc collect")
     }
      
     # Hic et Nunc curate
@@ -382,10 +376,15 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress)
   ) {
     
-    
-    # Resume here
-    if () {
-      
+    # akaSwap collect
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        filter(., "transfer" %in% parameterEntry) %>%
+        mutate(., case = "akaSwap collect")
+      x %<>% top_n(., n=-1, wt=id)
     }
     
     # Unidentified
@@ -406,6 +405,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT fulfill ask (collect)")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "akaSwap collect")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
