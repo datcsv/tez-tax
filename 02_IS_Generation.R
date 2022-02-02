@@ -382,9 +382,8 @@ for (i in 1:nrow(operations_hash)) {
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
       x %<>% 
-        filter(., "transfer" %in% parameterEntry) %>%
+        top_n(., n=1, wt=id) %>%
         mutate(., case = "akaSwap collect")
-      x %<>% top_n(., n=-1, wt=id)
     }
     
     # Unidentified
@@ -406,5 +405,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "akaSwap collect")
+#is %<>% filter(., case == "akaSwap collect")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
