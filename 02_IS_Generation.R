@@ -86,9 +86,9 @@ for (i in 1:nrow(operations_hash)) {
   y <- x
   
   # Scrape token data, where applicable
-  if ("transfer" %in% x$parameterEntry) {
+  if (sum(c("transfer", "mint") %in% x$parameterEntry) > 0) {
     for (i in 1:nrow(x)) {
-      if ("transfer" %in% x$parameterEntry[i]) {
+      if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
         x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
         x$tokenSender[i]   <- list_check(x$parameterValue[i], "from_")
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], "to_")
@@ -131,6 +131,8 @@ for (i in 1:nrow(operations_hash)) {
     )
   }
   
+  
+  
   # Contract signature
   else if (
     (nrow(x) == 1) &
@@ -143,7 +145,7 @@ for (i in 1:nrow(operations_hash)) {
   else if (
     ("KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9" %in% x$targetAddress) |
     ("KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn" %in% x$targetAddress) |
-    ("KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj" %in% x$targetAddress) 
+    ("KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj" %in% x$targetAddress)
   ) {
     
     # Hic et Nunc mint
@@ -151,10 +153,7 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
         mutate(., 
-          tokenID       = paste0(targetAddress, "_", list_check(parameterValue, "token_id")),
           tokenSender   = targetAddress,
-          tokenReceiver = list_check(parameterValue, "address"),
-          tokenAmount   = as.numeric(list_check(parameterValue, "amount")),
           case          = "Hic et Nunc mint"
         )
     }
@@ -182,7 +181,7 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
           tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
-          case = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
+          case        = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
         )
     }
    
@@ -289,8 +288,15 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress)
   ) {
   
+    # OBJKT ask 
+    if ("ask" %in% x$parameterEntry) {
+      x %<>%
+        filter(parameterEntry == "ask") %>%
+        mutate(., case = "OBJKT ask")
+    }
+    
     # OBJKT bid
-    if ("bid" %in% x$parameterEntry) {
+    else if ("bid" %in% x$parameterEntry) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
@@ -393,6 +399,27 @@ for (i in 1:nrow(operations_hash)) {
     
   }
   
+  # Tezzardz mint
+  else if (
+    ("KT1LHHLso8zQWQWg1HUukajdxxbkGfNoHjh6" %in% x$targetAddress) & 
+    ("mint" %in% x$parameterEntry)
+  ) {
+    
+    tz <- as.numeric(x$parameterValue[[1]])
+    
+    x %<>%
+      filter(., 
+        parameterEntry == "mint",
+        !row_number() == 1,
+      ) %>% 
+      mutate(., 
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        case = "Tezzardz mint"
+      )
+    
+  }
+  
   # Unidentified
   else {
     x <- y
@@ -404,6 +431,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "akaSwap collect")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "OBJKT ask")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
