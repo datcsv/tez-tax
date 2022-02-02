@@ -56,7 +56,8 @@ operations %<>%
     tokenID        = NA,
     tokenAmount    = NA,
     tokenSender    = NA,
-    tokenReceiver  = NA
+    tokenReceiver  = NA,
+    date           = as.Date(timestamp)
   ) %>%
   select(., 
     -initiator, -sender, -target, -quote, -parameter, -originatedContract, 
@@ -64,7 +65,8 @@ operations %<>%
     -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
     -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameters, 
     -initiatorAlias, -senderAlias, -targetAlias
-  )
+  ) %>%
+  filter(., date < as.Date("2022-01-01"))
 
 ################################################################################
 # Notes:
@@ -432,7 +434,8 @@ for (i in 1:nrow(operations_hash)) {
   
   # fxhash contracts
   else if (
-    ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress)
+    ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
+    ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress)
   ) {
     
     if ("mint" %in% x$parameterEntry) {
@@ -463,6 +466,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
+is %<>% filter(., is.na(case))
 #is %<>% filter(., case == "fxhash mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
