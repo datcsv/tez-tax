@@ -461,7 +461,8 @@ for (i in 1:nrow(operations_hash)) {
   # fxhash contracts
   else if (
     ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
-    ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress)
+    ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress) |
+    ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9") %in% x$targetAddress
   ) {
     
     # fxhash mint
@@ -500,5 +501,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "fxhash cancel offer")
+is %<>% filter(., case == "fxhash cancel offer")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
