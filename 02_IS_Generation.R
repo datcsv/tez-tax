@@ -93,8 +93,8 @@ for (i in 1:nrow(operations_hash)) {
     for (i in 1:nrow(x)) {
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
         x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
-        x$tokenSender[i]   <- list_check(x$parameterValue[i], "from_")
-        x$tokenReceiver[i] <- list_check(x$parameterValue[i], "to_")
+        x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_"))
+        x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
         x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
       }
     }
@@ -549,6 +549,28 @@ for (i in 1:nrow(operations_hash)) {
     
   }
   
+  # Rarible contracts
+  else if ("KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC" %in% x$targetAddress) {
+    
+    # Rarible collect
+    if (
+      ("match_orders" %in% x$targetAddress) &
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., case = "Rarible collect")
+    }
+    
+    # Unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  
+  
   # Unidentified
   else {
     x <- y
@@ -561,5 +583,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "OBJKT create auction")
+is %<>% filter(., case == "Rarible collect")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
