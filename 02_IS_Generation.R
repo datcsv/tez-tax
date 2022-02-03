@@ -92,11 +92,7 @@ for (i in 1:nrow(operations_hash)) {
   if (sum(c("transfer", "mint") %in% x$parameterEntry) > 0) {
     for (i in 1:nrow(x)) {
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
-        x$tokenID[i]       <- ifelse(
-          is.na(list_check(x$parameterValue[i], "iteration")),
-          paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id")),
-          paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"), "_", list_check(x$parameterValue[i], "iteration"))
-        )
+        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
         x$tokenSender[i]   <- list_check(x$parameterValue[i], "from_")
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], "to_")
         x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
@@ -499,7 +495,7 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # fxhash trade
-    if (
+    else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
@@ -512,7 +508,7 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # fxhash collect
-    if (
+    else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
