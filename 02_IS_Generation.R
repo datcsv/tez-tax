@@ -59,14 +59,15 @@ operations %<>%
     tokenReceiver  = NA,
     date           = as.Date(timestamp)
   ) %>%
+  filter(., date < as.Date("2022-01-01")) %>%
   select(., 
     -initiator, -sender, -target, -quote, -parameter, -originatedContract, 
     -newDelegate, -block, -nonce, -gasLimit, -gasUsed, -storageLimit, 
     -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
     -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameters, 
-    -initiatorAlias, -senderAlias, -targetAlias
-  ) %>%
-  filter(., date < as.Date("2022-01-01"))
+    -initiatorAlias, -senderAlias, -targetAlias, -date
+  )
+
 
 ################################################################################
 # Notes:
@@ -392,7 +393,8 @@ for (i in 1:nrow(operations_hash)) {
   
   # AKAswap contract
   else if (
-    ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress)
+    ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress) |
+    ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) 
   ) {
     
     # akaSwap collect
@@ -403,6 +405,32 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=1, wt=id) %>%
         mutate(., case = "akaSwap collect")
+    }
+    
+    # akaSwap collect bundle
+    else if (
+      ("collect_bundle" %in% x$parameterEntry) &
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      
+      x %<>%
+        top_n(., n=1, wt=id) %>%
+        mutate(., case = "akaSwap collect bundle")
+      
+      x_params <- x$parameterValue[[1]][[1]][[1]]
+      x_n <- nrow(x_params)
+      y <- x
+      x <- x[0, ]
+      for (i in 1:x_n) {
+        x_i <- y
+        x_i$tokenReceiver <- x_params$to_[[i]]
+        x_i$tokenAmount   <- as.numeric(x_params$amount[[i]])
+        x_i$tokenID       <- paste0(x_i$targetAddress, "_", x_params$token_id[[i]])
+        x_i$xtzSent       <- x_i$xtzSent / x_n
+        x %<>% bind_rows(., x_i)
+        
+      }
+      
     }
     
     # Unidentified
@@ -417,7 +445,6 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1LHHLso8zQWQWg1HUukajdxxbkGfNoHjh6" %in% x$targetAddress) & 
     ("mint" %in% x$parameterEntry)
   ) {
-    
     tz <- as.numeric(x$parameterValue[[1]])
     x %<>%
       filter(., 
@@ -429,7 +456,6 @@ for (i in 1:nrow(operations_hash)) {
         tokenSender = targetAddress,
         case = "Tezzardz mint"
       )
-    
   }
   
   # fxhash contracts
@@ -438,6 +464,7 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress)
   ) {
     
+    # fxhash mint
     if ("mint" %in% x$parameterEntry) {
       x %<>%
         filter(., 
@@ -447,13 +474,19 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "fxhash mint")
     }
     
+    # fxhash cancel offer
+    else if ("cancel_offer" %in% x$parameterEntry) {
+      x %<>%
+        filter(., x$parameterEntry == "cancel_offer") %>%
+        mutate(., case="fxhash cancel offer")
+    }
+    
     # Unidentified
     else {
       x <- y
     }
     
   }
-  
   
   # Unidentified
   else {
@@ -466,6 +499,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "fxhash mint")
+#is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "fxhash cancel offer")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
