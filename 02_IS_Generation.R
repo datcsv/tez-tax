@@ -397,6 +397,19 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) 
   ) {
     
+    # akaSwap trade
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% 
+        top_n(., n=1, wt=id) %>%
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+          case        = ifelse(xtzCollect <= xtzReceived, "akaSwap trade", "akaSwap royalties")
+        )
+    }
+    
     # akaSwap collect
     if (
       ("collect" %in% x$parameterEntry) & 
@@ -412,11 +425,9 @@ for (i in 1:nrow(operations_hash)) {
       ("collect_bundle" %in% x$parameterEntry) &
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      
       x %<>%
         top_n(., n=1, wt=id) %>%
         mutate(., case = "akaSwap collect bundle")
-      
       x_params <- x$parameterValue[[1]][[1]][[1]]
       x_n <- nrow(x_params)
       y <- x
@@ -428,9 +439,7 @@ for (i in 1:nrow(operations_hash)) {
         x_i$tokenID       <- paste0(x_i$targetAddress, "_", x_params$token_id[[i]])
         x_i$xtzSent       <- x_i$xtzSent / x_n
         x %<>% bind_rows(., x_i)
-        
       }
-      
     }
     
     # Unidentified
@@ -489,6 +498,29 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case="fxhash cancel offer")
     }
     
+    # fxhash trade
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+          case        = ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
+        )
+    }
+    
+    # fxhash collect
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., case = "fxhash collect")
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -507,6 +539,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "fxhash offer")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "fxhash collect")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
