@@ -475,6 +475,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "fxhash mint")
     }
     
+    # fxhash offer
+    else if ("offer" %in% x$parameterEntry) {
+      x %<>%
+        filter(., x$parameterEntry == "offer") %>%
+        mutate(., case="fxhash offer")
+    }
+    
     # fxhash cancel offer
     else if ("cancel_offer" %in% x$parameterEntry) {
       x %<>%
@@ -500,6 +507,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "fxhash cancel offer")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "fxhash offer")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
