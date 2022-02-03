@@ -576,11 +576,7 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
     ("buy" %in% x$parameterEntry)
   ){
-    x %<>%
-      mutate(., 
-        tokenAmount = as.numeric(parameterValue),
-        case = "RCS mint"
-      )
+    x %<>% mutate(., case = "RCS mint")
   }
   
   # Unidentified
