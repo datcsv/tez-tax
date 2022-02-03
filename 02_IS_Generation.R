@@ -554,7 +554,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Rarible collect
     if (
-      ("match_orders" %in% x$targetAddress) &
+      ("match_orders" %in% x$parameterEntry) &
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
       x %<>%
