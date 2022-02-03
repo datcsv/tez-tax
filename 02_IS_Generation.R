@@ -524,6 +524,23 @@ for (i in 1:nrow(operations_hash)) {
     
   }
   
+  # Pixel Potus contracts
+  else if ("KT1WGDVRnff4rmGzJUbdCRAJBmYt12BrPzdD" %in% x$targetAddress) {
+    
+    # Claim
+    if ("claim" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "claim") %>%
+        mutate(., case = "Pixel Potus claim")
+    }
+    
+    # Unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # Unidentified
   else {
     x <- y
@@ -535,6 +552,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "fxhash collect")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "Pixel Potus claim")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
