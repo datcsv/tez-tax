@@ -74,6 +74,8 @@ operations %<>%
 # (1) Tezos domains are not registered to income statement, but payments and
 #     gas fees are.
 #
+# (2) Randomly common skeles mint is not registered to income statement, 
+#     need to scrape bigmap data to capture this.
 #
 ################################################################################
 
@@ -569,7 +571,17 @@ for (i in 1:nrow(operations_hash)) {
     
   }
   
-  
+  # Randomly Common Skeles mint
+  else if (
+    ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
+    ("buy" %in% x$parameterEntry)
+  ){
+    x %<>%
+      mutate(., 
+        tokenAmount = as.numeric(parameterValue),
+        case = "RCS mint"
+      )
+  }
   
   # Unidentified
   else {
@@ -582,6 +594,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Rarible collect")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "RCS mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
