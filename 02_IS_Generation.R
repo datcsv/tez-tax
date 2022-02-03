@@ -288,7 +288,8 @@ for (i in 1:nrow(operations_hash)) {
   else if (
     ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
     ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
-    ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress)
+    ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress) |
+    ("KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih" %in% x$targetAddress)
   ) {
   
     # OBJKT ask
@@ -354,7 +355,7 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT fulfill ask (collect)")
     }
     
-    # Case: OBJKT fulfill bid (trade)
+    # OBJKT fulfill bid (trade)
     else if (
       ("fulfill_bid" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
@@ -371,7 +372,7 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
-    # Case: OBJKT fulfill bid (collect)
+    # OBJKT fulfill bid (collect)
     else if (
       ("fulfill_bid" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
@@ -381,13 +382,20 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT fulfill bid (collect)")
     }
     
+    # OBJKT create auction
+    else if("create_auction" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "create_auction") %>%
+        mutate(., case = "OBJKT create auction")
+    }
+    
     # Unidentified
     else {
       x <- y
     }
   }
   
-  # AKAswap contract
+  # akaSwap contract
   else if (
     ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress) |
     ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) 
@@ -467,7 +475,7 @@ for (i in 1:nrow(operations_hash)) {
   else if (
     ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
     ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress) |
-    ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9") %in% x$targetAddress
+    ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9" %in% x$targetAddress) 
   ) {
     
     # fxhash mint
@@ -552,6 +560,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Pixel Potus claim")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "OBJKT create auction")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
