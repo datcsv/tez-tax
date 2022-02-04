@@ -499,6 +499,24 @@ for (i in 1:nrow(operations_hash)) {
       )
   }
   
+  # Gogos mint
+  else if (
+    ("KT1CExkW5WoKqoiv5An6uaZzN6i2Q3mxcqpW" %in% x$targetAddress) & 
+    ("mint" %in% x$parameterEntry)
+  ) {
+    tz <- as.numeric(x$parameterValue[[1]])
+    x %<>%
+      filter(., 
+        parameterEntry == "mint",
+        !row_number() == 1,
+      ) %>% 
+      mutate(., 
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        case = "Gogos mint"
+      )
+  }
+  
   # fxhash contracts
   else if (
     ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
@@ -624,5 +642,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "akaSwap cancel swap")
+is %<>% filter(., case == "Gogos mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
