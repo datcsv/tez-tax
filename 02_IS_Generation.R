@@ -71,11 +71,8 @@ operations %<>%
 
 ################################################################################
 # Notes:
-# (1) Tezos domains are not registered to income statement, but payments and
-#     gas fees are.
-#
-# (2) Randomly common skeles mint is not registered to income statement, 
-#     need to scrape bigmap data to capture this.
+# (1) Tezos domains, randomly common skeles, pixel potus are untracked; data 
+#     not easily accessible from parameter list (would need big map data?).
 #
 ################################################################################
 
@@ -400,11 +397,22 @@ for (i in 1:nrow(operations_hash)) {
   # akaSwap contract
   else if (
     ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress) |
-    ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) 
+    ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) |
+    ("KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1" %in% x$targetAddress)
   ) {
     
+    # akaSwap mint
+    if ("mint" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "mint") %>% 
+        mutate(., 
+          tokenSender = targetAddress,
+          case        = "akaSwap mint"
+        )
+    }
+    
     # akaSwap trade
-    if (
+    else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
@@ -417,7 +425,7 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # akaSwap collect
-    if (
+    else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
@@ -446,6 +454,13 @@ for (i in 1:nrow(operations_hash)) {
         x_i$xtzSent       <- x_i$xtzSent / x_n
         x %<>% bind_rows(., x_i)
       }
+    }
+    
+    # akaSwap swap
+    else if ("swap" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "swap") %>%
+        mutate(., case = "akaSwap swap")
     }
     
     # Unidentified
@@ -590,6 +605,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "RCS mint")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "akaSwap mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
