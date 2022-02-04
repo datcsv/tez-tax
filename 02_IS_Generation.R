@@ -427,6 +427,17 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT create colletion")
     } 
     
+    # OBJKT mint
+    else if ("mint_artist" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "mint") %>%
+        mutate(., 
+          tokenSender = NA,
+          tokenReceiver = initiatorAddress,
+          case = "OBJKT mint"
+        )
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -597,12 +608,18 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
     ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress) |
     ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9" %in% x$targetAddress) |
-    ("KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" %in% x$targetAddress) |
-    ("KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM" %in% x$targetAddress)
+    ("KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" %in% x$targetAddress) 
   ) {
     
+    # fxhash issue mint
+    if ("mint_issuer" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "mint_issuer") %>%
+        mutate(., case = "fxhash issue mint")
+    }
+    
     # fxhash mint
-    if ("mint" %in% x$parameterEntry) {
+    else if ("mint" %in% x$parameterEntry) {
       x %<>%
         filter(., 
           parameterEntry == "mint",
@@ -653,20 +670,6 @@ for (i in 1:nrow(operations_hash)) {
       x %<>%
         filter(., parameterEntry == "update_profile") %>%
         mutate(., case = "fxhash update profile")
-    }
-    
-    # fxhash issue mint
-    else if ("mint_issuer" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "mint_issuer") %>%
-        mutate(., case = "fxhash issue mint")
-    }
-    
-    # fxhash self-mint
-    else if ("mint_issuer" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "mint") %>%
-        mutate(., case = "fxhash self-mint")
     }
     
     # Unidentified
@@ -739,6 +742,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "fxhash self-mint")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "OBJKT mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
