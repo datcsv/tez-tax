@@ -495,6 +495,7 @@ for (i in 1:nrow(operations_hash)) {
       mutate(., 
         xtzSent = xtzSent / tz,
         tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
         case = "Tezzardz mint"
       )
   }
@@ -513,6 +514,7 @@ for (i in 1:nrow(operations_hash)) {
       mutate(., 
         xtzSent = xtzSent / tz,
         tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
         case = "Gogos mint"
       )
   }
@@ -642,5 +644,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Gogos mint")
+is %<>% filter(., case == "Tezzardz mint")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
