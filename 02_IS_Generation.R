@@ -654,6 +654,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "fxhash update profile")
     }
     
+    # fxhash mint issue
+    else if ("mint_issuer" %iN% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "mint_issuer") %>%
+        mutate(., case = "fxhash mint issue")
+    }
+    
     # Unidentified
     else {
       x <- y
