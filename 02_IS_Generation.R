@@ -223,7 +223,8 @@ for (i in 1:nrow(operations_hash)) {
   
   # QuipuSwap contracts
   else if (
-    ("KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB" %in% x$targetAddress)
+    ("KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB" %in% x$targetAddress) |
+    ("KT1BMEEPX7MWzwwadW3NCSZe9XGmFJ7rs7Dr" %in% x$targetAddress) 
   ) {
     
     # QuipuSwap buy/sell
