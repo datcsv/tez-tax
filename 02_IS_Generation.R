@@ -478,7 +478,7 @@ for (i in 1:nrow(operations_hash)) {
     # akaSwap gachapon royalties
     else if (
       ("default" %in% x$parameterEntry) &
-      (x$xtzSent == 0)
+      (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
       x %<>% mutate(., case = "akaSwap gachapon royalties")
     }
