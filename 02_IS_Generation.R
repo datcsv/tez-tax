@@ -475,13 +475,12 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "akaSwap cancel swap")
     }
     
+    # akaSwap gachapon royalties
     else if (
       ("default" %in% x$parameterEntry) &
       (x$xtzSent == 0)
     ) {
-      x %<>% 
-        filter(., addresses %in% targetAddress) %>%
-        mutate(., case = "akaSwap gachapon royalties")
+      x %<>% mutate(., case = "akaSwap gachapon royalties")
     }
     
     # Unidentified
