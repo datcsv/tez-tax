@@ -586,7 +586,8 @@ for (i in 1:nrow(operations_hash)) {
   else if (
     ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
     ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress) |
-    ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9" %in% x$targetAddress) 
+    ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9" %in% x$targetAddress) |
+    ("KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" %in% x$targetAddress)
   ) {
     
     # fxhash mint
@@ -634,6 +635,13 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>%
         mutate(., case = "fxhash collect")
+    }
+    
+    # fxhash update profile
+    else if ("update_profile" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "update_profile") %>%
+        mutate(., case = "fxhash update profile")
     }
     
     # Unidentified
