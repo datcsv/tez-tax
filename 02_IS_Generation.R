@@ -295,7 +295,8 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
     ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress) |
     ("KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih" %in% x$targetAddress) |
-    ("KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r" %in% x$targetAddress)
+    ("KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r" %in% x$targetAddress) |
+    ("KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM" %in% x$targetAddress)
   ) {
   
     # OBJKT ask
@@ -418,6 +419,13 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "cancel_auction") %>%
         mutate(., case = "OBJKT cancel auction")
     }
+    
+    # OBJKT create collection
+    else if ("create_artist_collection" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "create_artist_collection") %>%
+        mutate(., case = "OBJKT create colletion")
+    } 
     
     # Unidentified
     else {
