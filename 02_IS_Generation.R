@@ -71,9 +71,9 @@ operations %<>%
 
 ################################################################################
 # Notes:
-# (1) Tezos Domains, Randomly Common Skeles, and Pixel Potus mints are currently
-#     not being registered. The data for these appears to be stored in bigmaps 
-#     rather than parameter values. 
+# (1) Tezos Domains, Randomly Common Skeles, Pixel Potus, Geoff Stearns mints 
+#     are currently not being registered. The data for these appears to be
+#     stored in bigmaps rather than parameter values. 
 #
 # (2) This code is a bit of a mess - I think case modularization would be a good
 #     move for future iterations. 
@@ -292,7 +292,8 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
     ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
     ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress) |
-    ("KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih" %in% x$targetAddress)
+    ("KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih" %in% x$targetAddress) |
+    ("KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r" %in% x$targetAddress)
   ) {
   
     # OBJKT ask
@@ -330,7 +331,7 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
-    # Case: OBJKT fulfill ask (trade)
+    # OBJKT fulfill ask (trade)
     else if (
       ("fulfill_ask" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
@@ -385,12 +386,30 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT fulfill bid (collect)")
     }
     
+    # OBJKT buy dutch auction
+    else if (
+      ("buy" %in% x$parameterEntry) & 
+      (sum(addresses %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., case = "OBJKT buy via Dutch auction")
+    }
+    
     # OBJKT create auction
     else if("create_auction" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "create_auction") %>%
         mutate(., case = "OBJKT create auction")
     }
+    
+    # OBJKT conclude auction
+    else if("conclude_auction" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "conclude_auction") %>%
+        mutate(., case = "OBJKT conclude auction")
+    }
+    
     
     # Unidentified
     else {
@@ -528,6 +547,35 @@ for (i in 1:nrow(operations_hash)) {
       )
   }
   
+  # Neonz mint
+  else if (
+    ("KT1QMAN7pWrR7fdiiMZ8mtVMMeFw2nADcVAH" %in% x$targetAddress) & 
+    ("mint" %in% x$parameterEntry)
+  ) {
+    tz <- as.numeric(x$parameterValue[[1]])
+    x %<>%
+      filter(., 
+        parameterEntry == "mint",
+        !row_number() == 1,
+      ) %>% 
+      mutate(., 
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
+        case = "Neonz mint"
+      )
+  }
+  
+  # Geoff Stearns mint
+  else if (
+    ("KT1Fxz4V3LaUcVFpvF8pAAx8G3Z4H7p7hhDg" %in% x$targetAddress) & 
+    ("mint" %in% x$parameterEntry)
+  ) {
+    x %<>% 
+      filter(., parameterEntry == "mint") %>%
+      mutate(., case = "Geoff Stearns mint")
+  }
+  
   # fxhash contracts
   else if (
     ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
@@ -652,6 +700,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "akaSwap gachapon royalties")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "OBJKT buy via Dutch auction")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
