@@ -71,8 +71,12 @@ operations %<>%
 
 ################################################################################
 # Notes:
-# (1) Tezos domains, randomly common skeles, pixel potus are untracked; data 
-#     not easily accessible from parameter list (would need big map data?).
+# (1) Tezos Domains, Randomly Common Skeles, and Pixel Potus mints are currently
+#     not being registered. The data for these appears to be stored in bigmaps 
+#     rather than parameter values. 
+#
+# (2) This code is a bit of a mess - I think case modularization would be a good
+#     move for future iterations. 
 #
 ################################################################################
 
@@ -463,6 +467,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "akaSwap swap")
     }
     
+    # akaSwap cancel swap
+    else if ("cancel_swap" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "cancel_swap") %>%
+        mutate(., case = "akaSwap cancel swap")
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -559,6 +570,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "Pixel Potus claim")
     }
     
+    # Trade
+    else if ("take_trade" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., case = "Pixel Potus trade")
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -606,5 +624,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "akaSwap mint")
+is %<>% filter(., case == "akaSwap cancel swap")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
