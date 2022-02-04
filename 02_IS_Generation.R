@@ -402,7 +402,8 @@ for (i in 1:nrow(operations_hash)) {
   else if (
     ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress) |
     ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) |
-    ("KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1" %in% x$targetAddress)
+    ("KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1" %in% x$targetAddress) |
+    ("KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU" %in% x$targetAddress)
   ) {
     
     # akaSwap mint
@@ -472,6 +473,15 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "cancel_swap") %>%
         mutate(., case = "akaSwap cancel swap")
+    }
+    
+    else if (
+      ("default" %in% x$parameterEntry) &
+      (x$xtzSent == 0)
+    ) {
+      x %<>% 
+        filter(., addresses %in% targetAddress) %>%
+        mutate(., case = "akaSwap gachapon royalties")
     }
     
     # Unidentified
@@ -644,5 +654,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Tezzardz mint")
+is %<>% filter(., case == "akaSwap gachapon royalties")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
