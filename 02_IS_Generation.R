@@ -410,6 +410,12 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT conclude auction")
     }
     
+    # OBJKT cancel auction
+    else if("cancel_auction" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "cancel_auction") %>%
+        mutate(., case = "OBJKT cancel auction")
+    }
     
     # Unidentified
     else {
