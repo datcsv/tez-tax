@@ -712,7 +712,10 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Rarible contracts
-  else if ("KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC" %in% x$targetAddress) {
+  else if (
+    ("KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC" %in% x$targetAddress) |
+    ("KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS" %in% x$targetAddress)
+  ) {
     
     # Rarible collect
     if (
@@ -722,6 +725,13 @@ for (i in 1:nrow(operations_hash)) {
       x %<>%
         filter(., parameterEntry == "transfer") %>%
         mutate(., case = "Rarible collect")
+    }
+    
+    # Rarible update operators
+    else if ("update_operators_for_all" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "update_operators_for_all") %>%
+        mutate(., case = "Rarible update operators")
     }
     
     # Unidentified
@@ -750,6 +760,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT update metadata")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "Rarible update operators")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
