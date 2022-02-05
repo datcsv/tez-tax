@@ -25,7 +25,7 @@ operations$targetAlias      <- operations$target$alias
 operations$targetAddress    <- operations$target$address
 operations$parameterEntry   <- operations$parameter$entrypoint
 operations$parameterValue   <- operations$parameter$value
-operations$quote            <- operations$quote$usd  ## UPDATE THIS!
+operations$quote            <- operations$quote[1]
 
 # Clean operations data
 operations %<>% 
