@@ -734,6 +734,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "Rarible update operators")
     }
     
+    # Rarible cancel
+    else if ("cancel" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "cancel") %>%
+        mutate(., case = "Rarible cancel")
+    }
+    
     # Unidentified
     else {
       x <- y
@@ -760,6 +767,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Rarible update operators")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "Rarible update operators")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
