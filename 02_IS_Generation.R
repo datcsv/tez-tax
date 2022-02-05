@@ -49,7 +49,6 @@ operations %<>%
     tokenReceiver  = NA,
     date           = as.Date(timestamp)
   ) %>%
-  filter(., date < as.Date("2022-01-01")) %>%
   select(., 
     -initiator, -sender, -target, -parameter, -originatedContract, 
     -newDelegate, -block, -nonce, -gasLimit, -gasUsed, -storageLimit, 
