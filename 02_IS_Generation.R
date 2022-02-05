@@ -252,7 +252,8 @@ for (i in 1:nrow(operations_hash)) {
     ("KT191reDVKrLxU9rjTSxg53wRqj6zh8pnHgr" %in% x$targetAddress) |
     ("KT1Mqx5meQbhufngJnUAGEGpa4ZRxhPSiCgB" %in% x$targetAddress) |
     ("KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS" %in% x$targetAddress) |
-    ("KT1Evxe1udtPDGWrkiRsEN3vMDdB6gNpkMPM" %in% x$targetAddress)
+    ("KT1Evxe1udtPDGWrkiRsEN3vMDdB6gNpkMPM" %in% x$targetAddress) |
+    ("KT1EVYBj3f1rZHNeUtq4ZvVxPTs77wuHwARU" %in% x$targetAddress)
   ) {
     
     # Tezos Domains commit
@@ -283,10 +284,18 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "Tezos Domains update reverse record")
     } 
     
+    # Tezos Domains place offer
     else if ("place_offer" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "place_offer") %>%
         mutate(., case = "Tezos Domains place offer")
+    }
+    
+    # Tezos Domains renew
+    else if ("renew" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "renew") %>%
+        mutate(., case = "Tezos Domains renew")
     }
     
     # Unidentified
@@ -774,6 +783,6 @@ for (i in 1:nrow(operations_hash)) {
 
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Tezos Domains place offer")
+is %<>% filter(., is.na(case))
+#is %<>% filter(., case == "Tezos Domains place offer")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
