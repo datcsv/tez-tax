@@ -49,10 +49,10 @@ operations %<>%
     tokenReceiver  = NA
   ) %>%
   select(., 
-    -initiator, -sender, -target, -parameter, -originatedContract, 
-    -newDelegate, -block, -nonce, -gasLimit, -gasUsed, -storageLimit, 
-    -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
-    -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameter, 
+    -initiator, -sender, -target, -parameter, -originatedContract, -newDelegate, 
+    -block, -nonce, -gasLimit, -gasUsed, -storageLimit, -storageUsed, 
+    -hasInternals, -contractBalance, -errors, -bakerFee, -storageFee, 
+    -allocationFee, -amount, -type, -level, -counter, -parameter, 
     -initiatorAlias, -senderAlias, -targetAlias
   )
 
