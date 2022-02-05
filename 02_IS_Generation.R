@@ -46,15 +46,14 @@ operations %<>%
     tokenID        = NA,
     tokenAmount    = NA,
     tokenSender    = NA,
-    tokenReceiver  = NA,
-    date           = as.Date(timestamp)
+    tokenReceiver  = NA
   ) %>%
   select(., 
     -initiator, -sender, -target, -parameter, -originatedContract, 
     -newDelegate, -block, -nonce, -gasLimit, -gasUsed, -storageLimit, 
     -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
     -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameter, 
-    -initiatorAlias, -senderAlias, -targetAlias, -date
+    -initiatorAlias, -senderAlias, -targetAlias
   )
 
 # Classify and filter transactions
