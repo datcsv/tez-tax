@@ -438,6 +438,14 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
+    # OBJKT update metadata
+    else if ("update_artist_metadata" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "update_artist_metadata") %>%
+        mutate(., case = "OBJKT update metadata")
+    }
+    
+    
     # Unidentified
     else {
       x <- y
@@ -743,5 +751,5 @@ for (i in 1:nrow(operations_hash)) {
 # Debugging filter
 #is %<>% filter(., row_number() > 3500)
 is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT mint")
+#is %<>% filter(., case == "OBJKT update metadata")
 #t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
