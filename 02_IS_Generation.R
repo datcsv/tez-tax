@@ -3,14 +3,17 @@ rm(list=ls())
 
 # Load function
 source("functions/load_packages.R")
+source("functions/tzkt_operations.R")
+source("functions/tzkt_operations_hash.R")
 source("functions/list_check.R")
 
 # Load packages
-load_packages(c("tidyverse", "magrittr"))
+load_packages(c("tidyverse", "jsonlite", "magrittr"))
 
 # Load data
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
+load(file="data/date_span.RData")
 load(file="data/operations.RData")
 
 # Split nested features in operations data

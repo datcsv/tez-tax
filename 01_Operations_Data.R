@@ -5,6 +5,7 @@ rm(list=ls())
 source("functions/load_packages.R")
 source("functions/tzkt_operations.R")
 source("functions/tzkt_operations_hash.R")
+source("functions/list_check.R")
 
 # Load packages
 load_packages(c("tidyverse", "jsonlite", "magrittr"))
