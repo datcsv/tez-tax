@@ -3,30 +3,16 @@ rm(list=ls())
 
 # Load function
 source("functions/load_packages.R")
-source("functions/tzkt_operations.R")
-source("functions/tzkt_operations_hash.R")
+source("functions/list_check.R")
 
 # Load packages
-load_packages(c("tidyverse", "jsonlite", "magrittr"))
+load_packages(c("tidyverse", "magrittr"))
 
 # Load data
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
 load(file="data/date_span.RData")
 load(file="data/operations.RData")
-
-# Define parameter function
-list_check <- function(x, check) {
-  y <- NA
-  if ((class(x) == "list" | class(x) == "data.frame") & length(x) > 0) {
-    for (i in 1:length(x)) {
-      if ((!is.null(names(x)[i])) && (names(x)[i] %in% check)) y <- x[[i]][[1]]
-      else y <- list_check(x[[i]], check) 
-      if (!is.na(y)) break
-    }
-  }
-  return(y)
-}
 
 # Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
@@ -37,7 +23,7 @@ operations$targetAlias      <- operations$target$alias
 operations$targetAddress    <- operations$target$address
 operations$parameterEntry   <- operations$parameter$entrypoint
 operations$parameterValue   <- operations$parameter$value
-operations$quote            <- operations$quote$usd
+operations$quote            <- operations$quote$usd  ## UPDATE THIS!
 
 # Clean operations data
 operations %<>% 
@@ -73,9 +59,6 @@ operations %<>%
 # Classify and filter transactions
 source("functions/classify_tx.R")
 
-
-
 # Debugging filter
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., case == "OBJKT conclude auction")
-write_csv(is, file="is.csv")
