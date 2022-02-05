@@ -76,7 +76,8 @@ operations %<>%
 #     stored in bigmaps rather than parameter values. 
 #
 # (2) This code is a bit of a mess - I think case modularization would be a good
-#     move for future iterations. 
+#     move for future iterations. It would be fairly straightforward to write
+#     a function to catch and edit the majoirty of cases. 
 #
 ################################################################################
 
@@ -425,7 +426,7 @@ for (i in 1:nrow(operations_hash)) {
     # OBJKT conclude auction
     else if("conclude_auction" %in% x$parameterEntry) {
       x %<>%
-        filter(., parameterEntry == "conclude_auction") %>%
+        #filter(., parameterEntry == "conclude_auction") %>%
         mutate(., case = "OBJKT conclude auction")
     }
     
@@ -782,7 +783,5 @@ for (i in 1:nrow(operations_hash)) {
 }
 
 # Debugging filter
-#is %<>% filter(., row_number() > 3500)
-is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "Tezos Domains place offer")
-#t <- operations %>% filter(., hash == "oneQ3pHjpfbJ8GCGQF7SQqtkEtCTbWjykYgnCPudCuAe4HwkdPy")
+#is %<>% filter(., is.na(case))
+is %<>% filter(., case == "OBJKT conclude auction")

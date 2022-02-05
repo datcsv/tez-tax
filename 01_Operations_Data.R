@@ -60,7 +60,10 @@ operations %<>%
 
 # Download operations - second pass (hash search)
 operations_hash <- operations %>% 
-  filter(., target[[2]] %in% addresses, amount > 0) %>%
+  filter(., 
+    (target[[2]] %in% addresses) |
+    (parameter[[1]] == "conclude_auction")
+  ) %>%
   distinct(., hash)
 
 for (i in 1:nrow(operations_hash)) {
