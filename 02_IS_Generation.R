@@ -59,6 +59,9 @@ operations %<>%
 # Classify and filter transactions
 source("functions/classify_tx.R")
 
+# Save data
+save(is, file="data/is.RData")
+
 # Debugging filter
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., case == "OBJKT conclude auction")

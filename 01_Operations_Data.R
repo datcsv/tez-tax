@@ -63,5 +63,5 @@ operations %<>%
   arrange(., id, hash) %>%
   distinct(.)
 
-# Export data
+# Save data
 save(operations, file="data/operations.RData")
