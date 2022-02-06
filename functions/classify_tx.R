@@ -671,5 +671,4 @@ for (i in 1:nrow(operations_hash)) {
   
   # Add row(s) to income statement
   is %<>% bind_rows(., x)
-  
 }

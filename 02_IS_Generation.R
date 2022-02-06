@@ -67,9 +67,8 @@ is %<>% select(., -xtzAmount, -xtzFee)
 save(is, file="data/is.RData")
 
 # Debugging code
-load(file="data/is.RData")
-is %<>% filter(., case == "fxhash update profile")
-
+#load(file="data/is.RData")
+#is %<>% filter(., case == "Rarible cancel")
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
 #is %<>% filter(., is.na(tokenID))
