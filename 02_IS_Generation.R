@@ -25,7 +25,7 @@ operations$targetAlias      <- operations$target$alias
 operations$targetAddress    <- operations$target$address
 operations$parameterEntry   <- operations$parameter$entrypoint
 operations$parameterValue   <- operations$parameter$value
-operations$quote            <- operations$quote[1]
+operations$quote            <- operations$quote[[1]]
 
 # Clean operations data
 operations %<>% 
@@ -66,8 +66,8 @@ is %<>% select(., -xtzAmount, -xtzFee)
 save(is, file="data/is.RData")
 
 # Debugging code
-#load(file="data/is.RData")
-#is %<>% filter(., case == "Rarible cancel")
+load(file="data/is.RData")
+is %<>% filter(., case == "OBJKT bid")
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
 #is %<>% filter(., is.na(tokenID))

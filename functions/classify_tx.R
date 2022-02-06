@@ -286,8 +286,37 @@ for (i in 1:nrow(operations_hash)) {
           case=ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
         )
       
-      ## Additional logic should be added here using bigmap API ##
-      
+      # Check if auction was won and add row if it was
+      key <- x$parameterValue[2][[1]]
+      if (class(key) == "character") {
+        
+        bigmap <- tzkt_bigmap(id="6210", key=key)
+        state  <- as.numeric(bm$value$state)
+        price  <- as.numeric(bm$value$current_price) / 1000000
+        buyer  <- bm$value$highest_bidder
+        time   <- bm$value$end_time
+        
+        if (
+          (state == 2) &
+          (as.Date(time) >= as.Date(span[1])) & 
+          (as.Date(time) <= as.Date(span[2])) &
+          (buyer %in% addresses)
+        ) {
+          
+          x2 <- x[0, ]
+          x2 %<>% mutate(.,
+            timestamp     = time,
+            quote         = tzkt_quote(level=bm$lastLevel, quote=currency),
+            xtzSent       = price,
+            xtzReceived   = 0,
+            tokenID       = paste0(bm$value$fa2, "_", bm$value$objkt_id),
+            tokenAmount   = 1,
+            tokenReceiver = buyer,
+          )
+          x %<>% bind_rows(., x2)
+          
+        }
+      }
     }
     
     # OBJKT retract bid
