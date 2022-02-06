@@ -364,7 +364,11 @@ for (i in 1:nrow(operations_hash)) {
     else if ("mint_artist" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "mint") %>%
-        mutate(., tokenReceiver=initiatorAddress, case="OBJKT mint")
+        mutate(., 
+          tokenSender=NA,
+          tokenReceiver=initiatorAddress, 
+          case="OBJKT mint"
+        )
     }
     
     # OBJKT update metadata
