@@ -1,7 +1,7 @@
 # Clear workspace
 rm(list=ls())
 
-# Load function
+# Load functions
 source("functions/load_packages.R")
 source("functions/tzkt_operations.R")
 source("functions/tzkt_operations_hash.R")
@@ -43,7 +43,7 @@ operations_hash <- operations %>%
   distinct(., hash)
 
 for (i in 1:nrow(operations_hash)) {
-  operations_i <- tzkt_operations_hash(operations_hash[i, ])
+  operations_i <- tzkt_operations_hash(operations_hash[i, ], quote=currency)
   if ("storage" %in% names(operations_i)) operations_i %<>% select(., -storage)
   if ("diffs" %in% names(operations_i))   operations_i %<>% select(., -diffs)
   if ("parameter" %in% names(operations_i)) {

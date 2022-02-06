@@ -1,7 +1,7 @@
 # Clear workspace
 rm(list=ls())
 
-# Load function
+# Load functions
 source("functions/load_packages.R")
 source("functions/tzkt_operations.R")
 source("functions/tzkt_operations_hash.R")
@@ -63,6 +63,8 @@ source("functions/classify_tx.R")
 save(is, file="data/is.RData")
 
 # Debugging filter
-#load(file="data/is.RData")
+load(file="data/is.RData")
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., case == "OBJKT conclude auction")
+is %<>% filter(., case == "OBJKT bid")
+#is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
+
