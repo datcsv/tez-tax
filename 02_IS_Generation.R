@@ -65,7 +65,7 @@ save(is, file="data/is.RData")
 
 # Debugging filter
 load(file="data/is.RData")
-is %<>% filter(., case == "QuipuSwap trade")
+is %<>% filter(., case == "TD place offer")
 
 
 

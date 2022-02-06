@@ -40,6 +40,16 @@ quipu_contracts <- c(
   "KT1X3zxdTzPB9DgVzA3ad6dgZe9JEamoaeRy"
 )
 
+# Tezos Domains contracts
+td_contracts <- c(
+  "KT1P8n2qzJjwMPbHJfi4o8xu6Pe3gaU3u2A3",
+  "KT191reDVKrLxU9rjTSxg53wRqj6zh8pnHgr",
+  "KT1Mqx5meQbhufngJnUAGEGpa4ZRxhPSiCgB",
+  "KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS",
+  "KT1Evxe1udtPDGWrkiRsEN3vMDdB6gNpkMPM",
+  "KT1EVYBj3f1rZHNeUtq4ZvVxPTs77wuHwARU"
+)
+
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
   
@@ -62,7 +72,7 @@ for (i in 1:nrow(operations_hash)) {
         x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
       }
       
-      # Non-FA2 tokens (HEH, PURPLE)
+      # Non-FA2 tokens - assuming a token ID of 0
       if (sum(nfa2 %in% x$targetAddress[i]) > 0) {
         x$tokenID[i]      <- paste0(x$targetAddress[i], "_0")
         x$tokenAmount[i]  <- as.numeric(list_check(x$parameterValue[i], "value"))
@@ -188,62 +198,42 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Tezos Domains contracts
-  else if (
-    ("KT1P8n2qzJjwMPbHJfi4o8xu6Pe3gaU3u2A3" %in% x$targetAddress) |
-    ("KT191reDVKrLxU9rjTSxg53wRqj6zh8pnHgr" %in% x$targetAddress) |
-    ("KT1Mqx5meQbhufngJnUAGEGpa4ZRxhPSiCgB" %in% x$targetAddress) |
-    ("KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS" %in% x$targetAddress) |
-    ("KT1Evxe1udtPDGWrkiRsEN3vMDdB6gNpkMPM" %in% x$targetAddress) |
-    ("KT1EVYBj3f1rZHNeUtq4ZvVxPTs77wuHwARU" %in% x$targetAddress)
-  ) {
+  else if (sum(td_contracts %in% x$targetAddress) > 0) {
     
-    # Tezos Domains commit
+    # TD commit
     if ("commit" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "commit") %>%
-        mutate(., case = "Tezos Domains commit")
+      x %<>% quick_case(., entry="commit", case="TD commit")
     }
     
-    # Tezos Domains buy
+    # TD buy
     else if ("buy" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "buy") %>%
-        mutate(., case = "Tezos Domains buy")
+      x %<>% quick_case(., entry="buy", case="TD buy")
     }
     
-    # Tezos Domains update record
+    # TD update record
     else if ("update_record" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "update_record") %>%
-        mutate(., case = "Tezos Domains update record")
+      x %<>% quick_case(., entry="update_record", case="TD update record")
     }
     
-    # Tezos Domains update reverse record
+    # TD update reverse record
     else if ("update_reverse_record" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "update_reverse_record") %>%
-        mutate(., case = "Tezos Domains update reverse record")
+      x %<>% quick_case(., entry="update_reverse_record", case="TD update reverse record")
     } 
     
-    # Tezos Domains place offer
+    # TD place offer
     else if ("place_offer" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "place_offer") %>%
-        mutate(., case = "Tezos Domains place offer")
+      x %<>% quick_case(., entry="place_offer", case="TD place offer")
     }
     
-    # Tezos Domains renew
+    # TD renew
     else if ("renew" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "renew") %>%
-        mutate(., case = "Tezos Domains renew")
+      x %<>% quick_case(., entry="renew", case="TD renew")
     }
     
-    # Unidentified
+    # TD unidentified
     else {
       x<- y
     }
-    
   }
   
   # OBJKT contracts
