@@ -54,6 +54,14 @@ objkt_contracts <- c(
   "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM"
 )
 
+# akaSwap contracts
+aka_contracts <- c(
+  "KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN",
+  "KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz",
+  "KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1",
+  "KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -128,7 +136,7 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
         mutate(., 
-          tokenSender=targetAddress, 
+          tokenSender=NA, 
           tokenReceiver=initiatorAddress,
           case="HEN mint"
         )
@@ -383,21 +391,13 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # akaSwap contract
-  else if (
-    ("KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN" %in% x$targetAddress) |
-    ("KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz" %in% x$targetAddress) |
-    ("KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1" %in% x$targetAddress) |
-    ("KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU" %in% x$targetAddress)
-  ) {
+  else if (sum(addresses %in% x$targetAddress) > 0) {
     
     # akaSwap mint
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., 
-               tokenSender = targetAddress,
-               case        = "akaSwap mint"
-        )
+        mutate(., tokenSender=NA, case="akaSwap mint")
     }
     
     # akaSwap trade
@@ -405,11 +405,13 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
       x %<>% 
         top_n(., n=1, wt=id) %>%
         mutate(., 
-               tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
-               case        = ifelse(xtzCollect <= xtzReceived, "akaSwap trade", "akaSwap royalties")
+          tokenAmount=ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case=ifelse(xtzCollect <= xtzReceived, "akaSwap trade", "akaSwap royalties")
         )
     }
     
@@ -418,9 +420,7 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% 
-        top_n(., n=1, wt=id) %>%
-        mutate(., case = "akaSwap collect")
+      x %<>% quick_case(., case="akaSwap collect", type=2)
     }
     
     # akaSwap collect bundle
@@ -428,9 +428,7 @@ for (i in 1:nrow(operations_hash)) {
       ("collect_bundle" %in% x$parameterEntry) &
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      x %<>%
-        top_n(., n=1, wt=id) %>%
-        mutate(., case = "akaSwap collect bundle")
+      x %<>% quick_case(., case="akaSwap collect bundle", type=2)
       x_params <- x$parameterValue[[1]][[1]][[1]]
       x_n <- nrow(x_params)
       y <- x
@@ -447,16 +445,12 @@ for (i in 1:nrow(operations_hash)) {
     
     # akaSwap swap
     else if ("swap" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "swap") %>%
-        mutate(., case = "akaSwap swap")
+      x %<>% quick_case(., entry="swap", case="akaSwap swap")
     }
     
     # akaSwap cancel swap
     else if ("cancel_swap" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "cancel_swap") %>%
-        mutate(., case = "akaSwap cancel swap")
+      x %<>%  quick_case(., entry="cancel_swap", case="akaSwap cancel swap")
     }
     
     # akaSwap gachapon royalties
@@ -467,11 +461,10 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% mutate(., case = "akaSwap gachapon royalties")
     }
     
-    # Unidentified
+    # akaSwap unidentified
     else {
       x <- y
     }
-    
   }
   
   # Tezzardz mint
