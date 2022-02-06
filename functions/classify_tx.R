@@ -62,6 +62,14 @@ aka_contracts <- c(
   "KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU"
 )
 
+# fxhash contracts
+fx_contracts <- c(
+  "KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS",
+  "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr",
+  "KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9",
+  "KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" 
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -540,19 +548,41 @@ for (i in 1:nrow(operations_hash)) {
       mutate(., case = "Geoff Stearns mint")
   }
   
-  # fxhash contracts
+  # RCS mint
   else if (
-    ("KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS" %in% x$targetAddress) |
-    ("KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr" %in% x$targetAddress) |
-    ("KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9" %in% x$targetAddress) |
-    ("KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" %in% x$targetAddress) 
-  ) {
+    ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
+    ("buy" %in% x$parameterEntry)
+  ){
+    x %<>% mutate(., case = "RCS mint")
+  }
+  
+  ## Test PP and fxhash, then update Rarible ##
+  
+  # Pixel Potus contracts
+  else if ("KT1WGDVRnff4rmGzJUbdCRAJBmYt12BrPzdD" %in% x$targetAddress) {
+    
+    # Pixel Potus claim
+    if ("claim" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="claim", case="Pixel Potus claim")
+    }
+    
+    # Pixel Potus trade
+    else if ("take_trade" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="Pixel Potus trade")
+    }
+    
+    # Pixel Potus unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # fxhash contracts
+  else if (sum(fx_contracts %in% x$targetAddress) > 0) {
     
     # fxhash issue mint
     if ("mint_issuer" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "mint_issuer") %>%
-        mutate(., case = "fxhash issue mint")
+      x %<>% quick_case(., entry="mint_issuer", case="fxhash mint issue")
     }
     
     # fxhash mint
@@ -567,16 +597,12 @@ for (i in 1:nrow(operations_hash)) {
     
     # fxhash offer
     else if ("offer" %in% x$parameterEntry) {
-      x %<>%
-        filter(., x$parameterEntry == "offer") %>%
-        mutate(., case="fxhash offer")
+      x %<>% quick_case(., entry="offer", case="fxhash offer")
     }
     
     # fxhash cancel offer
     else if ("cancel_offer" %in% x$parameterEntry) {
-      x %<>%
-        filter(., x$parameterEntry == "cancel_offer") %>%
-        mutate(., case="fxhash cancel offer")
+      x %<>% quick_case(., entry="cancel_offer", case="fxhash cancel offer")
     }
     
     # fxhash trade
@@ -587,8 +613,9 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
-          tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
-          case        = ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
+          tokenAmount=ifelse(
+            xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+          case=ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
         )
     }
     
@@ -597,47 +624,18 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>%
-        mutate(., case = "fxhash collect")
+      x %<>% quick_case(., entry="transfer", case="fxhash collect")
     }
     
     # fxhash update profile
     else if ("update_profile" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "update_profile") %>%
-        mutate(., case = "fxhash update profile")
+      x %<>% quick_case(., entry="update_profile", case="fxhash update profile")
     }
     
-    # Unidentified
+    # fxhash unidentified
     else {
       x <- y
     }
-    
-  }
-  
-  # Pixel Potus contracts
-  else if ("KT1WGDVRnff4rmGzJUbdCRAJBmYt12BrPzdD" %in% x$targetAddress) {
-    
-    # Claim
-    if ("claim" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "claim") %>%
-        mutate(., case = "Pixel Potus claim")
-    }
-    
-    # Trade
-    else if ("take_trade" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "transfer") %>%
-        mutate(., case = "Pixel Potus trade")
-    }
-    
-    # Unidentified
-    else {
-      x <- y
-    }
-    
   }
   
   # Rarible contracts
@@ -674,14 +672,6 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
-  }
-  
-  # RCS mint
-  else if (
-    ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
-    ("buy" %in% x$parameterEntry)
-  ){
-    x %<>% mutate(., case = "RCS mint")
   }
   
   # Unidentified
