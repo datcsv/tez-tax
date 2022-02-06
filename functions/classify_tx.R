@@ -286,35 +286,51 @@ for (i in 1:nrow(operations_hash)) {
           case=ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
         )
       
-      # Check if auction was won and add row if it was
-      key <- x$parameterValue[2][[1]]
-      if (class(key) == "character") {
+      # Check if auction was won, starting with a check to minimize API calls
+      # Note: We avoid the first iteration of the OBJKT contract here, which
+      # relies on different bigmap values - this can be added if needed.
+      # (e.g., KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z)
+      tx_value <- x$parameterValue[1][[1]]
+      if (
+        (length(tx_value) == 1) & 
+        (class(tx_value) == "character") &
+        (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
+      ) {
+      
+        tx_id         <- x$id[1]
+        tx_hash       <- x$hash[1]
+        tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
+        tx_operations %<>% filter(., id == tx_id)
+ 
+        id  <- tx_operations$diffs[[1]]$bigmap
+        key <- tx_operations$diffs[[1]]$content$key
         
-        bigmap <- tzkt_bigmap(id="6210", key=key)
-        state  <- as.numeric(bm$value$state)
-        price  <- as.numeric(bm$value$current_price) / 1000000
-        buyer  <- bm$value$highest_bidder
-        time   <- bm$value$end_time
+        bigmap <- tzkt_bigmap(id=id, key=key)
+        state  <- as.numeric(bigmap$value$state)
+        price  <- as.numeric(bigmap$value$current_price) / 1000000
+        buyer  <- bigmap$value$highest_bidder
+        time   <- bigmap$value$end_time
         
+        # If auction won in date span, add row to data
         if (
           (state == 2) &
-          (as.Date(time) >= as.Date(span[1])) & 
-          (as.Date(time) <= as.Date(span[2])) &
+          (as.Date(time) >= as.Date(date_span[1])) &
+          (as.Date(time) <= as.Date(date_span[2])) &
           (buyer %in% addresses)
         ) {
-          
-          x2 <- x[0, ]
-          x2 %<>% mutate(.,
+
+          x2 <- mutate(x,
             timestamp     = time,
-            quote         = tzkt_quote(level=bm$lastLevel, quote=currency),
+            quote         = tx_operations$quote[[1]],
             xtzSent       = price,
             xtzReceived   = 0,
-            tokenID       = paste0(bm$value$fa2, "_", bm$value$objkt_id),
+            tokenID       = paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id),
             tokenAmount   = 1,
             tokenReceiver = buyer,
+            case          = "OBJKT win auction"
           )
           x %<>% bind_rows(., x2)
-          
+
         }
       }
     }

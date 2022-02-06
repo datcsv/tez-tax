@@ -13,6 +13,7 @@ load_packages(c("tidyverse", "jsonlite", "magrittr"))
 # Load data
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
+
 load(file="data/date_span.RData")
 load(file="data/operations.RData")
 
@@ -67,7 +68,8 @@ save(is, file="data/is.RData")
 
 # Debugging code
 load(file="data/is.RData")
-is %<>% filter(., case == "OBJKT bid")
+#is %<>% filter(., case == "OBJKT bid")
+is %<>% filter(., case == "OBJKT win auction")
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
 #is %<>% filter(., is.na(tokenID))
