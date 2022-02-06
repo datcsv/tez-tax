@@ -1,16 +1,16 @@
 ################################################################################
 # Notes:
-# (1) Tezos Domains, Randomly Common Skeles, Pixel Potus, Geoff Stearns mints 
-#     are currently not being registered. The data for these appears to be
-#     stored in bigmaps rather than parameter values. 
+# (1) Tezos Domains, Randomly Common Skeles, Pixel Potus, and Geoff Stearns 
+#     tokens may not be registered correctly at this time. Bigmap lookups can
+#     solve these issues.
 #
-# (2) The code is a huge mess - Modularization and funcionalization would be 
-#     a very good idea; there is definitely a better way to go about this,
-#     but it works for now. 
+# (2) This code is a messy proof of concept; Modularization would be useful for
+#     future iterations. 
 #
-# (3) hDAO and akaDAO airdrop tokens are not currently accounted for. Given 
-#     that they have a cost-basis of zero, this should not be a huge issue.
-#     Nevertheless, it would not be terribly hard to add these in later. 
+# (3) hDAO and akaDAO airdrop tokens are not registered correctly at this time.
+#     both have a cost basis of zero, so the issue should not bear major tax
+#     implications. Nevertheless, these can be addressed without too much 
+#     trouble at a later time. 
 #
 ################################################################################
 
@@ -68,6 +68,12 @@ fx_contracts <- c(
   "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr",
   "KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9",
   "KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" 
+)
+
+# Rarible contracts
+rari_contracts <- c(
+  "KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC",
+  "KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS"
 )
 
 # Create null income statement
@@ -526,10 +532,7 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     tz <- as.numeric(x$parameterValue[[1]])
     x %<>%
-      filter(., 
-        parameterEntry == "mint",
-        !row_number() == 1
-      ) %>% 
+      filter(., parameterEntry == "mint", !row_number() == 1) %>% 
       mutate(., 
         xtzSent = xtzSent / tz,
         tokenSender = targetAddress,
@@ -555,8 +558,6 @@ for (i in 1:nrow(operations_hash)) {
   ){
     x %<>% mutate(., case = "RCS mint")
   }
-  
-  ## Test PP and fxhash, then update Rarible ##
   
   # Pixel Potus contracts
   else if ("KT1WGDVRnff4rmGzJUbdCRAJBmYt12BrPzdD" %in% x$targetAddress) {
@@ -588,11 +589,8 @@ for (i in 1:nrow(operations_hash)) {
     # fxhash mint
     else if ("mint" %in% x$parameterEntry) {
       x %<>%
-        filter(., 
-          parameterEntry == "mint",
-          !row_number() == 1
-        ) %>%
-        mutate(., case = "fxhash mint")
+        filter(., parameterEntry == "mint", !row_number() == 1) %>%
+        mutate(., case="fxhash mint")
     }
     
     # fxhash offer
@@ -614,7 +612,8 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
           tokenAmount=ifelse(
-            xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+            xtzCollect <= xtzReceived, 
+            as.numeric(list_check(parameterValue, "amount")), 0),
           case=ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
         )
     }
@@ -639,33 +638,24 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Rarible contracts
-  else if (
-    ("KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC" %in% x$targetAddress) |
-    ("KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS" %in% x$targetAddress)
-  ) {
+  else if (sum(rari_contracts %in% x$targetAddress) > 0) {
     
     # Rarible collect
     if (
       ("match_orders" %in% x$parameterEntry) &
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      x %<>%
-        filter(., parameterEntry == "transfer") %>%
-        mutate(., case = "Rarible collect")
+      x %<>% quick_case(., entry="trnasfer", case="Rarible collect")
     }
     
     # Rarible update operators
     else if ("update_operators_for_all" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "update_operators_for_all") %>%
-        mutate(., case = "Rarible update operators")
+      x %<>% quick_case(., entry="update_operators_for_all", case="Rarible update operators")
     }
     
     # Rarible cancel
     else if ("cancel" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "cancel") %>%
-        mutate(., case = "Rarible cancel")
+      x %<>% quick_case(., entry="cancel", case="Rarible cancel")
     }
     
     # Rarible unidentified
@@ -679,6 +669,7 @@ for (i in 1:nrow(operations_hash)) {
     x <- y
   }
   
+  # Add row(s) to income statement
   is %<>% bind_rows(., x)
   
 }

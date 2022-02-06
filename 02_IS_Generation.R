@@ -60,12 +60,15 @@ operations %<>%
 # Classify and filter transactions
 source("functions/classify_tx.R")
 
+# Clean data
+is %<>% select(., -xtzAmount, -xtzFee)
+
 # Save data
 save(is, file="data/is.RData")
 
-# Debugging filter
+# Debugging code
 load(file="data/is.RData")
-is %<>% filter(., case == "Tezzardz mint")
+is %<>% filter(., case == "fxhash update profile")
 
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
