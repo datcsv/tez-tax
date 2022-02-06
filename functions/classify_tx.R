@@ -98,16 +98,16 @@ for (i in 1:nrow(operations_hash)) {
       
       # Add token metadata, if possible
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
-        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
-        x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_"))
+        x$tokenID[i] <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
+        x$tokenSender[i] <- list_check(x$parameterValue[i], c("address", "from_"))
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
-        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
+        x$tokenAmount[i] <- as.numeric(list_check(x$parameterValue[i], "amount"))
       }
       
       # Non-FA2 tokens - assuming a token ID of 0
       if (sum(nfa2 %in% x$targetAddress[i]) > 0) {
-        x$tokenID[i]      <- paste0(x$targetAddress[i], "_0")
-        x$tokenAmount[i]  <- as.numeric(list_check(x$parameterValue[i], "value"))
+        x$tokenID[i] <- paste0(x$targetAddress[i], "_0")
+        x$tokenAmount[i] <- as.numeric(list_check(x$parameterValue[i], "value"))
       }
       
     }
@@ -149,11 +149,7 @@ for (i in 1:nrow(operations_hash)) {
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., 
-          tokenSender=NA, 
-          tokenReceiver=initiatorAddress,
-          case="HEN mint"
-        )
+        mutate(., tokenSender=NA, tokenReceiver=initiatorAddress, case="HEN mint")
     }
     
     # HEN swap
