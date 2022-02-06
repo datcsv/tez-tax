@@ -10,18 +10,23 @@
 #
 ################################################################################
 
-# Create empty income statement
+# Create null income statement
 is <- operations[0, ]
 
-# For each operation hash, add a single row to the income statement
+# Identify unique operation groups
 operations_hash <- operations %>% distinct(., hash)
+
+# Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
   
-  # Define helper variables
-  x <- operations %>% filter(., hash == operations_hash[i, ])
-  y <- x
   
-  # Scrape token data, where applicable
+  ##############################################################################
+  # Define variables, as necessary
+  ##############################################################################
+  
+  # Helper variables, etc
+  x <- filter(operations, hash == operations_hash[i, ])
+  y <- x
   if (sum(c("transfer", "mint") %in% x$parameterEntry) > 0) {
     for (i in 1:nrow(x)) {
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
@@ -36,79 +41,60 @@ for (i in 1:nrow(operations_hash)) {
   x$xtzReceived <- sum(x$xtzReceived)
   xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
   
-  # Failed/backtracked transaction
-  if (
-    ("failed"      %in% x$status) | 
-    ("backtracked" %in% x$status)
-  ) {
-    x %<>%
-      top_n(., n=1, wt=id) %>%
-      mutate(., case = "Failed/backtracked transaction")
+  # HEN contracts
+  hen_contracts <- c(
+    "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
+    "KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn", 
+    "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj"
+  )
+  
+  ##############################################################################
+  # Identify operation groups, filter and classify as necessary
+  ##############################################################################
+  
+  # Failed transaction
+  if (sum(c("failed", "backtracked") %in% x$status) > 0) {
+    x %<>% quick_case(., case="Failed transaction", type=2)
   }
   
   # Standard transaction
   else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
     x %<>%
-      filter(., 
-             (SenderAddress %in% addresses) |
-               (targetAddress %in% addresses)
-      ) %>%
-      mutate(., case = "Standard transaction")
+      filter(., (SenderAddress %in% addresses) | (targetAddress %in% addresses)) %>%
+      mutate(., case="Standard transaction")
   }
   
   # Token transfer
-  else if (
-    (nrow(x) == 1) &
-    ("transfer" %in% x$parameterEntry)
-  ) {
-    x %<>% mutate(., 
-                  tokenSender = targetAddress,
-                  case = "Token transfer"
-    )
+  else if ((nrow(x) == 1) & ("transfer" %in% x$parameterEntry)) {
+    x %<>% mutate(., tokenReceiver=targetAddress, case="Token transfer")
   }
-  
-  
   
   # Contract signature
-  else if (
-    (nrow(x) == 1) &
-    ("sign" %in% x$parameterEntry)
-  ) {
-    x %<>% mutate(., case = "Contract signature")
+  else if ((nrow(x) == 1) & ("sign" %in% x$parameterEntry)) {
+    x %<>% mutate(., case="Contract signature")
   }
   
-  # Hic et Nunc contracts
-  else if (
-    ("KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9" %in% x$targetAddress) |
-    ("KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn" %in% x$targetAddress) |
-    ("KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj" %in% x$targetAddress)
-  ) {
+  # HEN contracts
+  else if (sum(hen_contracts %in% x$targetAddress) > 0) {
     
-    # Hic et Nunc mint
+    # HEN mint
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., 
-               tokenSender   = targetAddress,
-               case          = "Hic et Nunc mint"
-        )
+        mutate(., tokenSender=targetAddress, case="HEN mint")
     }
     
-    # Hic et Nunc swap
+    # HEN swap
     else if ("swap" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "swap") %>% 
-        mutate(., case = "Hic et Nunc swap")
+      x %<>% quick_case(., entry="swap", case="HEN swap")
     }
     
-    # Hic et Nunc cancel swap
+    # HEN cancel swap
     else if ("cancel_swap" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "cancel_swap") %>% 
-        mutate(., case = "Hic et Nunc cancel swap")
+      x %<>% quick_case(., entry="cancel_swap", case="HEN cancel swap")
     }
     
-    # Hic et Nunc trade
+    # HEN trade
     else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
@@ -116,33 +102,35 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
-          case        = ifelse(xtzCollect <= xtzReceived, "Hic et Nunc trade", "Hic et Nunc royalties")
+          tokenAmount = ifelse(
+            xtzCollect <= xtzReceived, 
+            as.numeric(list_check(parameterValue, "amount")), 
+            0
+          ),
+          case = ifelse(
+            xtzCollect <= xtzReceived, 
+            "Hic et Nunc trade", 
+            "Hic et Nunc royalties"
+          )
         )
     }
     
-    # Hic et Nunc collect
+    # HEN collect
     else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., case = "Hic et Nunc collect")
+      x %<>% quick_case(., entry="transfer", case="HEN collect")
     }
     
-    # Hic et Nunc curate
+    # HEN curate
     else if ("curate" %in% x$parameterEntry) {
-      x %<>%
-        top_n(., n=-1, wt=id) %>%
-        mutate(., case  = "Hic et Nunc curate")
+      x %<>% quick_case(., case="HEN curate", type=2)
     }
     
-    # Hic et Nunc registry
+    # HEN registry
     else if ("registry" %in% x$parameterEntry) {
-      x %<>% 
-        filter(., parameterEntry == "registry") %>% 
-        mutate(., case  = "Hic et Nunc registry")
+      x %<>% quick_case(., entry="registry", case="HEN registry")
     }
     
     # Unidentified

@@ -6,6 +6,7 @@ source("functions/load_packages.R")
 source("functions/tzkt_operations.R")
 source("functions/tzkt_operations_hash.R")
 source("functions/list_check.R")
+source("functions/quick_case.R")
 
 # Load packages
 load_packages(c("tidyverse", "jsonlite", "magrittr"))
@@ -65,6 +66,6 @@ save(is, file="data/is.RData")
 # Debugging filter
 load(file="data/is.RData")
 #is %<>% filter(., is.na(case))
-is %<>% filter(., case == "OBJKT bid")
+is %<>% filter(., case == "Standard transaction")
 #is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
 
