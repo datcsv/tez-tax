@@ -14,12 +14,6 @@
 #
 ################################################################################
 
-# Create null income statement
-is <- operations[0, ]
-
-# Identify unique operation groups
-operations_hash <- operations %>% distinct(., hash)
-
 # Non-FA2 tokens
 nfa2 <- c(
   "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9",
@@ -49,6 +43,22 @@ td_contracts <- c(
   "KT1Evxe1udtPDGWrkiRsEN3vMDdB6gNpkMPM",
   "KT1EVYBj3f1rZHNeUtq4ZvVxPTs77wuHwARU"
 )
+
+# OBJKT contracts
+objkt_contracts <- c(
+  "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z",
+  "KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq",
+  "KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU",
+  "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih",
+  "KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r",
+  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM"
+)
+
+# Create null income statement
+is <- operations[0, ]
+
+# Identify unique operation groups
+operations_hash <- operations %>% distinct(., hash)
 
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
@@ -139,6 +149,7 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
@@ -146,10 +157,8 @@ for (i in 1:nrow(operations_hash)) {
             xtzCollect <= xtzReceived, 
             as.numeric(list_check(parameterValue, "amount")), 0
           ),
-          case=ifelse(
-            xtzCollect <= xtzReceived, 
-            "HEN trade", "HEN royalties"
-          )
+          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case=ifelse(xtzCollect <= xtzReceived, "HEN trade", "HEN royalties")
         )
     }
     
@@ -237,27 +246,16 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # OBJKT contracts
-  else if (
-    ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress) |
-    ("KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq" %in% x$targetAddress) |
-    ("KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU" %in% x$targetAddress) |
-    ("KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih" %in% x$targetAddress) |
-    ("KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r" %in% x$targetAddress) |
-    ("KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM" %in% x$targetAddress)
-  ) {
+  else if (sum(objkt_contracts %in% x$targetAddress) > 0) {
     
     # OBJKT ask
     if ("ask" %in% x$parameterEntry) {
-      x %<>%
-        filter(parameterEntry == "ask") %>%
-        mutate(., case = "OBJKT ask")
+      x %<>% quick_case(., entry="ask", case="OBJKT ask")
     }
     
     # OBJKT retract ask
     else if ("retract_ask" %in% x$parameterEntry) {
-      x %<>%
-        filter(parameterEntry == "retract_ask") %>%
-        mutate(., case = "OBJKT retract ask")
+      x %<>% quick_case(., entry="retract_ask", case="OBJKT retract ask")
     }
     
     # OBJKT bid
@@ -265,20 +263,20 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzReceived = 0,
-          xtzSent = ifelse(SenderAddress %in% addresses, xtzSent - xtzAmount, 0),
-          case = ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
+          xtzReceived=0,
+          xtzSent=ifelse(SenderAddress %in% addresses, xtzSent - xtzAmount, 0),
+          case=ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
         )
+      
+      ## Additional logic should be added here using bigmap API ##
+      
     }
     
     # OBJKT retract bid
     else if ("retract_bid" %in% x$parameterEntry) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
-        mutate(., 
-               xtzReceived = 0, 
-               case = "OBJKT retract bid"
-        )
+        mutate(., xtzReceived=0, case="OBJKT retract bid")
     }
     
     # OBJKT fulfill ask (trade)
@@ -286,11 +284,13 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_ask" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-        tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-        case = ifelse(
+        tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+        tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+        case=ifelse(
           xtzCollect > xtzReceived, 
           "OBJKT fulfill ask (royalties)", 
           "OBJKT fulfill ask (trade)")
@@ -302,10 +302,7 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_ask" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., case = "OBJKT fulfill ask (collect)")
+      x %<>% quick_case(., entry="transfer", case="OBJKT fulfill ask (collect)")
     }
     
     # OBJKT fulfill bid (trade)
@@ -313,11 +310,13 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_bid" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          case = ifelse(
+          tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case=ifelse(
             xtzCollect > xtzReceived, 
             "OBJKT fulfill bid (royalties)", 
             "OBJKT fulfill bid (trade)"
@@ -330,9 +329,7 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_bid" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., case = "OBJKT fulfill bid (collect)")
+      x %<>% quick_case(., entry="transfer", case="OBJKT fulfill bid (collect)")
     }
     
     # OBJKT buy dutch auction
@@ -340,59 +337,42 @@ for (i in 1:nrow(operations_hash)) {
       ("buy" %in% x$parameterEntry) & 
       (sum(addresses %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., case = "OBJKT buy via Dutch auction")
+      x %<>% quick_case(., entry="transfer", case="OBJKT buy dutch auction")
     }
     
     # OBJKT create auction
     else if("create_auction" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "create_auction") %>%
-        mutate(., case = "OBJKT create auction")
+      x %<>% quick_case(., entry="create_auction", case="OBJKT create auction")
     }
     
     # OBJKT conclude auction
     else if("conclude_auction" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "conclude_auction") %>%
-        mutate(., case = "OBJKT conclude auction")
+      x %<>% quick_case(., entry="conclude_auction", case="OBJKT conclude auction") 
     }
     
     # OBJKT cancel auction
     else if("cancel_auction" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "cancel_auction") %>%
-        mutate(., case = "OBJKT cancel auction")
+      x %<>% quick_case(., entry="cancel_auction", case="OBJKT cancel auction")
     }
     
     # OBJKT create collection
     else if ("create_artist_collection" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "create_artist_collection") %>%
-        mutate(., case = "OBJKT create colletion")
+      x %<>% quick_case(., entry="create_artist_collection", case="OBJKT create collection")
     } 
     
     # OBJKT mint
     else if ("mint_artist" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "mint") %>%
-        mutate(., 
-          tokenSender = NA,
-          tokenReceiver = initiatorAddress,
-          case = "OBJKT mint"
-        )
+        mutate(., tokenReceiver=initiatorAddress, case="OBJKT mint")
     }
     
     # OBJKT update metadata
     else if ("update_artist_metadata" %in% x$parameterEntry) {
-      x %<>%
-        filter(., parameterEntry == "update_artist_metadata") %>%
-        mutate(., case = "OBJKT update metadata")
+      x %<>% quick_case(., entry="update_artist_metadata", case="OBJKT update metadata")
     }
     
-    
-    # Unidentified
+    # OBJKT unidentified
     else {
       x <- y
     }
