@@ -65,7 +65,10 @@ save(is, file="data/is.RData")
 
 # Debugging filter
 load(file="data/is.RData")
-#is %<>% filter(., is.na(case))
-is %<>% filter(., case == "Standard transaction")
-#is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
+is %<>% filter(., case == "QuipuSwap trade")
 
+
+
+#is %<>% filter(., is.na(case))
+#is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
+#is %<>% filter(., is.na(tokenID))

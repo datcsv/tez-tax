@@ -8,6 +8,10 @@
 #     a very good idea; there is definitely a better way to go about this,
 #     but it works for now. 
 #
+# (3) hDAO and akaDAO airdrop tokens are not currently accounted for. Givven 
+#     that they have a cost-basis of zero, this should not be a huge issue.
+#     Nevertheless, it would not be terrible hard to add these in later. 
+#
 ################################################################################
 
 # Create null income statement
@@ -15,6 +19,26 @@ is <- operations[0, ]
 
 # Identify unique operation groups
 operations_hash <- operations %>% distinct(., hash)
+
+# Non-FA2 tokens
+nfa2 <- c(
+  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9",
+  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1"
+)
+
+# HEN contracts
+hen_contracts <- c(
+  "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
+  "KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn", 
+  "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj"
+)
+
+# QuipuSwap contracts
+quipu_contracts <- c(
+  "KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB",
+  "KT1BMEEPX7MWzwwadW3NCSZe9XGmFJ7rs7Dr",
+  "KT1X3zxdTzPB9DgVzA3ad6dgZe9JEamoaeRy"
+)
 
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
@@ -29,24 +53,26 @@ for (i in 1:nrow(operations_hash)) {
   y <- x
   if (sum(c("transfer", "mint") %in% x$parameterEntry) > 0) {
     for (i in 1:nrow(x)) {
+      
+      # Add token metadata, if possible
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
         x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
         x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_"))
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
         x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
       }
+      
+      # Non-FA2 tokens (HEH, PURPLE)
+      if (sum(nfa2 %in% x$targetAddress[i]) > 0) {
+        x$tokenID[i]      <- paste0(x$targetAddress[i], "_0")
+        x$tokenAmount[i]  <- as.numeric(list_check(x$parameterValue[i], "value"))
+      }
+      
     }
   }
   x$xtzSent     <- sum(x$xtzSent)
   x$xtzReceived <- sum(x$xtzReceived)
   xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
-  
-  # HEN contracts
-  hen_contracts <- c(
-    "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
-    "KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn", 
-    "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj"
-  )
   
   ##############################################################################
   # Identify operation groups, filter and classify as necessary
@@ -66,7 +92,7 @@ for (i in 1:nrow(operations_hash)) {
   
   # Token transfer
   else if ((nrow(x) == 1) & ("transfer" %in% x$parameterEntry)) {
-    x %<>% mutate(., tokenReceiver=targetAddress, case="Token transfer")
+    x %<>% mutate(., tokenSender=SenderAddress, case="Token transfer")
   }
   
   # Contract signature
@@ -81,7 +107,11 @@ for (i in 1:nrow(operations_hash)) {
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., tokenSender=targetAddress, case="HEN mint")
+        mutate(., 
+          tokenSender=targetAddress, 
+          tokenReceiver=initiatorAddress,
+          case="HEN mint"
+        )
     }
     
     # HEN swap
@@ -102,15 +132,13 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(
+          tokenAmount=ifelse(
             xtzCollect <= xtzReceived, 
-            as.numeric(list_check(parameterValue, "amount")), 
-            0
+            as.numeric(list_check(parameterValue, "amount")), 0
           ),
-          case = ifelse(
+          case=ifelse(
             xtzCollect <= xtzReceived, 
-            "Hic et Nunc trade", 
-            "Hic et Nunc royalties"
+            "HEN trade", "HEN royalties"
           )
         )
     }
@@ -125,7 +153,13 @@ for (i in 1:nrow(operations_hash)) {
     
     # HEN curate
     else if ("curate" %in% x$parameterEntry) {
-      x %<>% quick_case(., case="HEN curate", type=2)
+      x %<>% 
+        quick_case(., case="HEN curate", type=2) %>%
+        mutate(., 
+          tokenID="KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
+          tokenAmount=as.numeric(list_check(parameterValue, "hDAO_amount")),
+          tokenSender=SenderAddress
+        )
     }
     
     # HEN registry
@@ -133,35 +167,24 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="registry", case="HEN registry")
     }
     
-    # Unidentified
+    # HEN unidentified
     else {
       x <- y
     }
   }
   
   # QuipuSwap contracts
-  else if (
-    ("KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB" %in% x$targetAddress) |
-    ("KT1BMEEPX7MWzwwadW3NCSZe9XGmFJ7rs7Dr" %in% x$targetAddress) |
-    ("KT1X3zxdTzPB9DgVzA3ad6dgZe9JEamoaeRy" %in% x$targetAddress)
-  ) {
+  else if (sum(quipu_contracts %in% x$targetAddress) > 0) {
     
-    # QuipuSwap buy/sell
-    if (
-      ("tezToTokenPayment" %in% x$parameterEntry) |
-      ("tokenToTezPayment" %in% x$parameterEntry)
-    ) {
-      x %<>%
-        filter(., parameterEntry == "transfer") %>%
-        mutate(., case = "QuipuSwap buy/sell"
-        )
+    # QuipuSwap trade
+    if (sum(c("tezToTokenPayment", "tokenToTezPayment") %in% x$parameterEntry) > 0) {
+      x %<>% quick_case(., entry="transfer", case="QuipuSwap trade")
     }
     
-    # Unidentified
+    # Quipuswap unidentified
     else {
       x <- y
     }
-    
   }
   
   # Tezos Domains contracts
