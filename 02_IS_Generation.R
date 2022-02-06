@@ -63,5 +63,6 @@ source("functions/classify_tx.R")
 save(is, file="data/is.RData")
 
 # Debugging filter
+#load(file="data/is.RData")
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., case == "OBJKT conclude auction")
