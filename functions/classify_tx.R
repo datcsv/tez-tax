@@ -320,14 +320,14 @@ for (i in 1:nrow(operations_hash)) {
         ) {
 
           x2 <- mutate(x,
-            timestamp     = time,
-            quote         = tx_operations$quote[[1]],
-            xtzSent       = price,
-            xtzReceived   = 0,
-            tokenID       = paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id),
-            tokenAmount   = 1,
-            tokenReceiver = buyer,
-            case          = "OBJKT win auction"
+            timestamp    = time,
+            quote        = tx_operations$quote[[1]],
+            xtzSent      = price,
+            xtzReceived  = 0,
+            tokenID      = paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id),
+            tokenAmount  = 1,
+            tokenReceiver= buyer,
+            case         = "OBJKT win auction"
           )
           x %<>% bind_rows(., x2)
 
@@ -519,7 +519,7 @@ for (i in 1:nrow(operations_hash)) {
       target_address <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
       x %<>% 
         filter(., targetAddress == target_address) %>%
-        mutate(., case = "akaSwap gachapon royalties")
+        mutate(., case="akaSwap gachapon royalties")
     }
     
     # akaSwap unidentified
@@ -540,10 +540,10 @@ for (i in 1:nrow(operations_hash)) {
         !row_number() == 1
       ) %>% 
       mutate(., 
-        xtzSent = xtzSent / tz,
-        tokenSender = targetAddress,
-        tokenReceiver = list_check(parameterValue, "address"),
-        case = "Tezzardz mint"
+        xtzSent=xtzSent / tz,
+        tokenSender=targetAddress,
+        tokenReceiver=list_check(parameterValue, "address"),
+        case="Tezzardz mint"
       )
   }
   
@@ -559,10 +559,10 @@ for (i in 1:nrow(operations_hash)) {
         !row_number() == 1
       ) %>% 
       mutate(., 
-        xtzSent = xtzSent / tz,
-        tokenSender = targetAddress,
-        tokenReceiver = list_check(parameterValue, "address"),
-        case = "Gogos mint"
+        xtzSent=xtzSent / tz,
+        tokenSender=targetAddress,
+        tokenReceiver=list_check(parameterValue, "address"),
+        case="Gogos mint"
       )
   }
   
@@ -575,10 +575,10 @@ for (i in 1:nrow(operations_hash)) {
     x %<>%
       filter(., parameterEntry == "mint", !row_number() == 1) %>% 
       mutate(., 
-        xtzSent = xtzSent / tz,
-        tokenSender = targetAddress,
-        tokenReceiver = list_check(parameterValue, "address"),
-        case = "Neonz mint"
+        xtzSent=xtzSent / tz,
+        tokenSender=targetAddress,
+        tokenReceiver=list_check(parameterValue, "address"),
+        case="Neonz mint"
       )
   }
   
@@ -589,16 +589,24 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     x %<>% 
       filter(., parameterEntry == "mint") %>%
-      mutate(., case = "Geoff Stearns mint")
+      mutate(., case="Geoff Stearns mint")
   }
+  
+  ### CURRENTLY WORKING ON RCS MINT ###
   
   # RCS mint
   else if (
     ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
     ("buy" %in% x$parameterEntry)
   ){
-    x %<>% mutate(., case = "RCS mint")
+    x %<>% quick_case(., entry="buy", case="RCS mint")
+    
+    tzkt_operations_hash(x$parameterEntry$hash[1], quote=currency)
+    
+    
   }
+  
+  ######
   
   # Pixel Potus contracts
   else if ("KT1WGDVRnff4rmGzJUbdCRAJBmYt12BrPzdD" %in% x$targetAddress) {

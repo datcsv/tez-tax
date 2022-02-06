@@ -68,8 +68,6 @@ save(is, file="data/is.RData")
 
 # Debugging code
 load(file="data/is.RData")
-#is %<>% filter(., case == "OBJKT bid")
-is %<>% filter(., case == "OBJKT win auction")
+#is %<>% filter(., case == "OBJKT win auction")
+is %<>% filter(., case == "RCS mint")
 #is %<>% filter(., is.na(case))
-#is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")
-#is %<>% filter(., is.na(tokenID))
