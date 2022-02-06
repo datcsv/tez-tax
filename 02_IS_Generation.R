@@ -65,7 +65,7 @@ save(is, file="data/is.RData")
 
 # Debugging filter
 load(file="data/is.RData")
-is %<>% filter(., case == "akaSwap mint")
+is %<>% filter(., case == "akaSwap gachapon royalties")
 
 #is %<>% filter(., is.na(case))
 #is %<>% filter(., hash == "opEQK27ZKnqaaxFXQ72x22pgyXg8XSKB4JaGYhjc5VWeWUzq8UQ")

@@ -8,9 +8,9 @@
 #     a very good idea; there is definitely a better way to go about this,
 #     but it works for now. 
 #
-# (3) hDAO and akaDAO airdrop tokens are not currently accounted for. Givven 
+# (3) hDAO and akaDAO airdrop tokens are not currently accounted for. Given 
 #     that they have a cost-basis of zero, this should not be a huge issue.
-#     Nevertheless, it would not be terrible hard to add these in later. 
+#     Nevertheless, it would not be terribly hard to add these in later. 
 #
 ################################################################################
 
@@ -390,14 +390,14 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
-  # akaSwap contract
-  else if (sum(addresses %in% x$targetAddress) > 0) {
+  # akaSwap contracts
+  else if (sum(aka_contracts %in% x$targetAddress) > 0) {
     
     # akaSwap mint
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., tokenSender=NA, case="akaSwap mint")
+        mutate(., tokenSender=NA, tokenReceiver=initiatorAddress, case="akaSwap mint")
     }
     
     # akaSwap trade
@@ -409,7 +409,10 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=1, wt=id) %>%
         mutate(., 
-          tokenAmount=ifelse(xtzCollect <= xtzReceived, as.numeric(list_check(parameterValue, "amount")), 0),
+          tokenAmount=ifelse(
+            xtzCollect <= xtzReceived, 
+            as.numeric(list_check(parameterValue, "amount")), 0
+          ),
           tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
           case=ifelse(xtzCollect <= xtzReceived, "akaSwap trade", "akaSwap royalties")
         )
@@ -436,9 +439,9 @@ for (i in 1:nrow(operations_hash)) {
       for (i in 1:x_n) {
         x_i <- y
         x_i$tokenReceiver <- x_params$to_[[i]]
-        x_i$tokenAmount   <- as.numeric(x_params$amount[[i]])
-        x_i$tokenID       <- paste0(x_i$targetAddress, "_", x_params$token_id[[i]])
-        x_i$xtzSent       <- x_i$xtzSent / x_n
+        x_i$tokenAmount <- as.numeric(x_params$amount[[i]])
+        x_i$tokenID <- paste0(x_i$targetAddress, "_", x_params$token_id[[i]])
+        x_i$xtzSent <- x_i$xtzSent / x_n
         x %<>% bind_rows(., x_i)
       }
     }
@@ -458,7 +461,10 @@ for (i in 1:nrow(operations_hash)) {
       ("default" %in% x$parameterEntry) &
       (sum(addresses %in% x$initiatorAddress) == 0)
     ) {
-      x %<>% mutate(., case = "akaSwap gachapon royalties")
+      target_address <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
+      x %<>% 
+        filter(., targetAddress == target_address) %>%
+        mutate(., case = "akaSwap gachapon royalties")
     }
     
     # akaSwap unidentified
@@ -664,14 +670,13 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "Rarible cancel")
     }
     
-    # Unidentified
+    # Rarible unidentified
     else {
       x <- y
     }
-    
   }
   
-  # Randomly Common Skeles mint
+  # RCS mint
   else if (
     ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
     ("buy" %in% x$parameterEntry)
