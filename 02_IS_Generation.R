@@ -13,7 +13,6 @@ load_packages(c("tidyverse", "jsonlite", "magrittr"))
 # Load data
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
-
 load(file="data/date_span.RData")
 load(file="data/operations.RData")
 

@@ -591,22 +591,14 @@ for (i in 1:nrow(operations_hash)) {
       filter(., parameterEntry == "mint") %>%
       mutate(., case="Geoff Stearns mint")
   }
-  
-  ### CURRENTLY WORKING ON RCS MINT ###
-  
+
   # RCS mint
   else if (
     ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
     ("buy" %in% x$parameterEntry)
   ){
     x %<>% quick_case(., entry="buy", case="RCS mint")
-    
-    tzkt_operations_hash(x$parameterEntry$hash[1], quote=currency)
-    
-    
   }
-  
-  ######
   
   # Pixel Potus contracts
   else if ("KT1WGDVRnff4rmGzJUbdCRAJBmYt12BrPzdD" %in% x$targetAddress) {
