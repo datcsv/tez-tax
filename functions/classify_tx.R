@@ -587,9 +587,7 @@ for (i in 1:nrow(operations_hash)) {
     ("KT1Fxz4V3LaUcVFpvF8pAAx8G3Z4H7p7hhDg" %in% x$targetAddress) & 
     ("mint" %in% x$parameterEntry)
   ) {
-    x %<>% 
-      filter(., parameterEntry == "mint") %>%
-      mutate(., case="Geoff Stearns mint")
+    x %<>% quick_case(., entry="mint", case="Geoff Stearns mint")
   }
 
   # RCS mint

@@ -68,5 +68,5 @@ save(is, file="data/is.RData")
 # Debugging code
 load(file="data/is.RData")
 #is %<>% filter(., case == "OBJKT win auction")
-is %<>% filter(., case == "RCS mint")
+is %<>% filter(., case == "Geoff Stearns mint")
 #is %<>% filter(., is.na(case))
