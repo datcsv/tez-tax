@@ -582,12 +582,15 @@ for (i in 1:nrow(operations_hash)) {
       )
   }
   
-  # Geoff Stearns mint
+  # Hash Three Points mint
   else if (
     ("KT1Fxz4V3LaUcVFpvF8pAAx8G3Z4H7p7hhDg" %in% x$targetAddress) & 
     ("mint" %in% x$parameterEntry)
   ) {
-    x %<>% quick_case(., entry="mint", case="Geoff Stearns mint")
+    x %<>% quick_case(., entry="mint", case="H3P mint")
+    token_id <- as.numeric(tzkt_operations_hash(x$hash[1])$storage$next_id) - 1
+    token_id <- paste0(x$targetAddress[1], "_", token_id)
+    x$tokenID <- token_id
   }
 
   # RCS mint
