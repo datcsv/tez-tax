@@ -1,8 +1,7 @@
 ################################################################################
 # Notes:
-# (1) Tezos Domains, Randomly Common Skeles, Pixel Potus, and Geoff Stearns 
-#     tokens may not be registered correctly at this time. Bigmap lookups can
-#     solve these issues.
+# (1) Tezos Domains, Randomly Common Skeles, and Pixel Potus tokens may not be 
+#     registered correctly at this time. Bigmap lookups can solve these issues.
 #
 # (2) This code is a messy proof of concept; Modularization would be useful for
 #     future iterations. 
