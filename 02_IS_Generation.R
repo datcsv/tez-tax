@@ -62,14 +62,14 @@ source("functions/classify_tx.R")
 # Clean income statement data
 is %<>% select(., -xtzAmount, -xtzFee)
 
-# Save data
-save(is, file="data/is.RData")
-
 # Add exchange data
 if (cb_tx) source("functions/cb_data.R")
-  
+
+# Save income statement data
+save(is, file="data/is.RData")
+
 # Debug code
-load(file="data/is.RData")
+#load(file="data/is.RData")
 #bigmap <- tzkt_bigmap(4575, "43")
 #is %<>% filter(., case == "OBJKT win auction (old)")
-#is %<>% filter(., is.na(case))
+is %<>% filter(., is.na(case))
