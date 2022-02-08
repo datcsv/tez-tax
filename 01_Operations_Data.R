@@ -14,6 +14,8 @@ load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
 load(file="data/date_span.RData")
+load(file="data/cb_tx.RData")
+load(file="data/cb_data.RData")
 
 # Download operations - first pass (wallet search)
 limit_ops <- 1000

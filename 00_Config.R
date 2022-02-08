@@ -31,3 +31,5 @@ cb_data <- "data/cb_transactions.csv"
 save(addresses, file="data/addresses.RData")
 save(currency, file="data/currency.RData")
 save(date_span, file="data/date_span.RData")
+save(cb_tx, file="data/cb_tx.RData")
+save(cb_data, file="data/cb_data.RData")

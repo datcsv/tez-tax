@@ -14,6 +14,8 @@ load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
 load(file="data/date_span.RData")
+load(file="data/cb_tx.RData")
+load(file="data/cb_data.RData")
 load(file="data/operations.RData")
 
 # Split nested features in operations data
