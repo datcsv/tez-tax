@@ -21,6 +21,12 @@ currency <- "usd"
 # Define date span [min, max]
 date_span <- c("2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z")
 
+# Include Coinbase transaction data?
+cb_tx <- TRUE
+
+# Path to Coinbase transaction data
+cb_data <- "data/cb_transactions.csv"
+
 # Save data
 save(addresses, file="data/addresses.RData")
 save(currency, file="data/currency.RData")

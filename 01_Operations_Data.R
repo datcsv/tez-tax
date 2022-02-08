@@ -8,7 +8,7 @@ source("functions/quick_case.R")
 source("functions/tzkt_api.R")
 
 # Load packages
-load_packages(c("tidyverse", "jsonlite", "magrittr"))
+load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
 
 # Load data
 load(file="data/addresses.RData")
