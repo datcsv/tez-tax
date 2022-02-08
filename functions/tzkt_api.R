@@ -40,7 +40,6 @@ tzkt_quote <- function(level, quote="usd", base="https://api.tzkt.io/") {
   sfx <- paste0("v1/quotes?level=", level)
   url <- paste0(base, sfx)
   x <- fromJSON(url)
-  x <- x[[1, quote]]
   return(x)
   
 }

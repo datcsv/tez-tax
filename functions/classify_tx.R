@@ -1,7 +1,7 @@
 ################################################################################
 # Notes:
 # (1) Tezos Domains, Randomly Common Skeles, and Pixel Potus tokens may not be 
-#     registered correctly at this time. Bigmap lookups can solve these issues.
+#     registered correctly at this time. Bigmap lookups can resolve.
 #
 # (2) This code is a messy proof of concept; Modularization would be useful for
 #     future iterations. 
@@ -285,17 +285,13 @@ for (i in 1:nrow(operations_hash)) {
           case=ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
         )
       
-      # Check if auction was won, starting with a check to minimize API calls
-      # Note: We avoid the first iteration of the OBJKT contract here, which
-      # relies on different bigmap values - this can be added if needed.
-      # (e.g., KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z)
+      # Check if auction was won, starting with a check to minimize API calls.
       tx_value <- x$parameterValue[1][[1]]
       if (
         (length(tx_value) == 1) & 
-        (class(tx_value) == "character") &
-        (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
+        (class(tx_value) == "character")
       ) {
-      
+        
         tx_id         <- x$id[1]
         tx_hash       <- x$hash[1]
         tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
@@ -305,17 +301,31 @@ for (i in 1:nrow(operations_hash)) {
         key <- tx_operations$diffs[[1]]$content$key
         
         bigmap <- tzkt_bigmap(id=id, key=key)
-        state  <- as.numeric(bigmap$value$state)
-        price  <- as.numeric(bigmap$value$current_price) / 1000000
-        buyer  <- bigmap$value$highest_bidder
-        time   <- bigmap$value$end_time
+        
+        # Scrape data depending on OBJKT contract version
+        if (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z") {
+          state    <- as.numeric(bigmap$value$state)
+          price    <- as.numeric(bigmap$value$current_price) / 1000000
+          buyer    <- bigmap$value$highest_bidder
+          time     <- bigmap$value$end_time
+          token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
+        } 
+        else {
+          state    <- ifelse(bigmap$active, 1, 2)
+          price    <- as.numeric(bigmap$value$xtz_per_objkt) / 1000000
+          buyer    <- bigmap$value$issuer
+          level    <- as.numeric(bigmap$lastLevel)
+          time     <- tzkt_quote(level)$timestamp
+          token_id <- paste0("KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton_", bigmap$value$objkt_id)
+        }
         
         # If auction won in date span, add row to data
         if (
           (state == 2) &
           (as.Date(time) >= as.Date(date_span[1])) &
           (as.Date(time) <= as.Date(date_span[2])) &
-          (buyer %in% addresses)
+          (buyer %in% addresses) &
+          (price == x$xtzAmount[1])
         ) {
 
           x2 <- mutate(x,
@@ -323,13 +333,13 @@ for (i in 1:nrow(operations_hash)) {
             quote        = tx_operations$quote[[1]],
             xtzSent      = price,
             xtzReceived  = 0,
-            tokenID      = paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id),
+            tokenID      = token_id,
             tokenAmount  = 1,
             tokenReceiver= buyer,
             case         = "OBJKT win auction"
           )
+          
           x %<>% bind_rows(., x2)
-
         }
       }
     }
@@ -592,7 +602,7 @@ for (i in 1:nrow(operations_hash)) {
     x$tokenID <- token_id
   }
 
-  # RCS mint
+  # Randomly Common Skeles mint
   else if (
     ("KT1AvxTNETj3U4b3wKYxkX6CKya1EgLZezv8" %in% x$targetAddress) &
     ("buy" %in% x$parameterEntry)

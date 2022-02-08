@@ -56,17 +56,17 @@ operations %<>%
     -initiatorAlias, -senderAlias, -targetAlias
   )
 
-# Classify and filter transactions
+# Generate income statement from operation data
 source("functions/classify_tx.R")
 
-# Clean data
+# Clean income statement data
 is %<>% select(., -xtzAmount, -xtzFee)
 
 # Save data
 save(is, file="data/is.RData")
 
-# Debugging code
-#load(file="data/is.RData")
-#is %<>% filter(., case == "OBJKT win auction")
-#is %<>% filter(., case == "H3P mint")
+# Debug code
+load(file="data/is.RData")
+#bigmap <- tzkt_bigmap(4575, "43")
+is %<>% filter(., case == "OBJKT win auction")
 #is %<>% filter(., is.na(case))
