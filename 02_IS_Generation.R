@@ -66,7 +66,7 @@ is %<>% select(., -xtzAmount, -xtzFee)
 save(is, file="data/is.RData")
 
 # Debug code
-load(file="data/is.RData")
+#load(file="data/is.RData")
 #bigmap <- tzkt_bigmap(4575, "43")
-is %<>% filter(., case == "OBJKT win auction")
+#is %<>% filter(., case == "OBJKT win auction (old)")
 #is %<>% filter(., is.na(case))

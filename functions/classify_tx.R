@@ -291,57 +291,58 @@ for (i in 1:nrow(operations_hash)) {
         (length(tx_value) == 1) & 
         (class(tx_value) == "character")
       ) {
-        
         tx_id         <- x$id[1]
         tx_hash       <- x$hash[1]
         tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
         tx_operations %<>% filter(., id == tx_id)
- 
         id  <- tx_operations$diffs[[1]]$bigmap
         key <- tx_operations$diffs[[1]]$content$key
         
         bigmap <- tzkt_bigmap(id=id, key=key)
         
-        # Scrape data depending on OBJKT contract version
+        # Omit early OBJKT contract
         if (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z") {
           state    <- as.numeric(bigmap$value$state)
           price    <- as.numeric(bigmap$value$current_price) / 1000000
           buyer    <- bigmap$value$highest_bidder
           time     <- bigmap$value$end_time
           token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
-        } 
-        else {
-          state    <- ifelse(bigmap$active, 1, 2)
-          price    <- as.numeric(bigmap$value$xtz_per_objkt) / 1000000
-          buyer    <- bigmap$value$issuer
-          level    <- as.numeric(bigmap$lastLevel)
-          time     <- tzkt_quote(level)$timestamp
-          token_id <- paste0("KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton_", bigmap$value$objkt_id)
-        }
-        
-        # If auction won in date span, add row to data
-        if (
-          (state == 2) &
-          (as.Date(time) >= as.Date(date_span[1])) &
-          (as.Date(time) <= as.Date(date_span[2])) &
-          (buyer %in% addresses) &
-          (price == x$xtzAmount[1])
-        ) {
-
-          x2 <- mutate(x,
-            timestamp    = time,
-            quote        = tx_operations$quote[[1]],
-            xtzSent      = price,
-            xtzReceived  = 0,
-            tokenID      = token_id,
-            tokenAmount  = 1,
-            tokenReceiver= buyer,
-            case         = "OBJKT win auction"
-          )
           
-          x %<>% bind_rows(., x2)
-        }
+          if (
+            (state == 2) &
+            (as.Date(time) >= as.Date(date_span[1])) &
+            (as.Date(time) <= as.Date(date_span[2])) &
+            (buyer %in% addresses) &
+            (price == x$xtzAmount[1])
+          ) {
+            x2 <- mutate(x,
+              timestamp    = time,
+              quote        = tx_operations$quote[[1]],
+              xtzSent      = price,
+              xtzReceived  = 0,
+              tokenID      = token_id,
+              tokenAmount  = 1,
+              tokenReceiver= buyer,
+              case         = "OBJKT win auction"
+            )
+            x %<>% bind_rows(., x2)
+          }
+        } 
       }
+      
+    }
+    
+    # OBJKT win auction (old contract)
+    else if (
+      ("swap" %in% x$parameterEntry) & 
+      ("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z" %in% x$targetAddress)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT win auction (old)")
+      tx_hash <- x$hash[1]
+      tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
+      tx_operations %<>% filter(., tx_operations$parameter$entrypoint == "swap")
+      price <- as.numeric(tx_operations$diffs[[1]]$content$value$xtz_per_objkt) / 1000000
+      x %<>% mutate(., xtzSent=price)
     }
     
     # OBJKT retract bid
