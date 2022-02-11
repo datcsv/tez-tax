@@ -1,3 +1,3 @@
-# Tez Tax
+# tez-tax
 
 Tezos tax tracking
