@@ -23,4 +23,4 @@ R is a free software environment for statistical computing and graphics. It comp
     2. 01_Operations_Data.R*
     3. 02_IS_Generation.R
 
-** The operations data code is used to download transaction data from the blockchain via the tzkt API. All outputs are saved to the 'data' directory and, thus, it is only necessary to run this program once. 
+\* The operations data code is used to download transaction data from the blockchain via the tzkt API. All outputs are saved to the 'data' directory and, thus, it is only necessary to run this program once. 
