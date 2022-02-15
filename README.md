@@ -4,7 +4,7 @@ Tezos tax tracking
 
 # R Crash Course
 
-R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. The most commonly used IDE for R is "RStudio".
+R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS (https://cran.r-project.org/). The most commonly used IDE for R is "RStudio" (https://www.rstudio.com/).
 
 1. Assignment is "<-".
 2. Indexing starts at 1.
