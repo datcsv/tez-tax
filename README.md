@@ -16,7 +16,7 @@ R is a free software environment for statistical computing and graphics. It comp
 # Instructions
 
 1. Create a copy of the configuration file, "00_Config.R", and update it with your own information. 
-  1. Until a 'prior year import' feature is available, it is necessary to set the start date to include all transactions. 
+    1. Until a 'prior year import' feature is available, it is necessary to set the start date to include all transactions. 
 
 2. Run the files in numerical order, starting with the updated configuration file:
     1. 00_Config.R
