@@ -1,6 +1,6 @@
 # tez-tax
 
-Tezos tax tracking
+Tezos tax tracking.
 
 ## R Crash Course
 
