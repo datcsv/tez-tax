@@ -2,7 +2,7 @@
 
 Tezos tax tracking
 
-# R Crash Course
+## R Crash Course
 
 R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS (https://cran.r-project.org/). The most commonly used IDE for R is "RStudio" (https://www.rstudio.com/).
 
@@ -13,7 +13,7 @@ R is a free software environment for statistical computing and graphics. It comp
     1. Pipe operator is "%<%".
     2. Pipe + assignment operator is "%<>%".
 
-# Instructions
+## Instructions
 
 1. Create a copy of the configuration file, "00_Config.R", and update it with your own information. 
     1. Until a 'prior year import' feature is available, it is necessary to set the start date to include all transactions. 
