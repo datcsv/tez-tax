@@ -83,9 +83,11 @@ for (i in 1:nrow(cb)) {
     x$case        <- "Coinbase income"
   }
   
-  cb_is %<>% bind_rows(., x)
+  cb_is %<>% 
+    bind_rows(., x) %>%
+    mutate(., walletTx = FALSE)
   
 }
 
 # Combine with income statement
-is %<>% bind_rows(., cb_is)
+is %<>% bind_rows(., cb_is) 

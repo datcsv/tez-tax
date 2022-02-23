@@ -48,7 +48,8 @@ operations %<>%
     tokenID        = NA,
     tokenAmount    = NA,
     tokenSender    = NA,
-    tokenReceiver  = NA
+    tokenReceiver  = NA,
+    walletTx       = TRUE
   ) %>%
   select(., 
     -initiator, -sender, -target, -parameter, -originatedContract,
