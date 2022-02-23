@@ -1,111 +1,22 @@
+# Clear workspace
+rm(list=ls())
 
-################################################################################
-# Notes:
-# (1) Account for inter-address transfers
-# (2) Create date filtering
-# (3) Add for hDAO/akaDAO airdrop info if FIFO requires consistency for all tx
-# (4) Functionalize currency
-# (5) Figure out how to work with exchange data
-# (6) Swap operations API to transactions API as per suggestion from BCD?
-################################################################################
+# Load functions
+source("functions/load_packages.R")
+source("functions/list_check.R")
+source("functions/quick_case.R")
+source("functions/tzkt_api.R")
 
-# Generate price and fee features
-is %<>%
-  mutate(., 
-         nftID       = tokenID,
-         nftSent     = if_else(
-           !is.na(tokenID) & (tokenSender %in% addresses),
-           tokenAmount,
-           0
-         ),
-         nftReceived = if_else(
-           !is.na(tokenID) & (tokenReceiver %in% addresses),
-           tokenAmount,
-           0
-         ),
-         xtzCost     = NA,
-         xtzProceeds = NA,
-         xtzGainLoss = NA,
-         nftCost     = NA,
-         nftProceeds = NA,
-         nftGainLoss = NA
-  )
+# Load packages
+load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
 
-# Generate balance sheet
-bs <- tibble(
-  timestamp   = character(),
-  asset       = character(),
-  quantity    = double(),
-  cost        = double(),
-  collectible = logical()
-)
+# Load data
+load(file="data/addresses.RData")
+load(file="data/currency.RData")
+load(file="data/date_span.RData")
+load(file="data/cb_tx.RData")
+load(file="data/cb_data.RData")
+load(file="data/operations.RData")
+load(file="data/is.RData")
 
-for (i in 1:nrow(is)) {
-  
-  # Define variables
-  xtzSent     <- is[[i, "xtzSent"]]
-  xtzReceived <- is[[i, "xtzReceived"]]
-  nftSent     <- is[[i, "nftSent"]]
-  nftReceived <- is[[i, "nftReceived"]]
-  nftID       <- is[[i, "nftID"]]
-  timestamp   <- is[[i, "timestamp"]]
-  quote       <- is[[i, "quote"]]
-  
-  # Subtract sent basis from balance sheet, calculate cost basis of XTZ
-  # Note: Cost basis is calculated in USD
-  if (xtzSent > 0) {
-    xtzBalance  <- xtzSent
-    xtzCost     <- 0
-    xtzProceeds <- quote * xtzSent
-    for (j in 1:nrow(bs)) {
-      quantity_j <- bs[[j, "quantity"]]
-      asset_j    <- bs[[j, "asset"]]
-      cost_j     <- bs[[j, "cost"]] / bs[[j, "quantity"]] # Unit price in USD
-      if (asset_j == "xtz" && quantity_j > 0) {
-        subtract_j        <- min(quantity_j, xtzBalance)
-        bs[j, "quantity"] <- quantity_j - subtract_j
-        xtzBalance        <- xtzBalance - subtract_j
-        xtzCost           <- xtzCost + subtract_j * cost_j
-      }
-      if (xtzBalance <= 0) break
-    }
-    if (xtzBalance > 0) warning(cat("Asset < balance!", is[[i, "id"]]))
-    is[[i, "xtzCost"]]     <- xtzCost
-    is[[i, "xtzProceeds"]] <- xtzProceeds
-    is[[i, "xtzGainLoss"]] <- xtzProceeds - xtzCost
-  }
-  
-  # Subtract sent NFT from balance sheet
-  if (nftSent > 0) {
-    
-  }
-  
-  # Add received XTZ to balance sheet
-  if (xtzReceived > 0) {
-    xtzCost <- ifelse(nftSent == 0, 0, quote * xtzReceived)
-    bs %<>% 
-      add_row(.,
-              timestamp   = timestamp,
-              asset       = "xtz",
-              quantity    = xtzReceived,
-              cost        = xtzCost,
-              collectible = FALSE
-      )
-    is[[i, "xtzCost"]]     <- xtzCost
-  }
-  
-  # Add received NFT to balance sheet
-  if (nftReceived > 0) {
-    bs %<>%
-      add_row(.,
-              timestamp   = timestamp,
-              asset       = nftID,
-              quantity    = nftReceived,
-              cost        = ifelse(xtzSent == 0, 0, quote * xtzReceived), # Update send amount
-              collectible = TRUE
-      )
-  }
-  
-}
-
-
+# 
