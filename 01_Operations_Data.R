@@ -23,7 +23,7 @@ for (i in 1:length(addresses)) {
   operations_i <- tzkt_operations(
     address=addresses[i], limit=limit_ops, span=date_span, quote=currency
   )
-  while ((nrow(operations_i) %% limit_ops) == 0) {
+  while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
     level <- min(operations_i$level + 1)
     operations_i <- bind_rows(
       operations_i,
