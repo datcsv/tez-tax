@@ -1,4 +1,3 @@
-
 # Get account operations: First pass 
 limit_ops <- 1000
 for (i in 1:length(wallets)) {

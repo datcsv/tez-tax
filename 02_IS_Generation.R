@@ -1,4 +1,3 @@
-
 # Load operations data
 load(file="data/operations.RData")
 
