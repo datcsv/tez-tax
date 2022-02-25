@@ -2,7 +2,6 @@
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
 load(file="data/date_span.RData")
-load(file="data/cb_tx.RData")
 load(file="data/cb_data.RData")
 load(file="data/operations.RData")
 
@@ -54,7 +53,7 @@ source("functions/classify_tx.R")
 is %<>% select(., -xtzAmount, -xtzFee)
 
 # Add exchange data
-if (cb_tx) source("functions/cb_import.R")
+if (!is.na(cb_tx)) source("functions/cb_import.R")
 
 # Save income statement data
 save(is, file="data/is.RData")

@@ -2,7 +2,6 @@
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
 load(file="data/date_span.RData")
-load(file="data/cb_tx.RData")
 load(file="data/cb_data.RData")
 load(file="data/operations.RData")
 load(file="data/is.RData")

@@ -1,14 +1,5 @@
 # Set working directory
-setwd("C:\\Users\\Nick\\OneDrive\\tez-tax")
-
-# Load functions
-source("functions/load_packages.R")
-source("functions/list_check.R")
-source("functions/quick_case.R")
-source("functions/tzkt_api.R")
-
-# Load packages
-load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
+#setwd("C:\\Users\\Nick\\OneDrive\\tez-tax")
 
 # Create data folder, if necessary
 dir.create("data", showWarnings=FALSE)
@@ -27,15 +18,12 @@ currency <- "usd"
 # Define date span [min, max]
 date_span <- c("2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z")
 
-# Include Coinbase transaction data?
-cb_tx <- TRUE
-
-# Path to Coinbase transaction data
+# Path to Coinbase transaction data, if applicable (Otherwise set to NA)
 cb_data <- "data/cb_transactions.csv"
 
 # Save data
 save(addresses, file="data/addresses.RData")
-save(currency, file="data/currency.RData")
+save(currency,  file="data/currency.RData")
 save(date_span, file="data/date_span.RData")
-save(cb_tx, file="data/cb_tx.RData")
-save(cb_data, file="data/cb_data.RData")
+save(cb_tx,     file="data/cb_tx.RData")
+save(cb_data,   file="data/cb_data.RData")
