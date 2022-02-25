@@ -59,7 +59,7 @@ if (objkt_v1) {
     parameter_entry <- operations_i$parameter$entrypoint
     parameter_value <- operations_i$parameter$value
     token_receiver <- list_check(operations_i$parameter$value, "to_")
-    if (("swap" %in% parameter_entry > 0) & (token_receiver %in% addresses)) {
+    if (("swap" %in% parameter_entry > 0) & (token_receiver %in% wallets)) {
       operations %<>% bind_rows(., operations_i)
     }
   }
