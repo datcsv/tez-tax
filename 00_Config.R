@@ -32,5 +32,5 @@ objkt_v1 <- TRUE
 
 # Run next steps in process
 if (!file.exists("data/operations.RData")) source("01_Operations_Data.R")
-#source("02_IS_Generation.R")
+source("02_IS_Generation.R")
 #source("03_BS_Generation.R")
