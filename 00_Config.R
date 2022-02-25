@@ -1,14 +1,13 @@
 
-# Load functions
-source("functions/list_check.R")
-source("functions/import_packages.R")
-source("functions/quick_case.R")
-source("functions/tzkt_api.R")
-
 # Import packages
 library("tidyverse", "jsonlite", "magrittr", "readr")
 
-# Create data folder, if necessary
+# Load functions
+source("functions/list_check.R")
+source("functions/quick_case.R")
+source("functions/tzkt_api.R")
+
+# Create data folder, if applicable
 dir.create("data", showWarnings=FALSE)
 
 # Define wallet addresses
