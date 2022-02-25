@@ -49,20 +49,21 @@ for (i in 1:nrow(cb)) {
   
   # Coinbase send
   else if (cb_i$`Transaction Type` == "Send") {
-    x$xtzSent     <- cb_i$`Quantity Transacted`
-    x$xtzReceived <- 0
-    x$costBasis   <- NA
-    x$proceeds    <- NA
-    x$case        <- "Coinbase send"
+    x$xtzSent       <- cb_i$`Quantity Transacted`
+    x$xtzReceived   <- 0
+    x$costBasis     <- NA
+    x$proceeds      <- NA
+    x$case          <- "Coinbase send"
+    x$targetAddress <- substr(cb_i$Notes, nchar(cb_i$Notes)-36, nchar(cb_i$Notes))
   }
   
   # Coinbase receive
   else if (cb_i$`Transaction Type` == "Receive") {
-    x$xtzSent     <- 0
-    x$xtzReceived <- cb_i$`Quantity Transacted`
-    x$costBasis   <- NA
-    x$proceeds    <- NA
-    x$case        <- "Coinbase receive"
+    x$xtzSent       <- 0
+    x$xtzReceived   <- cb_i$`Quantity Transacted`
+    x$costBasis     <- NA
+    x$proceeds      <- NA
+    x$case          <- "Coinbase receive"
   }
   
   # Coinbase convert
@@ -85,9 +86,10 @@ for (i in 1:nrow(cb)) {
   
   cb_is %<>% 
     bind_rows(., x) %>%
-    mutate(., walletTx = FALSE)
+    mutate(., walletTx=FALSE) %>%
+    filter(., )
   
 }
 
 # Combine with income statement
-is %<>% bind_rows(., cb_is) 
+#is %<>% bind_rows(., cb_is) 

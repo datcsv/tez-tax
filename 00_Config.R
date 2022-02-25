@@ -1,6 +1,3 @@
-# Clear workspace
-rm(list=ls())
-
 # Set working directory
 setwd("C:\\Users\\Nick\\OneDrive\\tez-tax")
 

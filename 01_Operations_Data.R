@@ -1,6 +1,3 @@
-# Clear workspace
-rm(list=ls())
-
 # Load functions
 source("functions/load_packages.R")
 source("functions/list_check.R")
