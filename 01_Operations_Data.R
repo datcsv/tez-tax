@@ -1,17 +1,15 @@
 
 # Get account operations: First pass 
 limit_ops <- 1000
-contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z") # OBJKT v1 contract
-accounts <- c(wallets, contracts)
-for (i in 1:length(accounts)) {
+for (i in 1:length(wallets)) {
   operations_i <- tzkt_operations(
-    address=accounts[i], limit=limit_ops, span=date_span, quote=currency
+    address=wallets[i], limit=limit_ops, span=date_span, quote=currency
   )
   while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
     level <- min(operations_i$level + 1)
     operations_i <- bind_rows(
       operations_i,
-      tzkt_operations(address=accounts[i], level=level, limit=limit_ops)
+      tzkt_operations(address=wallets[i], level=level, limit=limit_ops)
     )
   }
   if (i == 1) operations <- operations_i
@@ -37,8 +35,36 @@ for (i in 1:nrow(operations_hash)) {
   operations %<>% bind_rows(., operations_i)
 }
 
+# Get account operations: OBJKT v1 contract (Early auction data)
+contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
+for (i in 1:length(contracts)) {
+  operations_i <- tzkt_operations(
+    address=contracts[i], limit=limit_ops, span=date_span, quote=currency
+  )
+  while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
+    level <- min(operations_i$level + 1)
+    operations_i <- bind_rows(
+      operations_i,
+      tzkt_operations(address=wallets[i], level=level, limit=limit_ops)
+    )
+  }
+  if (i == 1) objkt_operations <- operations_i
+  else objkt_operations %<>% bind_rows(., operations_i)
+}
+
+objkt_operations_hash <- objkt_operations %>% distinct(., hash)
+for (i in 1:nrow(operations_hash)) {
+  operations_i <- filter(objkt_operations, hash == objkt_operations_hash[i, ])
+  parameter_entry <- operations_i$parameter$entrypoint
+  parameter_value <- operations_i$parameter$value
+  token_receiver <- list_check(operations_i$parameter$value, "to_")
+  if (("swap" %in% parameter_entry > 0) & (token_receiver %in% addresses)) {
+    operations %<>% bind_rows(., operations_i)
+  }
+}
+
 # Combine and clean operations data
-operations %<>% 
+operations %<>%
   arrange(., id, hash) %>%
   distinct(.)
 

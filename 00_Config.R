@@ -28,6 +28,6 @@ date_span <- c("2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z")
 cb_data <- "data/cb_transactions.csv"
 
 # Run next steps in process
-#source("01_Operations_Data.R")
+if (!file.exists("data/operations.RData")) source("01_Operations_Data.R")
 #source("02_IS_Generation.R")
 #source("03_BS_Generation.R")
