@@ -1,6 +1,19 @@
 
-# tzkt API function: Pull operations by address
-tzkt_operations <- function(address, level=NA, limit=NA, span=NA, quote="usd", base="https://api.tzkt.io/") {
+################################################################################
+# Notes:
+# (1) TzKT Explorer provides free REST API and WebSocket API for accessing
+#     detailed Tezos blockchain data and helps developers build more services 
+#     and applications on top of Tezos. The following functions were built for
+#     TzKT API (1.7.0).
+#
+#     Additional API documentation is available at: https://api.tzkt.io/
+#
+################################################################################
+
+# Get account operations, https://api.tzkt.io/#operation/Accounts_GetOperations
+tzkt_operations <- function(
+  address, level=NA, limit=NA, span=NA, quote="usd", base="https://api.tzkt.io/"
+) {
   sfx <- paste0("v1/accounts/", address, "/operations?quote=", quote)
   if (!is.na(level)) sfx <- paste0(sfx, "&level.lt=", level)
   if (!is.na(limit)) sfx <- paste0(sfx, "&limit=", limit)
@@ -12,7 +25,7 @@ tzkt_operations <- function(address, level=NA, limit=NA, span=NA, quote="usd", b
   return(x)
 }
 
-# tzkt API function: Pull operations by hash
+# Get operations by hash, https://api.tzkt.io/#operation/Operations_GetByHash
 tzkt_operations_hash <- function(hash, quote="usd", base="https://api.tzkt.io/") {
   sfx <- paste0("v1/operations/", hash, "?quote=", quote)
   url <- paste0(base, sfx)
@@ -20,7 +33,7 @@ tzkt_operations_hash <- function(hash, quote="usd", base="https://api.tzkt.io/")
   return(x)
 }
 
-# tzkt API function: Pull bigmap by key and ID
+# Get bigmap by ID, https://api.tzkt.io/#operation/BigMaps_GetBigMapById
 tzkt_bigmap <- function(id, key, base="https://api.tzkt.io/") {
   sfx <- paste0("v1/bigmaps/", id, "/keys/", key)
   url <- paste0(base, sfx)
@@ -28,7 +41,7 @@ tzkt_bigmap <- function(id, key, base="https://api.tzkt.io/") {
   return(x)
 }
 
-# tzkt API function - Pull quote by block level
+# Get quotes, https://api.tzkt.io/#operation/Quotes_Get
 tzkt_quote <- function(level, quote="usd", base="https://api.tzkt.io/") {
   sfx <- paste0("v1/quotes?level=", level)
   url <- paste0(base, sfx)
