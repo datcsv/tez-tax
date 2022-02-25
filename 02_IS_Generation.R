@@ -52,7 +52,10 @@ source("functions/classify_tx.R")
 # Clean income statement data
 is %<>% select(., -xtzAmount, -xtzFee)
 
-# Add exchange data
+# Add exchange data:
+#   This code is not actually a function at this point, and can still be 
+#   considered incomplete. Specifically, I am working to identify and combine
+#   wallet transfer transactions across the exchange and tzkt data.
 if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data
