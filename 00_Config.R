@@ -1,12 +1,12 @@
 
-# Import functions
+# Load functions
 source("functions/list_check.R")
-source("functions/load_packages.R")
+source("functions/import_packages.R")
 source("functions/quick_case.R")
 source("functions/tzkt_api.R")
 
-# Import libraries
-load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
+# Import packages
+import_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
 
 # Create data folder, if necessary
 dir.create("data", showWarnings=FALSE)

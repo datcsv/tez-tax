@@ -1,5 +1,5 @@
 
-# Package loading function
+# Function to import/install packages
 load_packages <- function(packages) {
   installed_packages <- packages %in% rownames(installed.packages())
   if (any(installed_packages == FALSE)) {

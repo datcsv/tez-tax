@@ -1,5 +1,5 @@
 
-# Download operations - first pass (wallet search)
+# Pull wallet transaction: First pass 
 limit_ops <- 1000
 for (i in 1:length(addresses)) {
   operations_i <- tzkt_operations(
@@ -16,12 +16,11 @@ for (i in 1:length(addresses)) {
   else operations %<>% bind_rows(., operations_i)
 }
 
-# Clean operations data
 operations %<>% 
   distinct(.) %>%
   arrange(., id) 
 
-# Download operations - second pass (hash search)
+# Pull wallet transactions: Second pass (hash search)
 operations_hash <- operations %>% 
   filter(., target[[2]] %in% addresses) %>%
   distinct(., hash)
@@ -41,7 +40,7 @@ for (i in 1:nrow(operations_hash)) {
   else operations2 %<>% bind_rows(., operations_i)
 }
 
-# Download contract data
+# Pull contract transaction data for OBJKT v1 contract
 contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
 for (i in 1:length(contracts)) {
   operations_i <- tzkt_operations(
@@ -58,7 +57,6 @@ for (i in 1:length(contracts)) {
   else operations3 %<>% bind_rows(., operations_i)
 }
 
-# Clean contract data
 operations_hash <- operations3 %>% distinct(., hash)
 operations_temp <- operations3[0, ]
 for (i in 1:nrow(operations_hash)) {
@@ -72,11 +70,11 @@ for (i in 1:nrow(operations_hash)) {
 }
 operations3 <- operations_temp
 
-# Combine and clean operations data
+# Combine and clean transaction data
 operations %<>% 
   bind_rows(., operations2, operations3) %>%
   arrange(., id, hash) %>%
   distinct(.)
 
-# Save operations data
+# Save transaction data
 save(operations, file="data/operations.RData")
