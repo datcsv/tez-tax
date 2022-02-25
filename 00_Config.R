@@ -27,7 +27,7 @@ currency <- "usd"
 date_span <- c("2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z")
 
 # Path to Coinbase transaction data, if applicable (Otherwise set to NA)
-cb_data <- "data/cb_transactions.csv"
+cb_path <- "data/cb_transactions.csv"
 
 # Include early OBJKT auction data (TRUE/FALSE)
 objkt_v1 <- TRUE

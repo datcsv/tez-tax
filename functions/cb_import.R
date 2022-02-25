@@ -8,7 +8,7 @@
 ################################################################################
 
 # Import Coinbase data
-cb <- read_csv(file=cb_data, skip=7)
+cb <- read_csv(file=cb_path, skip=7)
 cb %<>% filter(., 
   Asset == "XTZ", 
   Timestamp >= date_span[1], 
