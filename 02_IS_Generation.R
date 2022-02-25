@@ -1,3 +1,7 @@
+
+# Load operations data
+load(file="data/operations.RData")
+
 # Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
 operations$initiatorAddress <- operations$initiator$address
@@ -50,9 +54,3 @@ if (!is.na(cb_tx)) source("functions/cb_import.R")
 
 # Save income statement data
 save(is, file="data/is.RData")
-
-# Debug code
-#load(file="data/is.RData")
-#bigmap <- tzkt_bigmap(4575, "43")
-#is %<>% filter(., case == "OBJKT win auction (old)")
-#is %<>% filter(., is.na(case))

@@ -1,3 +1,7 @@
+
+# Load income statement data
+load(file="data/is.RData")
+
 # Clean income statement
 is %<>% 
   arrange(., timestamp) %>%
