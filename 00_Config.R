@@ -1,4 +1,6 @@
 
+
+
 # Create data folder, if necessary
 dir.create("data", showWarnings=FALSE)
 
@@ -16,14 +18,8 @@ currency <- "usd"
 # Define date span [min, max]
 date_span <- c("2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z")
 
-# Path to Coinbase transaction data, if applicable (Otherwise set to NA)
+# Path to Coinbase transaction data, if applicable (Else set to NA)
 cb_data <- "data/cb_transactions.csv"
 
-# Save data
-save(addresses, file="data/addresses.RData")
-save(currency,  file="data/currency.RData")
-save(date_span, file="data/date_span.RData")
-save(cb_tx,     file="data/cb_tx.RData")
-save(cb_data,   file="data/cb_data.RData")
-
-
+# Run next steps in process
+source("01_Operations_Data.R")

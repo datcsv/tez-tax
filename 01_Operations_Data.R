@@ -1,9 +1,3 @@
-# Load data
-load(file="data/addresses.RData")
-load(file="data/currency.RData")
-load(file="data/date_span.RData")
-load(file="data/cb_data.RData")
-
 # Download operations - first pass (wallet search)
 limit_ops <- 1000
 for (i in 1:length(addresses)) {
