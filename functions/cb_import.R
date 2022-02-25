@@ -92,4 +92,4 @@ for (i in 1:nrow(cb)) {
 }
 
 # Combine with income statement
-#is %<>% bind_rows(., cb_is) 
+is %<>% bind_rows(., cb_is) 
