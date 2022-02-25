@@ -6,7 +6,7 @@ source("functions/quick_case.R")
 source("functions/tzkt_api.R")
 
 # Import packages
-import_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
+library("tidyverse", "jsonlite", "magrittr", "readr")
 
 # Create data folder, if necessary
 dir.create("data", showWarnings=FALSE)
