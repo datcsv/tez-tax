@@ -42,7 +42,11 @@ operations %<>%
     -initiatorAlias, -senderAlias, -targetAlias
   )
 
-# Generate income statement from operation data
+# Generate income statement from operation data:
+#   This is not actually a function at this point, but should be in the future.
+#   Each contract contains various functions, which need to be identified on a
+#   case-by-case basis. There is probably a better way to modularize this code, 
+#   but this works  for now. 
 source("functions/classify_tx.R")
 
 # Clean income statement data
