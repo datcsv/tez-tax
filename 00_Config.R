@@ -1,7 +1,16 @@
 # Set working directory
 setwd("C:\\Users\\Nick\\OneDrive\\tez-tax")
 
-# Create data folder if it does not exist
+# Load functions
+source("functions/load_packages.R")
+source("functions/list_check.R")
+source("functions/quick_case.R")
+source("functions/tzkt_api.R")
+
+# Load packages
+load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
+
+# Create data folder, if necessary
 dir.create("data", showWarnings=FALSE)
 
 # Define wallet addresses

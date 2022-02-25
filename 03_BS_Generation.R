@@ -1,12 +1,3 @@
-# Load functions
-source("functions/load_packages.R")
-source("functions/list_check.R")
-source("functions/quick_case.R")
-source("functions/tzkt_api.R")
-
-# Load packages
-load_packages(c("tidyverse", "jsonlite", "magrittr", "readr"))
-
 # Load data
 load(file="data/addresses.RData")
 load(file="data/currency.RData")
