@@ -127,7 +127,7 @@ for (i in 1:nrow(operations_hash)) {
   # Standard transaction
   else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
     x %<>%
-      filter(., (SenderAddress %in% addresses) | (targetAddress %in% addresses)) %>%
+      filter(., (SenderAddress %in% wallets) | (targetAddress %in% wallets)) %>%
       mutate(., case="Standard transaction")
   }
   
@@ -164,9 +164,9 @@ for (i in 1:nrow(operations_hash)) {
     # HEN trade
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
@@ -182,7 +182,7 @@ for (i in 1:nrow(operations_hash)) {
     # HEN collect
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., entry="transfer", case="HEN collect")
     }
@@ -281,8 +281,8 @@ for (i in 1:nrow(operations_hash)) {
         top_n(., n=-1, wt=id) %>%
         mutate(., 
           xtzReceived=0,
-          xtzSent=ifelse(SenderAddress %in% addresses, xtzSent - xtzAmount, 0),
-          case=ifelse(SenderAddress %in% addresses, "OBJKT bid", "OBJKT outbid")
+          xtzSent=ifelse(SenderAddress %in% wallets, xtzSent - xtzAmount, 0),
+          case=ifelse(SenderAddress %in% wallets, "OBJKT bid", "OBJKT outbid")
         )
       
       # Check if auction was won, starting with a check to minimize API calls.
@@ -312,7 +312,7 @@ for (i in 1:nrow(operations_hash)) {
             (state == 2) &
             (as.Date(time) >= as.Date(date_span[1])) &
             (as.Date(time) <= as.Date(date_span[2])) &
-            (buyer %in% addresses) &
+            (buyer %in% wallets) &
             (price == x$xtzAmount[1])
           ) {
             x2 <- mutate(x,
@@ -355,9 +355,9 @@ for (i in 1:nrow(operations_hash)) {
     # OBJKT fulfill ask (trade)
     else if (
       ("fulfill_ask" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
@@ -373,7 +373,7 @@ for (i in 1:nrow(operations_hash)) {
     # OBJKT fulfill ask (collect)
     else if (
       ("fulfill_ask" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., entry="transfer", case="OBJKT fulfill ask (collect)")
     }
@@ -381,9 +381,9 @@ for (i in 1:nrow(operations_hash)) {
     # OBJKT fulfill bid (trade)
     else if (
       ("fulfill_bid" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
@@ -400,7 +400,7 @@ for (i in 1:nrow(operations_hash)) {
     # OBJKT fulfill bid (collect)
     else if (
       ("fulfill_bid" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
       x %<>% quick_case(., entry="transfer", case="OBJKT fulfill bid (collect)")
     }
@@ -408,7 +408,7 @@ for (i in 1:nrow(operations_hash)) {
     # OBJKT buy dutch auction
     else if (
       ("buy" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., entry="transfer", case="OBJKT buy dutch auction")
     }
@@ -468,9 +468,9 @@ for (i in 1:nrow(operations_hash)) {
     # akaSwap trade
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      token_sender <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
         top_n(., n=1, wt=id) %>%
         mutate(., 
@@ -486,7 +486,7 @@ for (i in 1:nrow(operations_hash)) {
     # akaSwap collect
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., case="akaSwap collect", type=2)
     }
@@ -494,7 +494,7 @@ for (i in 1:nrow(operations_hash)) {
     # akaSwap collect bundle
     else if (
       ("collect_bundle" %in% x$parameterEntry) &
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., case="akaSwap collect bundle", type=2)
       x_params <- x$parameterValue[[1]][[1]][[1]]
@@ -524,9 +524,9 @@ for (i in 1:nrow(operations_hash)) {
     # akaSwap gachapon royalties
     else if (
       ("default" %in% x$parameterEntry) &
-      (sum(addresses %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      target_address <- x$targetAddress[which(x$targetAddress %in% addresses)][1]
+      target_address <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
         filter(., targetAddress == target_address) %>%
         mutate(., case="akaSwap gachapon royalties")
@@ -658,7 +658,7 @@ for (i in 1:nrow(operations_hash)) {
     # fxhash trade
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>%
@@ -673,7 +673,7 @@ for (i in 1:nrow(operations_hash)) {
     # fxhash collect
     else if (
       ("collect" %in% x$parameterEntry) & 
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., entry="transfer", case="fxhash collect")
     }
@@ -695,7 +695,7 @@ for (i in 1:nrow(operations_hash)) {
     # Rarible collect
     if (
       ("match_orders" %in% x$parameterEntry) &
-      (sum(addresses %in% x$initiatorAddress) > 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       x %<>% quick_case(., entry="trnasfer", case="Rarible collect")
     }

@@ -3,7 +3,7 @@
 library("tidyverse", "jsonlite", "magrittr", "readr")
 
 # Load functions
-source("functions/list_check.R")
+source("functions/list_check.R") # Does this exist in tidyjson?
 source("functions/quick_case.R")
 source("functions/tzkt_api.R")
 
@@ -11,7 +11,7 @@ source("functions/tzkt_api.R")
 dir.create("data", showWarnings=FALSE)
 
 # Define wallet addresses
-addresses <- c(
+wallets <- c(
   "tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", # datcsv
   "tz1L5vaycmTzEDekjDJSFZJ1V8FPwAUCVSDM", # datcsv1
   "tz1Sbt4C1MXm1AWPK6qdgfDzciJCCUVADmUt", # datcsv2
