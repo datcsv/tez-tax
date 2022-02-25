@@ -1,5 +1,3 @@
-# Set working directory
-#setwd("C:\\Users\\Nick\\OneDrive\\tez-tax")
 
 # Create data folder, if necessary
 dir.create("data", showWarnings=FALSE)
@@ -27,3 +25,5 @@ save(currency,  file="data/currency.RData")
 save(date_span, file="data/date_span.RData")
 save(cb_tx,     file="data/cb_tx.RData")
 save(cb_data,   file="data/cb_data.RData")
+
+
