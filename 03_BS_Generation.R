@@ -6,8 +6,8 @@ load(file="data/is.RData")
 is %<>% 
   arrange(., timestamp) %>%
   mutate(., 
-    tokenSent     = ifelse(tokenSender   %in% addresses, tokenAmount, 0),
-    tokenReceived = ifelse(tokenReceiver %in% addresses, tokenAmount, 0),
+    tokenSent     = ifelse(tokenSender   %in% wallets, tokenAmount, 0),
+    tokenReceived = ifelse(tokenReceiver %in% wallets, tokenAmount, 0),
     gainLoss      = NA
   ) %>% 
   filter(., 
