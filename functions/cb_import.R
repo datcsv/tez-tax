@@ -9,11 +9,12 @@
 
 # Import Coinbase data
 cb <- read_csv(file=cb_path, skip=7)
-cb %<>% filter(., 
-  Asset == "XTZ", 
-  Timestamp >= date_span[1], 
-  Timestamp <= date_span[2]
-)
+cb %<>% 
+  filter(., 
+    Asset == "XTZ", 
+    Timestamp >= date_span[1], 
+    Timestamp <= date_span[2]
+  )
 
 # Generate empty income statement row
 cb_is <- is[0, ]
@@ -25,7 +26,7 @@ for (i in 1:nrow(cb)) {
   x      <- is[0, ]
   x[1, ] <- NA
   
-  x$timestamp <- as.character(cb_i$Timestamp)
+  x$timestamp <- cb_i$Timestamp
   x$status    <- "applied"
   x$quote     <- cb_i$`Spot Price at Transaction`
   

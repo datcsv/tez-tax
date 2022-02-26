@@ -50,7 +50,9 @@ operations %<>%
 source("functions/classify_tx.R")
 
 # Clean income statement data
-is %<>% select(., -xtzAmount, -xtzFee)
+is %<>% 
+  mutate(., timestamp = as_datetime(timestamp)) %>%
+  select(., -xtzAmount, -xtzFee)
 
 # Add exchange data:
 #   This code is not actually a function at this point, and can still be 

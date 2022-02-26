@@ -3,6 +3,7 @@ library("tidyverse")
 library("jsonlite")
 library("magrittr")
 library("readr")
+library("lubridate")
 
 # Load functions
 source("functions/list_check.R") # Does this exist in tidyjson?
