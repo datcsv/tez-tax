@@ -59,6 +59,7 @@ is %<>%
 #   This code is not actually a function at this point, and can still be 
 #   considered incomplete. Specifically, I am working to identify and combine
 #   wallet transfer transactions across the exchange and tzkt data.
+save(is, "is_test.RData")
 if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data

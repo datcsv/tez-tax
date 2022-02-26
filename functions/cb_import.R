@@ -7,6 +7,8 @@
 #
 ################################################################################
 
+load(file="data/is_test.RData")
+
 # Import Coinbase data
 cb <- read_csv(file=cb_path, skip=7)
 cb %<>% 
@@ -55,7 +57,7 @@ for (i in 1:nrow(cb)) {
     x$costBasis     <- NA
     x$proceeds      <- NA
     x$case          <- "Coinbase send"
-    x$targetAddress <- substr(cb_i$Notes, nchar(cb_i$Notes)-36, nchar(cb_i$Notes))
+    x$targetAddress <- substr(cb_i$Notes, nchar(cb_i$Notes)-35, nchar(cb_i$Notes))
   }
   
   # Coinbase receive
@@ -96,3 +98,21 @@ for (i in 1:nrow(cb)) {
 is %<>% 
   bind_rows(., cb_is) %>%
   arrange(., timestamp)
+
+# Identify and adjust exchange/wallet transfers
+for (i in 1:nrow(cb_is)) {
+  
+  if (
+    (cb_is$case[i] == "Coinbase send") & 
+    (cb_is$targetAddress[i] %in% wallets)
+  ) {
+    
+    
+    
+  }
+  
+  else if (cb_is$case[i] == "Coinbase receive") {
+  }
+  
+}
+
