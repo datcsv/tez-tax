@@ -4,7 +4,6 @@ load(file="data/is.RData")
 
 # Clean income statement
 is %<>% 
-  arrange(., timestamp) %>%
   mutate(., 
     tokenSent     = ifelse(tokenSender   %in% wallets, tokenAmount, 0),
     tokenReceived = ifelse(tokenReceiver %in% wallets, tokenAmount, 0),
