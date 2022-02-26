@@ -28,6 +28,7 @@ for (i in 1:nrow(cb)) {
   x      <- is[0, ]
   x[1, ] <- NA
   
+  x$id        <- i
   x$timestamp <- cb_i$Timestamp
   x$status    <- "applied"
   x$quote     <- cb_i$`Spot Price at Transaction`
@@ -99,19 +100,24 @@ is %<>%
   bind_rows(., cb_is) %>%
   arrange(., timestamp)
 
-# Identify and adjust exchange/wallet transfers
+# Identify Coinbase wallet(s)
 for (i in 1:nrow(cb_is)) {
   
   if (
-    (cb_is$case[i] == "Coinbase send") & 
+    (cb_is$case[i] == "Coinbase sent") & 
     (cb_is$targetAddress[i] %in% wallets)
   ) {
-    
-    
-    
+    # is %<>% filter(., (walletTx) | (id != cb_is$id[i]))
+    # ^ Won't work, because we need to log fees.
   }
   
-  else if (cb_is$case[i] == "Coinbase receive") {
+  else if (cb_is$case[i] == "Coinbase received") {
+    # time_i <- cb_is$timestamp[i]
+    # xtz_i <- cb_is$xtzSent[i] + cb_is$xtzReceived[i]
+    # is_i <- is %>% filter(., 
+    #   between(timestamp, time_i + 300, time_i - 300),
+    #   between(xtzSent, xtz_i - 0.5, xtz_i + 0.5)
+    # )
   }
   
 }
