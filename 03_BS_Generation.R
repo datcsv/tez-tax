@@ -2,27 +2,6 @@
 # Load income statement data
 load(file="data/is.RData")
 
-# Clean income statement
-is %<>% 
-  mutate(., 
-    tokenSent     = ifelse(tokenSender   %in% wallets, tokenAmount, 0),
-    tokenReceived = ifelse(tokenReceiver %in% wallets, tokenAmount, 0),
-    gainLoss      = NA
-  ) %>% 
-  filter(., 
-    (tokenSent == 0) | (tokenReceived == 0)
-  ) %>%
-  select(., 
-    timestamp, quote, xtzSent, xtzReceived, tokenID, tokenSent, tokenReceived, 
-    walletTx, proceeds, costBasis, gainLoss
-  )
-
-# First pass through balance sheet, log all acqusitions
-for (i in 1:nrow(is)) {
-  
-  
-}
-
 # Form 8949
 # (a) Description of property
 # (b) Date acquired
