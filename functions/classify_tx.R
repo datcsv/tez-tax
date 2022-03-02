@@ -129,11 +129,23 @@ for (i in 1:nrow(operations_hash)) {
     x %<>%
       filter(., (SenderAddress %in% wallets) | (targetAddress %in% wallets)) %>%
       mutate(., case="Standard transaction")
+    
+    # Adjust wallet-to-wallet transfers
+    if ((x$Senderaddress %in% wallets) & (x$targetAddress %in% wallets)) {
+      x %<>% mutate(., xtzSent=xtzFee, xtzReceived=0)
+    }
+    
   }
   
   # Token transfer
   else if ((nrow(x) == 1) & ("transfer" %in% x$parameterEntry)) {
     x %<>% mutate(., tokenSender=SenderAddress, case="Token transfer")
+    
+    # Adjust wallet-to-wallet transfers
+    if ((x$tokenSender %in% wallets) & (x$tokenReceiver %in% wallets)) {
+      x %<>% mutate(., tokenAmount=0)
+    }
+    
   }
   
   # Contract signature
