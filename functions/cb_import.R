@@ -28,7 +28,6 @@ for (i in 1:nrow(cb)) {
   x      <- is[0, ]
   x[1, ] <- NA
   
-  x$id        <- i
   x$timestamp <- cb_i$Timestamp
   x$status    <- "applied"
   x$quote     <- cb_i$`Spot Price at Transaction`
@@ -95,30 +94,46 @@ for (i in 1:nrow(cb)) {
   
 }
 
+# Identify and adjust Coinbase/wallet transfers
+drop_rows <- c()
+for (i in 1:nrow(cb_is)) {
+  
+  if (cb_is$case[i] == "Coinbase send") {
+    time_i <- cb_is$timestamp[i]
+    xtz_i  <- cb_is$xtzSent[i] + cb_is$xtzReceived[i]
+    is_i   <- is %>% filter(.,
+      between(timestamp, time_i - 300, time_i + 300),
+      between(xtzReceived + xtzFee, xtz_i - 0.1, xtz_i + 0.1)
+    )
+    if (nrow(is_i) == 1) { 
+      id_i <- is_i$id[1]
+      is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
+      is[is$id == id_i, "xtzReceived"] <- 0
+      is[is$id == id_i, "case"] <- cb_is$case[i]
+      drop_rows <- c(drop_rows, i)
+    }
+  }
+  
+  else if (cb_is$case[i] == "Coinbase receive") {
+    time_i <- cb_is$timestamp[i]
+    xtz_i  <- cb_is$xtzSent[i] + cb_is$xtzReceived[i]
+    is_i   <- is %>% filter(.,
+      between(timestamp, time_i - 300, time_i + 300),
+      between(xtzSent - xtzFee, xtz_i - 0.1, xtz_i + 0.1)
+    )
+    if (nrow(is_i) == 1) { 
+      id_i <- is_i$id[1]
+      is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
+      is[is$id == id_i, "xtzReceived"] <- 0
+      is[is$id == id_i, "case"] <- cb_is$case[i]
+      drop_rows <- c(drop_rows, i)
+    }
+  }
+  
+}
+cb_is <- cb_is[-drop_rows, ]
+
 # Combine with income statement
 is %<>% 
   bind_rows(., cb_is) %>%
   arrange(., timestamp)
-
-# Identify Coinbase wallet(s)
-for (i in 1:nrow(cb_is)) {
-  
-  if (
-    (cb_is$case[i] == "Coinbase sent") & 
-    (cb_is$targetAddress[i] %in% wallets)
-  ) {
-    # is %<>% filter(., (walletTx) | (id != cb_is$id[i]))
-    # ^ Won't work, because we need to log fees.
-  }
-  
-  else if (cb_is$case[i] == "Coinbase received") {
-    # time_i <- cb_is$timestamp[i]
-    # xtz_i <- cb_is$xtzSent[i] + cb_is$xtzReceived[i]
-    # is_i <- is %>% filter(., 
-    #   between(timestamp, time_i + 300, time_i - 300),
-    #   between(xtzSent, xtz_i - 0.5, xtz_i + 0.5)
-    # )
-  }
-  
-}
-

@@ -18,7 +18,8 @@ wallets <- c(
   "tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", # datcsv
   "tz1L5vaycmTzEDekjDJSFZJ1V8FPwAUCVSDM", # datcsv1
   "tz1Sbt4C1MXm1AWPK6qdgfDzciJCCUVADmUt", # datcsv2
-  "tz2TXkQS6kPPXbuVMsNBcdtpjWf9DPYWHfqV"  # gmail
+  "tz2TXkQS6kPPXbuVMsNBcdtpjWf9DPYWHfqV", # gmail
+  "tz1bxnm2CyNNn9cTKdotn1sqFwCYZ1UBbFwU"  # Random account
 )
 
 # Define currency
@@ -35,5 +36,5 @@ objkt_v1 <- TRUE
 
 # Run next steps in process
 if (!file.exists("data/operations.RData")) source("01_Operations_Data.R")
-if (!file.exists("data/is.RData"))         source("02_IS_Generation.R")
-source("03_BS_Generation.R")
+if (!file.exists("data/is.RData")) source("02_IS_Generation.R")
+#source("03_BS_Generation.R")
