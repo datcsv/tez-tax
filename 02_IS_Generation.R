@@ -43,10 +43,6 @@ operations %<>%
   )
 
 # Generate income statement from operation data:
-#   This is not actually a function at this point, but should be in the future.
-#   Each contract contains various functions, which need to be identified on a
-#   case-by-case basis. There is probably a better way to modularize this code, 
-#   but this works  for now. 
 source("functions/classify_tx.R")
 
 # Clean income statement data
@@ -56,9 +52,6 @@ is %<>%
   arrange(., timestamp)
 
 # Add exchange data:
-#   This code is not actually a function at this point, and can still be 
-#   considered incomplete. Specifically, I am working to identify and combine
-#   wallet transfer transactions across the exchange and tzkt data.
 if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data
