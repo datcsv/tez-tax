@@ -132,7 +132,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Adjust wallet-to-wallet transfers
     if ((x$SenderAddress %in% wallets) & (x$targetAddress %in% wallets)) {
-      x %<>% mutate(., xtzSent=xtzFee, xtzReceived=0)
+      x %<>% mutate(., xtzSent=xtzFee, xtzReceived=0, case="Wallet transfer")
     }
     
   }
@@ -143,7 +143,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Adjust wallet-to-wallet transfers
     if ((x$tokenSender %in% wallets) & (x$tokenReceiver %in% wallets)) {
-      x %<>% mutate(., tokenAmount=0)
+      x %<>% mutate(., tokenAmount=0, case="Wallet transfer")
     }
     
   }
