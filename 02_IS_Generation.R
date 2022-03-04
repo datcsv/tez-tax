@@ -34,7 +34,10 @@ operations %<>%
     tokenReceiver  = NA,
     walletTx       = TRUE,
     xtzBuy         = FALSE,
-    xtzSell        = FALSE
+    xtzSell        = FALSE,
+    proceeds       = NA, # Proceeds on sent
+    gainLoss       = NA, # Gain loss on sent
+    costBasis      = NA, # Cost basis on received
   ) %>%
   select(., 
     -initiator, -sender, -target, -parameter, -originatedContract,
