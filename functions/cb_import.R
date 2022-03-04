@@ -29,6 +29,8 @@ for (i in 1:nrow(cb)) {
   x$timestamp <- cb_i$Timestamp
   x$status    <- "applied"
   x$quote     <- cb_i$`Spot Price at Transaction`
+  x$xtzBuy    <- FALSE
+  x$xtzSell   <- FALSE
   
   # Coinbase buy
   if (cb_i$`Transaction Type` == "Buy") {

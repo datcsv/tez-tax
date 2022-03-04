@@ -16,6 +16,7 @@ for (i in 1:nrow(is)) {
   
   is_i <- is[i,]
   
+  # Tezos exchange buy
   if (is_i$xtzBuy) {
     bs %<>% 
       add_row(.,
@@ -25,12 +26,16 @@ for (i in 1:nrow(is)) {
         costBasis   = ifelse(
           is.na(is_i$costBasis), is_i$quote * is_i$xtzReceived, is_i$costBasis
         ),
-        collectible = FALSE
+        fungible    = TRUE
       )
   }
+  
+  # Tezos exchange sell
   else if (is_i$xtzSell) {
     
   }
+  
+  # Else...
   else {
     
   }
