@@ -11,7 +11,7 @@ bs <- tibble(
   fungible  = logical()
 )
 
-# Generate balance sheet and initial tax form
+# Generate initial balance sheet
 for (i in 1:nrow(is)) {
   
   is_i <- is[i,]
@@ -24,7 +24,7 @@ for (i in 1:nrow(is)) {
         asset       = "xtz",
         quantity    = is_i$xtzReceived,
         costBasis   = ifelse(
-          is.na(is_i$costBasis), is_i$quote * is_i$xtzReceived, is_i$costBasis
+          is.na(is_i$costBasis), is_i$quote, is_i$costBasis / is_i$xtzReceived
         ),
         fungible    = TRUE
       )
