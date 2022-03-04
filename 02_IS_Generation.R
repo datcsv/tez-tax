@@ -32,7 +32,9 @@ operations %<>%
     tokenAmount    = NA,
     tokenSender    = NA,
     tokenReceiver  = NA,
-    walletTx       = TRUE
+    walletTx       = TRUE,
+    xtzBuy         = FALSE,
+    xtzSell        = FALSE
   ) %>%
   select(., 
     -initiator, -sender, -target, -parameter, -originatedContract,

@@ -2,6 +2,43 @@
 # Load income statement data
 load(file="data/is.RData")
 
+# Generate empy balance sheet
+bs <- tibble(
+  timestamp = POSIXct(),
+  asset     = character(),
+  quantity  = double(),
+  costBasis = double(),
+  fungible  = logical()
+)
+
+# Generate balance sheet and initial tax form
+for (i in 1:nrow(is)) {
+  
+  is_i <- is[i,]
+  
+  if (is_i$xtzBuy) {
+    bs %<>% 
+      add_row(.,
+        timestamp   = is_i$timestamp,
+        asset       = "xtz",
+        quantity    = is_i$xtzReceived,
+        costBasis   = ifelse(
+          is.na(is_i$costBasis), is_i$quote * is_i$xtzReceived, is_i$costBasis
+        ),
+        collectible = FALSE
+      )
+  }
+  else if (is_i$xtzSell) {
+    
+  }
+  else {
+    
+  }
+  
+}
+
+
+
 # Form 8949
 # (a) Description of property
 # (b) Date acquired

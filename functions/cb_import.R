@@ -37,6 +37,7 @@ for (i in 1:nrow(cb)) {
     x$costBasis   <- cb_i$`Total (inclusive of fees)`
     x$proceeds    <- NA
     x$case        <- "Coinbase buy"
+    x$xtzBuy      <- TRUE
   }
   
   # Coinbase sell
@@ -46,6 +47,7 @@ for (i in 1:nrow(cb)) {
     x$costBasis   <- NA
     x$proceeds    <- cb_i$`Total (inclusive of fees)`
     x$case        <- "Coinbase sell"
+    x$xtzSell     <- TRUE
   }
   
   # Coinbase send
@@ -74,6 +76,7 @@ for (i in 1:nrow(cb)) {
     x$costBasis   <- cb_i$`Total (inclusive of fees)`
     x$proceeds    <- NA
     x$case        <- "Coinbase convert"
+    x$xtzBuy      <- TRUE
   }
   
   # Coinbase income
