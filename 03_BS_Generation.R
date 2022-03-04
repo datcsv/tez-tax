@@ -35,7 +35,8 @@ for (i in 1:nrow(is)) {
       )
   }
   else {
-    # XTZ sent
+    
+    # XTZ sent - need to generalize to all tokens?
     xtzBalance  <- is_i$xtzSent
     xtzCost     <- 0
     xtzProceeds <- is_i$quote * is_i$xtzSent
@@ -55,9 +56,6 @@ for (i in 1:nrow(is)) {
     if (is.na(is$gainLoss[i]))  is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
     if (is.na(is$costBasis[i])) is$costBasis[i] <- round(xtzProceeds, 2)
   }
-  
-  
-  
   
 }
 
