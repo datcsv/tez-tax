@@ -14,8 +14,12 @@ bs <- tibble(
 # Generate initial balance sheet
 for (i in 1:nrow(is)) {
   
+  # Isolate row, adjust xtz sent/received
   is_i <- is[i,]
-  
+  if ((is_i$xtzSent > 0) & (is_i$xtzReceived > 0)) {
+    is_i$xtzSent <- max(is_i$xtzSent - is_i$xtzReceived, 0)
+    is_i$xtzReceived <- max(is_i$xtzReceived - is_i$xtzSent, 0)
+  }
   
   # Tezos exchange buy
   if (is_i$xtzBuy) {
@@ -32,35 +36,24 @@ for (i in 1:nrow(is)) {
   }
   
   # XTZ sent
-  if (is_i$xtzSent > 0) {
-    
-    xtzBalance  <- is_i$xtzSent
-    xtzCost     <- 0
-    xtzProceeds <- is_i$quote * is_i$xtzSent
-    
-    for (j in 1:nrow(bs)) {
-      if (bs$asset[j] == "xtz" && bs$quantity[j] > 0) {
-        subtract_j     <- min(bs$quantity[j], xtzBalance)
-        bs$quantity[j] <- bs$quantity[j] - subtract_j
-        xtzBalance     <- xtzBalance - subtract_j
-        xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
-      }
-      if (xtzBalance <= 0) break
+  xtzBalance  <- is_i$xtzSent
+  xtzCost     <- 0
+  xtzProceeds <- is_i$quote * is_i$xtzSent
+  
+  for (j in 1:nrow(bs)) {
+    if (xtzBalance <= 0) break
+    if (bs$asset[j] == "xtz" && bs$quantity[j] > 0) {
+      subtract_j     <- min(bs$quantity[j], xtzBalance)
+      bs$quantity[j] <- bs$quantity[j] - subtract_j
+      xtzBalance     <- xtzBalance - subtract_j
+      xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
     }
-    
-    if (xtzBalance > 0) warning(cat("\nAsset < balance!", is[[i, "id"]]))
-    if (is.na(is$proceeds[i]))  is$proceeds[i]  <- round(xtzProceeds, 2)
-    if (is.na(is$gainLoss[i]))  is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
-    if (is.na(is$costBasis[i])) is$costBasis[i] <- round(xtzProceeds, 2)
-    
   }
   
-  # Else...
-  else {
-    
-    
-    
-  }
+  if (xtzBalance > 0) warning(cat("\nAsset < balance!", is[[i, "id"]]))
+  if (is.na(is$proceeds[i]))  is$proceeds[i]  <- round(xtzProceeds, 2)
+  if (is.na(is$gainLoss[i]))  is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
+  if (is.na(is$costBasis[i])) is$costBasis[i] <- round(xtzProceeds, 2)
   
 }
 
