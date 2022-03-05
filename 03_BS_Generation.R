@@ -30,13 +30,12 @@ for (i in 1:nrow(is)) {
         fungible  = TRUE
       )
   }
-  else {
-    
-    # XTZ sent
+  
+  # Calculate gain/loss on sent XTZ
+  if (is_i$xtzSent > 0) {
     xtzBalance  <- is_i$xtzSent
     xtzCost     <- 0
     xtzProceeds <- is_i$quote * is_i$xtzSent
-    
     for (j in 1:nrow(bs)) {
       if (xtzBalance <= 0) break
       if (bs$asset[j] == "xtz" && bs$quantity[j] > 0) {
@@ -46,20 +45,20 @@ for (i in 1:nrow(is)) {
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
       }
     }
-    
     if (xtzBalance > 0) warning(cat("\nXTZ < balance!", is[[i, "id"]]))
-    
-    
-    
-    
-    
-    
-    
-    
-    is$proceeds[i]  <- round(xtzProceeds, 2)
-    is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
-    
+    is$xtzProceeds[i]  <- round(xtzProceeds, 2)
+    is$xtzGainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
+  } 
+  else {
+    is$xtzProceeds[i]  <- 0
+    is$xtzGainLoss[i]  <- 0
   }
+  
+  # Calculate gain/loss on sent tokens
+  
+  
+  
+  
   
 }
 

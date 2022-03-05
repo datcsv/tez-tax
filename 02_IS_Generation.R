@@ -32,13 +32,15 @@ operations %<>%
     tokenAmount    = NA,
     tokenSender    = NA,
     tokenReceiver  = NA,
+    tokenSent      = NA,
+    tokenReceived  = NA,
     walletTx       = TRUE,
     xtzBuy         = FALSE,
     xtzSell        = FALSE,
     xtzProceeds    = NA, # Proceeds on xtz sent
     xtzGainLoss    = NA, # Gain loss on xtz sent
-    tknProceeds    = NA, # Proceeds on token sent
-    tknGainLoss    = NA, # Gain loss on token sent
+    tokenProceeds  = NA, # Proceeds on token sent
+    tokenGainLoss  = NA, # Gain loss on token sent
     costBasis      = NA  # Cost basis on received
   ) %>%
   select(., 
@@ -54,8 +56,12 @@ source("functions/classify_tx.R")
 
 # Clean income statement data
 is %<>% 
-  mutate(., timestamp = as_datetime(timestamp)) %>%
-  select(., -xtzAmount) %>%
+  mutate(., 
+    timestamp     = as_datetime(timestamp),
+    tokenSent     = ifelse(tokenSender %in% wallets, tokenAmount, 0),
+    tokenReceived = ifelse(tokenReceiver %in% wallets, tokenAmount, 0)
+  ) %>%
+  select(., -xtzAmount, -tokenAmount) %>%
   arrange(., timestamp)
 
 # Add exchange data:
