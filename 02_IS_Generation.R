@@ -29,7 +29,7 @@ operations %<>%
     xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
     tokenID        = NA,
-    tokenAmount    = NA,
+    tokenAmount    = 0,
     tokenSender    = NA,
     tokenReceiver  = NA,
     tokenSent      = 0,
