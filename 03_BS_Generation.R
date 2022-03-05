@@ -14,12 +14,8 @@ bs <- tibble(
 # Generate initial balance sheet
 for (i in 1:nrow(is)) {
   
-  # Isolate row, adjust xtz sent/received
+  # Isolate row
   is_i <- is[i,]
-  if ((is_i$xtzSent > 0) & (is_i$xtzReceived > 0)) {
-    is_i$xtzSent <- max(is_i$xtzSent - is_i$xtzReceived, 0)
-    is_i$xtzReceived <- max(is_i$xtzReceived - is_i$xtzSent, 0)
-  }
   
   # Tezos exchange buy
   if (is_i$xtzBuy) {
@@ -36,7 +32,7 @@ for (i in 1:nrow(is)) {
   }
   else {
     
-    # XTZ sent - need to generalize to all tokens?
+    # XTZ sent
     xtzBalance  <- is_i$xtzSent
     xtzCost     <- 0
     xtzProceeds <- is_i$quote * is_i$xtzSent
@@ -52,9 +48,9 @@ for (i in 1:nrow(is)) {
     }
     
     if (xtzBalance > 0) warning(cat("\nAsset < balance!", is[[i, "id"]]))
-    if (is.na(is$proceeds[i]))  is$proceeds[i]  <- round(xtzProceeds, 2)
-    if (is.na(is$gainLoss[i]))  is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
-    if (is.na(is$costBasis[i])) is$costBasis[i] <- round(xtzProceeds, 2)
+    is$proceeds[i]  <- round(xtzProceeds, 2)
+    is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
+    is$costBasis[i] <- round(xtzProceeds, 2)
   }
   
 }
