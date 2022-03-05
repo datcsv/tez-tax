@@ -45,7 +45,7 @@ for (i in 1:nrow(is)) {
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
       }
     }
-    if (xtzBalance > 0) warning(cat("\nXTZ < balance!", is[[i, "id"]]))
+    if (xtzBalance > 0) warning(cat("\nXTZ < balance!", is_i$id))
     is$xtzProceeds[i]  <- round(xtzProceeds, 2)
     is$xtzGainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
   } 
@@ -56,11 +56,26 @@ for (i in 1:nrow(is)) {
   
   # Calculate gain/loss on sent tokens
   if (is_i$tokenSent > 0) {
-    
+    tokenBalance  <- is_i$tokenSent
+    tokenCost     <- 0
+    tokenProceeds <- is_i$xtzReceived * is_i$quote
+    for (j in 1:nrow(bs)) {
+      if (tokenBalance <= 0) break
+      if (bs$asset[j] == is_i$tokenID && bs$quantity[j] > 0) {
+        subtract_j     <- min(bs$quantity[j], tokenBalance)
+        bs$quantity[j] <- bs$quantity[j] - subtract_j
+        tokenBalance   <- tokenBalance - subtract_j
+        tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
+      }
+    }
+    if (tokenBalance > 0) warning(cat("\nToken < balance!", is_i$id))
+    is$tokenProceeds <- round(tokenProceeds, 2)
+    is$tokenGainLoss <- round(tokenProceeds - tokenCost, 2)
   }
-  
-  
-  
+  else {
+    is$tokenProceeds[i] <- 0
+    is$tokenGainLoss[i] <- 0
+  }
   
 }
 
