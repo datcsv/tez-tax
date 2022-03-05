@@ -654,7 +654,7 @@ for (i in 1:nrow(operations_hash)) {
     else if ("mint" %in% x$parameterEntry) {
       x %<>%
         filter(., parameterEntry == "mint", !row_number() == 1) %>%
-        mutate(., case="fxhash mint")
+        mutate(., case="fxhash mint", tokenAmount=1)
     }
     
     # fxhash offer
