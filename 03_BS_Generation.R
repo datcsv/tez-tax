@@ -77,6 +77,12 @@ for (i in 1:nrow(is)) {
     is$tokenGainLoss[i] <- 0
   }
   
+  # Calculate cost basis
+  costBasis <- is_i$xtzProceeds + is_i$tokenProceeds
+  if (is.na(is_i$costBasis)) {
+    is$costBasis[i] <- round(xtzProceeds + tokenProceeds, 2)
+  }
+  
 }
 
 # Form 8949
