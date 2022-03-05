@@ -69,8 +69,8 @@ for (i in 1:nrow(is)) {
       }
     }
     if (tokenBalance > 0) warning(cat("\nToken < balance!", is_i$id))
-    is$tokenProceeds <- round(tokenProceeds, 2)
-    is$tokenGainLoss <- round(tokenProceeds - tokenCost, 2)
+    is$tokenProceeds[i] <- round(tokenProceeds, 2)
+    is$tokenGainLoss[i] <- round(tokenProceeds - tokenCost, 2)
   }
   else {
     is$tokenProceeds[i] <- 0
@@ -78,8 +78,6 @@ for (i in 1:nrow(is)) {
   }
   
 }
-
-
 
 # Form 8949
 # (a) Description of property
