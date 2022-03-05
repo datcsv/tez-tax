@@ -122,6 +122,7 @@ for (i in 1:nrow(operations_hash)) {
   # Failed transaction
   if (sum(c("failed", "backtracked") %in% x$status) > 0) {
     x %<>% quick_case(., case="Failed transaction", type=2)
+    x %<>% mutate(., tokenAmount=0)
   }
   
   # Standard transaction
