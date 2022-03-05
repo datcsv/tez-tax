@@ -55,7 +55,9 @@ for (i in 1:nrow(is)) {
   }
   
   # Calculate gain/loss on sent tokens
-  
+  if (is_i$tokenSent > 0) {
+    
+  }
   
   
   

@@ -54,6 +54,9 @@ operations %<>%
 # Generate income statement from operation data:
 source("functions/classify_tx.R")
 
+# Add exchange data:
+if (!is.na(cb_path)) source("functions/cb_import.R")
+
 # Clean income statement data
 is %<>% 
   mutate(., 
@@ -63,9 +66,6 @@ is %<>%
   ) %>%
   select(., -xtzAmount, -tokenAmount) %>%
   arrange(., timestamp)
-
-# Add exchange data:
-if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data
 save(is, file="data/is.RData")
