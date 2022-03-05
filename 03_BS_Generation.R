@@ -45,7 +45,7 @@ for (i in 1:nrow(is)) {
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
       }
     }
-    if (xtzBalance > 0) warning(cat("\nXTZ < balance!", is_i$id))
+    if (xtzBalance > 0) warning(cat("\nNegative XTZ balance!", is_i$id))
     is$xtzProceeds[i]  <- round(xtzProceeds, 2)
     is$xtzGainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
   } 
@@ -68,7 +68,7 @@ for (i in 1:nrow(is)) {
         tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
       }
     }
-    if (tokenBalance > 0) warning(cat("\nToken < balance!", is_i$id))
+    if (tokenBalance > 0) warning(cat("\nNegative token balance!", is_i$id))
     is$tokenProceeds[i] <- round(tokenProceeds, 2)
     is$tokenGainLoss[i] <- round(tokenProceeds - tokenCost, 2)
   }
@@ -83,6 +83,32 @@ for (i in 1:nrow(is)) {
     is$costBasis[i] <- round(xtzProceeds + tokenProceeds, 2)
   }
   
+  # Add xtz to balance sheet
+  if (is_i$xtzReceived > 0) {
+    bs %<>% 
+      add_row(.,
+        timestamp = is_i$timestamp,
+        asset     = "xtz",
+        quantity  = is_i$xtzReceived,
+        costBasis = is$costBasis[i],
+        fungible  = TRUE
+      )
+  }
+  
+  if (is_i$tokenReceived > 0) {
+    bs %<>% 
+      add_row(.,
+        timestamp = is_i$timestamp,
+        asset     = is_i$tokenID,
+        quantity  = is_i$tokenReceived,
+        costBasis = is$costBasis[i],
+        fungible  = FALSE
+      )
+  }
+  
+  if ((is_i$xtzReceived > 0) & (is_i$tokenReceived > 0)) {
+    warning(cat("\nRHS error!", is_i$id))
+  }
 }
 
 # Form 8949
