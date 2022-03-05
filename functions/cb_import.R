@@ -32,6 +32,9 @@ for (i in 1:nrow(cb)) {
   x$xtzBuy    <- FALSE
   x$xtzSell   <- FALSE
   
+  x$tokenSent     <- 0
+  x$tokenReceived <- 0
+  
   # Coinbase buy
   if (cb_i$`Transaction Type` == "Buy") {
     x$xtzSent       <- 0

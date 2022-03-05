@@ -32,8 +32,8 @@ operations %<>%
     tokenAmount    = NA,
     tokenSender    = NA,
     tokenReceiver  = NA,
-    tokenSent      = NA,
-    tokenReceived  = NA,
+    tokenSent      = 0,
+    tokenReceived  = 0,
     walletTx       = TRUE,
     xtzBuy         = FALSE,
     xtzSell        = FALSE,
@@ -54,10 +54,7 @@ operations %<>%
 # Generate income statement from operation data:
 source("functions/classify_tx.R")
 
-# Add exchange data:
-if (!is.na(cb_path)) source("functions/cb_import.R")
-
-# Clean income statement data
+# Adjust data
 is %<>% 
   mutate(., 
     timestamp     = as_datetime(timestamp),
@@ -66,6 +63,9 @@ is %<>%
   ) %>%
   select(., -xtzAmount, -tokenAmount) %>%
   arrange(., timestamp)
+
+# Add exchange data:
+if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data
 save(is, file="data/is.RData")
