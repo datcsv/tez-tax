@@ -34,30 +34,26 @@ for (i in 1:nrow(cb)) {
   
   # Coinbase buy
   if (cb_i$`Transaction Type` == "Buy") {
-    x$xtzSent     <- 0
-    x$xtzReceived <- cb_i$`Quantity Transacted`
-    x$costBasis   <- cb_i$`Total (inclusive of fees)`
-    x$proceeds    <- NA
-    x$case        <- "Coinbase buy"
-    x$xtzBuy      <- TRUE
+    x$xtzSent       <- 0
+    x$xtzReceived   <- cb_i$`Quantity Transacted`
+    x$costBasis     <- cb_i$`Total (inclusive of fees)`
+    x$case          <- "Coinbase buy"
+    x$xtzBuy        <- TRUE
   }
   
   # Coinbase sell
   else if (cb_i$`Transaction Type` == "Sell") {
-    x$xtzSent     <- cb_i$`Quantity Transacted`
-    x$xtzReceived <- 0
-    x$costBasis   <- NA
-    x$proceeds    <- cb_i$`Total (inclusive of fees)`
-    x$case        <- "Coinbase sell"
-    x$xtzSell     <- TRUE
+    x$xtzSent       <- cb_i$`Quantity Transacted`
+    x$xtzReceived   <- 0
+    x$xtzProceeds   <- cb_i$`Total (inclusive of fees)`
+    x$case          <- "Coinbase sell"
+    x$xtzSell       <- TRUE
   }
   
   # Coinbase send
   else if (cb_i$`Transaction Type` == "Send") {
     x$xtzSent       <- cb_i$`Quantity Transacted`
     x$xtzReceived   <- 0
-    x$costBasis     <- NA
-    x$proceeds      <- NA
     x$case          <- "Coinbase send"
     x$targetAddress <- substr(cb_i$Notes, nchar(cb_i$Notes)-35, nchar(cb_i$Notes))
   }
@@ -66,28 +62,24 @@ for (i in 1:nrow(cb)) {
   else if (cb_i$`Transaction Type` == "Receive") {
     x$xtzSent       <- 0
     x$xtzReceived   <- cb_i$`Quantity Transacted`
-    x$costBasis     <- NA
-    x$proceeds      <- NA
     x$case          <- "Coinbase receive"
   }
   
   # Coinbase convert
   else if (cb_i$`Transaction Type` == "Convert") {
-    x$xtzSent     <- 0
-    x$xtzReceived <- cb_i$`Quantity Transacted`
-    x$costBasis   <- cb_i$`Total (inclusive of fees)`
-    x$proceeds    <- NA
-    x$case        <- "Coinbase convert"
-    x$xtzBuy      <- TRUE
+    x$xtzSent       <- 0
+    x$xtzReceived   <- cb_i$`Quantity Transacted`
+    x$costBasis     <- cb_i$`Total (inclusive of fees)`
+    x$case          <- "Coinbase convert"
+    x$xtzBuy        <- TRUE
   }
   
   # Coinbase income
   else if (cb_i$`Transaction Type` == "Rewards Income") {
-    x$xtzSent     <- 0
-    x$xtzReceived <- cb_i$`Quantity Transacted`
-    x$costBasis   <- 0
-    x$proceeds    <- NA
-    x$case        <- "Coinbase income"
+    x$xtzSent       <- 0
+    x$xtzReceived   <- cb_i$`Quantity Transacted`
+    x$costBasis     <- 0
+    x$case          <- "Coinbase income"
   }
   
   cb_is %<>% 

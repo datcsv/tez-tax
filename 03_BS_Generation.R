@@ -47,10 +47,18 @@ for (i in 1:nrow(is)) {
       }
     }
     
-    if (xtzBalance > 0) warning(cat("\nAsset < balance!", is[[i, "id"]]))
+    if (xtzBalance > 0) warning(cat("\nXTZ < balance!", is[[i, "id"]]))
+    
+    
+    
+    
+    
+    
+    
+    
     is$proceeds[i]  <- round(xtzProceeds, 2)
     is$gainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
-    is$costBasis[i] <- round(xtzProceeds, 2)
+    
   }
   
 }
