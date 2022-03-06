@@ -90,7 +90,7 @@ for (i in 1:nrow(is)) {
         timestamp = is_i$timestamp,
         asset     = "xtz",
         quantity  = is_i$xtzReceived,
-        costBasis = is$costBasis[i] / is_i$xtzReceived,
+        costBasis = round(is$costBasis[i] / is_i$xtzReceived, 2),
         fungible  = TRUE
       )
   }
@@ -101,7 +101,7 @@ for (i in 1:nrow(is)) {
         timestamp = is_i$timestamp,
         asset     = is_i$tokenID,
         quantity  = is_i$tokenReceived,
-        costBasis = is$costBasis[i] / is_i$tokenReceived,
+        costBasis = round(is$costBasis[i] / is_i$tokenReceived, 2),
         fungible  = FALSE
       )
   }
