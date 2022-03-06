@@ -66,6 +66,14 @@ for (i in 1:nrow(is)) {
     }
     if (xtzBalance > 0) {
       warning(cat("\nNegative XTZ balance, cost basis assumed zero!", is_i$id))
+      bs %<>% 
+        add_row(.,
+          timestamp = is_i$timestamp,
+          asset     = "xtz",
+          quantity  = -1 * xtzBalance,
+          costBasis = NA,
+          fungible  = TRUE
+        )
     }
     is$xtzProceeds[i]  <- xtzProceeds
     is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
@@ -90,8 +98,15 @@ for (i in 1:nrow(is)) {
       }
     }
     if (tokenBalance > 0) {
-      warning(cat("\nNegative token balance, cost basis assumed zero!", 
-        is_i$id, is_i$tokenID))
+      warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
+      bs %<>% 
+        add_row(.,
+          timestamp = is_i$timestamp,
+          asset     = is_i$tokenID,
+          quantity  = -1 * tokenBalance,
+          costBasis = NA,
+          fungible  = FALSE
+        )
     }
     is$tokenProceeds[i] <- tokenProceeds
     is$tokenGainLoss[i] <- tokenProceeds - tokenCost

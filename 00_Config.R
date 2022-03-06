@@ -34,6 +34,9 @@ cb_path <- "data/cb_transactions.csv"
 # Include early OBJKT auction data (TRUE/FALSE)
 objkt_v1 <- TRUE
 
+# Assume RCS tokens with no transaction history were minted at 5tz
+rcs_mint <- TRUE
+
 # Run next steps in process
 if (!file.exists("data/operations.RData")) source("01_Operations_Data.R")
 if (!file.exists("data/is.RData")) source("02_IS_Generation.R")
