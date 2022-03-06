@@ -14,7 +14,7 @@ bs <- tibble(
 # Generate initial balance sheet
 for (i in 1:nrow(is)) {
   
-  # Zero variables
+  # Initiate variables
   xtzBalance    <- 0
   xtzCost       <- 0
   xtzProceeds   <- 0
@@ -25,6 +25,16 @@ for (i in 1:nrow(is)) {
   
   # Isolate row
   is_i <- is[i,]
+  
+  # Adjust cases where xtz is sent and received
+  if (is_i$tokenSender %in% wallets) {
+    is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
+    is_i$xtzSent     <- 0
+  }
+  else if (is_i$tokenReceiver %in% wallets) {
+    is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
+    is_i$xtzReceived <- 0
+  }
   
   # Tezos exchange buy
   if (is_i$xtzBuy) {
@@ -124,6 +134,10 @@ for (i in 1:nrow(is)) {
     warning(cat("\nRHS error!", is_i$id))
   }
 }
+
+# To Do:
+# -RCS assumption
+# -Manual adjustments
 
 # Form 8949
 # (a) Description of property
