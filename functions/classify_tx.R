@@ -229,7 +229,7 @@ for (i in 1:nrow(operations_hash)) {
     if (sum(c("tezToTokenPayment", "tokenToTezPayment") %in% x$parameterEntry) > 0) {
       x %<>% 
         quick_case(., entry="transfer", case="QuipuSwap trade") %>%
-        mutate(., tokenAmount = as.numeric(list_check(parameterValue, "amount")))
+        mutate(., tokenAmount = as.numeric(list_check(parameterValue, "value")))
     }
     
     # Quipuswap unidentified
