@@ -54,7 +54,9 @@ for (i in 1:nrow(is)) {
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
       }
     }
-    if (xtzBalance > 0) warning(cat("\nNegative XTZ balance!", is_i$id))
+    if (xtzBalance > 0) {
+      warning(cat("\nNegative XTZ balance, cost basis assumed zero!", is_i$id))
+    }
     is$xtzProceeds[i]  <- xtzProceeds
     is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
   } 
@@ -77,7 +79,10 @@ for (i in 1:nrow(is)) {
         tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
       }
     }
-    if (tokenBalance > 0) warning(cat("\nNegative token balance!", is_i$id))
+    if (tokenBalance > 0) {
+      warning(cat("\nNegative token balance, cost basis assumed zero!", 
+        is_i$id, is_i$tokenID))
+    }
     is$tokenProceeds[i] <- tokenProceeds
     is$tokenGainLoss[i] <- tokenProceeds - tokenCost
   }
@@ -123,7 +128,7 @@ for (i in 1:nrow(is)) {
 # Form 8949
 # (a) Description of property
 # (b) Date acquired
-# (c) Date sold or disposal of 
+# (c) Date sold or disposal of
 # (d) Proceeds (sales price)
 # (e) Cost or other basis
 # (f) Code(s) from instructions
