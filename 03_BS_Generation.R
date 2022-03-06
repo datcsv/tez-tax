@@ -46,8 +46,8 @@ for (i in 1:nrow(is)) {
       }
     }
     if (xtzBalance > 0) warning(cat("\nNegative XTZ balance!", is_i$id))
-    is$xtzProceeds[i]  <- round(xtzProceeds, 2)
-    is$xtzGainLoss[i]  <- round(xtzProceeds - xtzCost, 2)
+    is$xtzProceeds[i]  <- xtzProceeds
+    is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
   } 
   else {
     is$xtzProceeds[i]  <- 0
@@ -69,8 +69,8 @@ for (i in 1:nrow(is)) {
       }
     }
     if (tokenBalance > 0) warning(cat("\nNegative token balance!", is_i$id))
-    is$tokenProceeds[i] <- round(tokenProceeds, 2)
-    is$tokenGainLoss[i] <- round(tokenProceeds - tokenCost, 2)
+    is$tokenProceeds[i] <- tokenProceeds
+    is$tokenGainLoss[i] <- tokenProceeds - tokenCost
   }
   else {
     is$tokenProceeds[i] <- 0
@@ -80,7 +80,7 @@ for (i in 1:nrow(is)) {
   # Calculate cost basis
   costBasis <- is_i$xtzProceeds + is_i$tokenProceeds
   if (is.na(is_i$costBasis)) {
-    is$costBasis[i] <- round(xtzProceeds + tokenProceeds, 2)
+    is$costBasis[i] <- xtzProceeds + tokenProceeds
   }
   
   # Add xtz to balance sheet
