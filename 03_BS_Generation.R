@@ -14,6 +14,15 @@ bs <- tibble(
 # Generate initial balance sheet
 for (i in 1:nrow(is)) {
   
+  # Zero variables
+  xtzBalance    <- 0
+  xtzCost       <- 0
+  xtzProceeds   <- 0
+  tokenBalance  <- 0
+  tokenCost     <- 0
+  tokenProceeds <- 0
+  subtract_j    <- 0
+  
   # Isolate row
   is_i <- is[i,]
   
