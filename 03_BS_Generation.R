@@ -138,6 +138,8 @@ for (i in 1:nrow(is)) {
 # To Do:
 # -RCS assumption
 # -Manual adjustments
+# -hDAO drops
+# -Adjust 'fungible' token list
 
 # Form 8949
 # (a) Description of property
