@@ -168,6 +168,10 @@ is %<>% mutate(., fungibleToken = (tokenID %in% fungible))
 # Update gain/loss on token transfers
 is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
 
+# To do:
+# -Manual override, second pass
+# -Export to tax-software-readable format
+
 # Form 8949
 # (a) Description of property
 # (b) Date acquired
