@@ -35,6 +35,7 @@ operations %<>%
     tokenSent      = 0,
     tokenReceived  = 0,
     walletTx       = TRUE,
+    fungible       = NA,
     xtzBuy         = FALSE,
     xtzSell        = FALSE,
     xtzProceeds    = NA, # Proceeds on xtz sent

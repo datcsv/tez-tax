@@ -207,7 +207,7 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., 
           tokenID="KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
           tokenAmount=as.numeric(list_check(parameterValue, "hDAO_amount")),
-          tokenSender=SenderAddress
+          tokenSender=initiatorAddress
         )
     }
     

@@ -7,8 +7,7 @@ bs <- tibble(
   timestamp = POSIXct(),
   asset     = character(),
   quantity  = double(),
-  costBasis = double(),
-  fungible  = logical()
+  costBasis = double()
 )
 
 # Generate initial balance sheet
@@ -45,8 +44,7 @@ for (i in 1:nrow(is)) {
         quantity  = is_i$xtzReceived,
         costBasis = ifelse(
           is.na(is_i$costBasis), is_i$quote, is_i$costBasis / is_i$xtzReceived
-        ),
-        fungible  = TRUE
+        )
       )
   }
   
@@ -71,8 +69,7 @@ for (i in 1:nrow(is)) {
           timestamp = is_i$timestamp,
           asset     = "xtz",
           quantity  = -1 * xtzBalance,
-          costBasis = NA,
-          fungible  = TRUE
+          costBasis = NA
         )
     }
     is$xtzProceeds[i]  <- xtzProceeds
@@ -113,8 +110,7 @@ for (i in 1:nrow(is)) {
           timestamp = is_i$timestamp,
           asset     = is_i$tokenID,
           quantity  = -1 * tokenBalance,
-          costBasis = NA,
-          fungible  = FALSE
+          costBasis = NA
         )
     }
     is$tokenProceeds[i] <- tokenProceeds
@@ -138,8 +134,7 @@ for (i in 1:nrow(is)) {
         timestamp = is_i$timestamp,
         asset     = "xtz",
         quantity  = is_i$xtzReceived,
-        costBasis = is$costBasis[i] / is_i$xtzReceived,
-        fungible  = TRUE
+        costBasis = is$costBasis[i] / is_i$xtzReceived
       )
   }
   
@@ -149,8 +144,7 @@ for (i in 1:nrow(is)) {
         timestamp = is_i$timestamp,
         asset     = is_i$tokenID,
         quantity  = is_i$tokenReceived,
-        costBasis = is$costBasis[i] / is_i$tokenReceived,
-        fungible  = FALSE
+        costBasis = is$costBasis[i] / is_i$tokenReceived
       )
   }
   
@@ -159,10 +153,23 @@ for (i in 1:nrow(is)) {
   }
 }
 
+# Fungible token list
+fungible <- c(
+  "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
+  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1_0", # PURPLE
+  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9_0", # Hedgehoge
+  "KT18hYjnko76SBVv6TaCT4kU6B32mJk6JWLZ_0", # MATH
+  "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb_0", # QUIPU
+  "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
+)
+
+# Adjust fungible tokens
+is %<>% mutate(., fungibleToken = (tokenID %in% fungible))
+
 # To Do:
+# -Transfer/gift treatment?
 # -Manual adjustments
 # -hDAO drops
-# -Adjust 'fungible' token list
 
 # Form 8949
 # (a) Description of property
