@@ -21,9 +21,18 @@ tax_8949 <- tibble(
   Gain_Loss     = double()
 )
 
+# Fungible token list
+fungible <- c(
+  "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
+  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1_0", # PURPLE
+  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9_0", # Hedgehoge
+  "KT18hYjnko76SBVv6TaCT4kU6B32mJk6JWLZ_0", # MATH
+  "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb_0", # QUIPU
+  "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
+)
+
 ### NEED TO CALCULATE GAIN ON RECEIVED XTZ ###
 ### USE TZKT TO FIND MISSING TOKEN DATA    ###
-### ADJUST COLLECTIBLES CODES ON NFTS      ###
 ### ADJUST TOKEN TRANSFERS EARLIER         ###
 
 # Generate balance sheet, updated income statement, and form 8949
@@ -144,7 +153,7 @@ for (i in 1:nrow(is)) {
             Date_Sold     = as_date(is_i$timestamp),
             Proceeds      = round(subtract_j * (tokenProceeds / is_i$tokenSent), 2),
             Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
-            Codes         = NA,
+            Codes         = ifelse(is_i$tokenID %in% fungible, "C", NA),
             Adjustment    = NA,
             Gain_Loss     = Proceeds - Cost_Basis
           )
@@ -176,7 +185,7 @@ for (i in 1:nrow(is)) {
           Date_Sold     = as_date(is_i$timestamp),
           Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
           Cost_Basis    = 0,
-          Codes         = NA,
+          Codes         = ifelse(is_i$tokenID %in% fungible, "C", NA),
           Adjustment    = NA,
           Gain_Loss     = Proceeds
         )
@@ -221,19 +230,6 @@ for (i in 1:nrow(is)) {
     warning(cat("\nRHS error!", is_i$id))
   }
 }
-
-# Fungible token list
-fungible <- c(
-  "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
-  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1_0", # PURPLE
-  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9_0", # Hedgehoge
-  "KT18hYjnko76SBVv6TaCT4kU6B32mJk6JWLZ_0", # MATH
-  "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb_0", # QUIPU
-  "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
-)
-
-# Update fungible variable
-is %<>% mutate(., fungibleToken = (tokenID %in% fungible))
 
 # Update gain/loss on token transfers
 is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
