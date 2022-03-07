@@ -9,11 +9,19 @@ bs <- tibble(
   costBasis = double()
 )
 
-################################################################################
-# NOTE: NEED TO SPLIT EACH BALANCE SHEET SALE INTO A SEPARATE LINE  ITEM
-################################################################################
+# Generate 8949 form
+tax_8949 <- tibble(
+  Description   = character(),
+  Date_Acquired = character(),
+  Date_Sold     = character(),
+  Proceeds      = double(),
+  Cost_Basis    = double(),
+  Codes         = character(),
+  Adjustment    = double(),
+  Gain_Loss     = double()
+)
 
-# Generate initial balance sheet
+# Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {
   
   # Initiate variables
@@ -64,6 +72,19 @@ for (i in 1:nrow(is)) {
         xtzBalance     <- xtzBalance - subtract_j
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
       }
+      
+      tax_8949 %<>% 
+        add_row(.,
+          Description   = paste(subtract_j, bs$asset[j]),
+          Date_Acquired = as.character(bs$timestamp[j]),
+          Date_Sold     = as.character(is_i$timestamp),
+          Proceeds      = subtract_j * (xtzProceeds / is_i$xtzSent),
+          Cost_Basis    = subtract_j * bs$costBasis[j],
+          Codes         = NULL,
+          Adjustment    = NULL,
+          Gain_Loss   = subtract_j * ((xtzProceeds / is_i$xtzSent) - bs$costBasis[j])
+        )
+      
     }
     if (xtzBalance > 0) {
       warning(cat("\nNegative XTZ balance, cost basis assumed zero!", is_i$id))
