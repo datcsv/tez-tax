@@ -631,7 +631,7 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., 
           tokenID       = "RCS_MINT",
           tokenReceiver = SenderAddress,
-          tokenReceived = round((xtzSent - xtzFee) / 5.00, 0)
+          tokenAmount   = round((xtzSent - xtzFee) / 5.00, 0)
         )
     }
     

@@ -88,7 +88,8 @@ for (i in 1:nrow(is)) {
     tokenBalance  <- is_i$tokenSent
     tokenCost     <- 0
     tokenProceeds <- is_i$xtzReceived * is_i$quote
-    for (j in 1:nrow(bs)) {
+    j <- 1
+    while (j <= nrow(bs)) {
       if (tokenBalance <= 0) break
       if (bs$asset[j] == is_i$tokenID && bs$quantity[j] > 0) {
         subtract_j     <- min(bs$quantity[j], tokenBalance)
@@ -96,6 +97,14 @@ for (i in 1:nrow(is)) {
         tokenBalance   <- tokenBalance - subtract_j
         tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
       }
+      j <- j + 1
+      
+      # RCS mint assumption
+      if ((j == nrow(bs)) & (tokenBalance > 0) & (rcs_mint) & str_split(is_i$tokenID, "_")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih") {
+        is_i$tokenID <- "RCS_MINT"
+        j <- 1
+      }
+      
     }
     if (tokenBalance > 0) {
       warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
@@ -151,7 +160,6 @@ for (i in 1:nrow(is)) {
 }
 
 # To Do:
-# -RCS assumption
 # -Manual adjustments
 # -hDAO drops
 # -Adjust 'fungible' token list
