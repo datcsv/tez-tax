@@ -764,11 +764,19 @@ for (i in 1:nrow(operations_hash)) {
     (hdao_drop) &
     ("hDAO_batch" %in% y$parameterEntry)
   ) {
-    x_h <- y %>% 
-      filter(., parameterEntry == "hDAO_batch") %>%
+    
+    x_h <- y %>% filter(., parameterEntry == "hDAO_batch")
+    x_h_wallets <- y$parameterValue[[5]][[1]]
+    x_h_amount  <- as.numeric(y$parameterValue[[5]][[2]])
+    x_h_index   <- which(x_h_wallets %in% wallets)
+    
+    x_h %<>% 
       mutate(.,
         xtzSent=0,
         xtzReceived=0,
+        tokenID="KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
+        tokenReceiver=x_h_wallets[x_h_index],
+        tokenAmount=sum(x_h_amount[x_h_index]),
         case="hDAO airdrop"
       )
     x %<>% add_row(., x_h)
