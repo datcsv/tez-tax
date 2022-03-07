@@ -50,7 +50,8 @@ operations %<>%
     -storageUsed, -hasInternals, -contractBalance, -errors, -bakerFee, 
     -storageFee, -allocationFee, -amount, -type, -level, -counter, -parameter, 
     -initiatorAlias, -senderAlias, -targetAlias
-  )
+  ) 
+  #%>% head(n=100)
 
 # Generate income statement from operation data:
 source("functions/classify_tx.R")

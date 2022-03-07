@@ -1,4 +1,3 @@
-
 # Load income statement data
 load(file="data/is.RData")
 
@@ -167,11 +166,7 @@ fungible <- c(
 is %<>% mutate(., fungibleToken = (tokenID %in% fungible))
 
 # Update gain/loss on token transfers
-is %<>% mutate(., gainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
-
-# To Do:
-# -Manual adjustments
-# -hDAO airdrops
+is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
 
 # Form 8949
 # (a) Description of property

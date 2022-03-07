@@ -759,6 +759,21 @@ for (i in 1:nrow(operations_hash)) {
     x <- y
   }
   
+  # Check for hDAO airdrop
+  if (
+    (hdao_drop) &
+    ("hDAO_batch" %in% y$parameterEntry)
+  ) {
+    x_h <- y %>% 
+      filter(., parameterEntry == "hDAO_batch") %>%
+      mutate(.,
+        xtzSent=0,
+        xtzReceived=0,
+        case="hDAO airdrop"
+      )
+    x %<>% add_row(., x_h)
+  }
+  
   # Add row(s) to income statement
   is %<>% bind_rows(., x)
 }
