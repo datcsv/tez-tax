@@ -71,7 +71,6 @@ for (i in 1:nrow(is)) {
         bs$quantity[j] <- bs$quantity[j] - subtract_j
         xtzBalance     <- xtzBalance - subtract_j
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
-      }
       
       tax_8949 %<>% 
         add_row(.,
@@ -84,6 +83,8 @@ for (i in 1:nrow(is)) {
           Adjustment    = NULL,
           Gain_Loss   = subtract_j * ((xtzProceeds / is_i$xtzSent) - bs$costBasis[j])
         )
+      
+      }
       
     }
     if (xtzBalance > 0) {
@@ -197,3 +198,4 @@ is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainL
 is_updated <- is
 save(is_updated, file="data/is_updated.RData")
 save(bs, file="data/bs.RData")
+save(tax_8949, file="data/tax_8949.RData")
