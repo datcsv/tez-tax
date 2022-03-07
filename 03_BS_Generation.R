@@ -9,6 +9,10 @@ bs <- tibble(
   costBasis = double()
 )
 
+################################################################################
+# NOTE: NEED TO SPLIT EACH BALANCE SHEET SALE INTO A SEPARATE LINE  ITEM
+################################################################################
+
 # Generate initial balance sheet
 for (i in 1:nrow(is)) {
   
