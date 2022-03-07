@@ -23,6 +23,8 @@ tax_8949 <- tibble(
 
 ### NEED TO CALCULATE GAIN ON RECEIVED XTZ ###
 ### USE TZKT TO FIND MISSING TOKEN DATA    ###
+### ADJUST COLLECTIBLES CODES ON NFTS      ###
+### ADJUST TOKEN TRANSFERS EARLIER         ###
 
 # Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {
