@@ -163,13 +163,15 @@ fungible <- c(
   "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
 )
 
-# Adjust fungible tokens
+# Update fungible variable
 is %<>% mutate(., fungibleToken = (tokenID %in% fungible))
 
+# Update gain/loss on token transfers
+is %<>% mutate(., gainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
+
 # To Do:
-# -Transfer/gift treatment?
 # -Manual adjustments
-# -hDAO drops
+# -hDAO airdrops
 
 # Form 8949
 # (a) Description of property
