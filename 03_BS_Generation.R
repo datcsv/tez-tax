@@ -12,8 +12,8 @@ bs <- tibble(
 # Generate 8949 form
 tax_8949 <- tibble(
   Description   = character(),
-  Date_Acquired = character(),
-  Date_Sold     = character(),
+  Date_Acquired = Date(),
+  Date_Sold     = Date(),
   Proceeds      = double(),
   Cost_Basis    = double(),
   Codes         = character(),
@@ -75,13 +75,13 @@ for (i in 1:nrow(is)) {
       tax_8949 %<>% 
         add_row(.,
           Description   = paste(subtract_j, bs$asset[j]),
-          Date_Acquired = as.character(bs$timestamp[j]),
-          Date_Sold     = as.character(is_i$timestamp),
-          Proceeds      = subtract_j * (xtzProceeds / is_i$xtzSent),
-          Cost_Basis    = subtract_j * bs$costBasis[j],
-          Codes         = NULL,
-          Adjustment    = NULL,
-          Gain_Loss   = subtract_j * ((xtzProceeds / is_i$xtzSent) - bs$costBasis[j])
+          Date_Acquired = as_date(bs$timestamp[j]),
+          Date_Sold     = as_date(is_i$timestamp),
+          Proceeds      = round(subtract_j * (xtzProceeds / is_i$xtzSent), 2),
+          Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
+          Codes         = NA,
+          Adjustment    = NA,
+          Gain_Loss     = Proceeds - Cost_Basis
         )
       
       }
@@ -96,6 +96,19 @@ for (i in 1:nrow(is)) {
           quantity  = -1 * xtzBalance,
           costBasis = NA
         )
+      
+      tax_8949 %<>% 
+        add_row(.,
+          Description   = paste(xtzBalance, bs$asset[j]),
+          Date_Acquired = NA,
+          Date_Sold     = as_date(is_i$timestamp),
+          Proceeds      = round(xtzBalance * (xtzProceeds / is_i$xtzSent), 2),
+          Cost_Basis    = 0,
+          Codes         = NA,
+          Adjustment    = NA,
+          Gain_Loss     = Proceeds
+        )
+      
     }
     is$xtzProceeds[i]  <- xtzProceeds
     is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
@@ -118,6 +131,19 @@ for (i in 1:nrow(is)) {
         bs$quantity[j] <- bs$quantity[j] - subtract_j
         tokenBalance   <- tokenBalance - subtract_j
         tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
+        
+        tax_8949 %<>% 
+          add_row(.,
+            Description   = paste(subtract_j, bs$asset[j]),
+            Date_Acquired = as_date(bs$timestamp[j]),
+            Date_Sold     = as_date(is_i$timestamp),
+            Proceeds      = round(subtract_j * (tokenProceeds / is_i$tokenSent), 2),
+            Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
+            Codes         = NA,
+            Adjustment    = NA,
+            Gain_Loss     = Proceeds - Cost_Basis
+          )
+        
       }
       j <- j + 1
       
@@ -137,6 +163,19 @@ for (i in 1:nrow(is)) {
           quantity  = -1 * tokenBalance,
           costBasis = NA
         )
+      
+      tax_8949 %<>% 
+        add_row(.,
+          Description   = paste(tokenBalance, bs$asset[j]),
+          Date_Acquired = NA,
+          Date_Sold     = as_date(is_i$timestamp),
+          Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
+          Cost_Basis    = 0,
+          Codes         = NA,
+          Adjustment    = NA,
+          Gain_Loss     = Proceeds
+        )
+      
     }
     is$tokenProceeds[i] <- tokenProceeds
     is$tokenGainLoss[i] <- tokenProceeds - tokenCost
