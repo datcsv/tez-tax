@@ -42,5 +42,6 @@ hdao_drop <- TRUE
 
 # Run next steps in process
 if (!file.exists("data/operations.RData")) source("01_Operations_Data.R")
-if (!file.exists("data/is.RData")) source("02_IS_Generation.R")
-source("03_BS_Generation.R")
+if (!file.exists("data/is.RData"))         source("02_IS_Generation.R")
+if (!file.exists("data/is_updated.RData")) source("03_BS_Generation.R")
+source("04_Tax_Documentation.R")

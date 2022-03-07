@@ -168,12 +168,7 @@ is %<>% mutate(., fungibleToken = (tokenID %in% fungible))
 # Update gain/loss on token transfers
 is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
 
-# Form 8949
-# (a) Description of property
-# (b) Date acquired
-# (c) Date sold or disposal of
-# (d) Proceeds (sales price)
-# (e) Cost or other basis
-# (f) Code(s) from instructions
-# (g) Amount of adjustment
-# (h) Gain or (loss)
+# Save income statement and balance sheet data
+is_updated <- is
+save(is_updated, file="data/is_updated.RData")
+save(bs, file="data/bs.RData")
