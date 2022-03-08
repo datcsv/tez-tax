@@ -16,7 +16,7 @@ tax_8949 <- tibble(
   Date_Sold     = Date(),
   Proceeds      = double(),
   Cost_Basis    = double(),
-  Codes         = character(),iis
+  Codes         = character(),
   Adjustment    = double(),
   Gain_Loss     = double()
 )
