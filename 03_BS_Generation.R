@@ -16,7 +16,7 @@ tax_8949 <- tibble(
   Date_Sold     = Date(),
   Proceeds      = double(),
   Cost_Basis    = double(),
-  Codes         = character(),
+  Codes         = character(),iis
   Adjustment    = double(),
   Gain_Loss     = double()
 )
@@ -31,10 +31,9 @@ fungible <- c(
   "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
 )
 
-### INCOME NOT CALCULATING CORRECTLY RIGHT NOW ###
-### NEED TO CALCULATE GAIN ON RECEIVED XTZ ###
-### USE TZKT TO FIND MISSING TOKEN DATA    ###
-### GENERATE OTHER INCOME FOR 1040         ###
+### FIX OTHER INCOME CALCULATIONS              ###
+### USE TZKT TO FIND MISSING TOKEN DATES       ###
+## FIX ISSUE WITH FXHASH TRADES (TOKENSENDER == oobLKtF6xj8wtdWdR1c58ojdsJUjgkLVbu8VEnrHCduRuBgYq61) ###
 
 # Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {
