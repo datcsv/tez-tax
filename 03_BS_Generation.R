@@ -31,9 +31,8 @@ fungible <- c(
   "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
 )
 
-### FIX OTHER INCOME CALCULATIONS              ###
-### USE TZKT TO FIND MISSING TOKEN DATES       ###
-## FIX ISSUE WITH FXHASH TRADES (TOKENSENDER == oobLKtF6xj8wtdWdR1c58ojdsJUjgkLVbu8VEnrHCduRuBgYq61) ###
+### FIX OTHER INCOME CALCULATIONS        ###
+### USE TZKT TO FIND MISSING TOKEN DATES ###
 
 # Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {

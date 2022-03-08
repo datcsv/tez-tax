@@ -704,6 +704,7 @@ for (i in 1:nrow(operations_hash)) {
           tokenAmount=ifelse(
             xtzCollect <= xtzReceived, 
             as.numeric(list_check(parameterValue, "amount")), 0),
+          tokenSender=ifelse(xtzCollect <= xtzReceived, wallets[1], NA),
           case=ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
         )
     }
