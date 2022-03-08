@@ -73,7 +73,7 @@ for (i in 1:nrow(is)) {
   }
   
   # Tezos income
-  if ((is_i$xtzReceived > 0) & (is_i$tokenReceived == 0)) {
+  if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
