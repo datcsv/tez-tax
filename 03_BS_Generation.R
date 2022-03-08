@@ -31,9 +31,6 @@ fungible <- c(
   "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
 )
 
-### FIX OTHER INCOME CALCULATIONS        ###
-### USE TZKT TO FIND MISSING TOKEN DATES ###
-
 # Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {
   
@@ -47,7 +44,7 @@ for (i in 1:nrow(is)) {
   subtract_j    <- 0
   
   # Isolate row
-  is_i <- is[i,]
+  is_i <- is[i, ]
   
   # Adjust cases where xtz is sent and received
   if (is_i$tokenSender %in% wallets) {
@@ -72,7 +69,7 @@ for (i in 1:nrow(is)) {
       )
   }
   # Tezos income
-  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
+  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0) & (is_i$xtzSent == 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,

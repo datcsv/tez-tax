@@ -29,3 +29,6 @@ tax_8949c <- tibble(
   Adjustment    = double(),
   Gain_Loss     = double()
 )
+
+
+### Calculate other income: is %>% filter(., (xtzReceived > 0) & (tokenSent == 0) & (xtzSent == 0) & !xtzBuy) %>% View(.)
