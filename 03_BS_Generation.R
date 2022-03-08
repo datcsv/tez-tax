@@ -33,7 +33,6 @@ fungible <- c(
 
 ### NEED TO CALCULATE GAIN ON RECEIVED XTZ ###
 ### USE TZKT TO FIND MISSING TOKEN DATA    ###
-### ADJUST TOKEN TRANSFERS EARLIER         ###
 
 # Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {
@@ -71,6 +70,20 @@ for (i in 1:nrow(is)) {
           is.na(is_i$costBasis), is_i$quote, is_i$costBasis / is_i$xtzReceived
         )
       )
+  }
+  
+  # Tezos income
+  if ((is_i$xtzReceived > 0) & (is_i$tokenReceived == 0)) {
+    bs %<>% 
+      add_row(.,
+        timestamp = is_i$timestamp,
+        asset     = "xtz",
+        quantity  = is_i$xtzReceived,
+        costBasis = is_i$quote
+      )
+    
+    # ADD 1040 FORM INFORMATION
+    
   }
   
   # Calculate gain/loss on sent XTZ
@@ -134,29 +147,34 @@ for (i in 1:nrow(is)) {
   
   # Calculate gain/loss on sent tokens
   if (is_i$tokenSent > 0) {
+    
     tokenBalance  <- is_i$tokenSent
     tokenCost     <- 0
     tokenProceeds <- is_i$xtzReceived * is_i$quote
+    
     j <- 1
     while (j <= nrow(bs)) {
       if (tokenBalance <= 0) break
       if (bs$asset[j] == is_i$tokenID && bs$quantity[j] > 0) {
+        
         subtract_j     <- min(bs$quantity[j], tokenBalance)
         bs$quantity[j] <- bs$quantity[j] - subtract_j
         tokenBalance   <- tokenBalance - subtract_j
         tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
         
-        tax_8949 %<>% 
-          add_row(.,
-            Description   = paste(subtract_j, bs$asset[j]),
-            Date_Acquired = as_date(bs$timestamp[j]),
-            Date_Sold     = as_date(is_i$timestamp),
-            Proceeds      = round(subtract_j * (tokenProceeds / is_i$tokenSent), 2),
-            Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
-            Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
-            Adjustment    = NA,
-            Gain_Loss     = Proceeds - Cost_Basis
-          )
+        if (is_i$case != "Token transfer") {
+          tax_8949 %<>% 
+            add_row(.,
+              Description   = paste(subtract_j, bs$asset[j]),
+              Date_Acquired = as_date(bs$timestamp[j]),
+              Date_Sold     = as_date(is_i$timestamp),
+              Proceeds      = round(subtract_j * (tokenProceeds / is_i$tokenSent), 2),
+              Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
+              Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
+              Adjustment    = NA,
+              Gain_Loss     = Proceeds - Cost_Basis
+            )
+        }
         
       }
       j <- j + 1
@@ -178,17 +196,19 @@ for (i in 1:nrow(is)) {
           costBasis = NA
         )
       
-      tax_8949 %<>% 
-        add_row(.,
-          Description   = paste(tokenBalance, bs$asset[j]),
-          Date_Acquired = NA,
-          Date_Sold     = as_date(is_i$timestamp),
-          Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
-          Cost_Basis    = 0,
-          Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
-          Adjustment    = NA,
-          Gain_Loss     = Proceeds
-        )
+      if (is_i$case != "Token transfer") {
+        tax_8949 %<>% 
+          add_row(.,
+            Description   = paste(tokenBalance, bs$asset[j]),
+            Date_Acquired = NA,
+            Date_Sold     = as_date(is_i$timestamp),
+            Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
+            Cost_Basis    = 0,
+            Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
+            Adjustment    = NA,
+            Gain_Loss     = Proceeds
+          )
+      }
       
     }
     is$tokenProceeds[i] <- tokenProceeds
