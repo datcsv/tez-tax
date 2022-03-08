@@ -31,8 +31,10 @@ fungible <- c(
   "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
 )
 
+### INCOME NOT CALCULATING CORRECTLY RIGHT NOW ###
 ### NEED TO CALCULATE GAIN ON RECEIVED XTZ ###
 ### USE TZKT TO FIND MISSING TOKEN DATA    ###
+### GENERATE OTHER INCOME FOR 1040         ###
 
 # Generate balance sheet, updated income statement, and form 8949
 for (i in 1:nrow(is)) {
@@ -71,9 +73,8 @@ for (i in 1:nrow(is)) {
         )
       )
   }
-  
   # Tezos income
-  if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
+  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
@@ -81,9 +82,6 @@ for (i in 1:nrow(is)) {
         quantity  = is_i$xtzReceived,
         costBasis = is_i$quote
       )
-    
-    # ADD 1040 FORM INFORMATION
-    
   }
   
   # Calculate gain/loss on sent XTZ
