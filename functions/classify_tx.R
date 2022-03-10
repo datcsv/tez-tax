@@ -126,7 +126,10 @@ for (i in 1:nrow(operations_hash)) {
       mutate(., case = "Standard transaction")
     
     # Adjust wallet-to-wallet transfers
-    if ((x$SenderAddress %in% wallets) & (x$targetAddress %in% wallets)) {
+    if (
+      (sum(x$SenderAddress %in% wallets) > 0) & 
+      (sum(x$targetAddress %in% wallets) > 0)
+    ) {
       x %<>% mutate(., xtzSent=xtzFee, xtzReceived=0, case="Wallet transfer")
     }
     
