@@ -25,7 +25,37 @@ hen_contracts <- c(
 quipu_contracts <- c(
   "KT1QxLqukyfohPV5kPkw97Rs6cw1DDDvYgbB",
   "KT1BMEEPX7MWzwwadW3NCSZe9XGmFJ7rs7Dr",
-  "KT1X3zxdTzPB9DgVzA3ad6dgZe9JEamoaeRy"
+  "KT1X3zxdTzPB9DgVzA3ad6dgZe9JEamoaeRy",
+  "KT1FHiJmJUgZMPtv5F8M4ZEa6cb1D9Lf758T",
+  "KT1JyPE1BWdYoRGBvvKhEPbcVRd3C9NCCwQC",
+  "KT1NEa7CmaLaWgHNi6LkRi5Z1f4oHfdzRdGA",
+  "KT1FG63hhFtMEEEtmBSX2vuFmP87t9E7Ab4t",
+  "KT1V41fGzkdTJki4d11T1Rp9yPkCmDhB7jph",
+  "KT1Qm3urGqkRsWsovGzNb2R81c3dSfxpteHG",
+  "KT1U2hs5eNdeCpHouAvQXGMzGFGJowbhjqmo",
+  "KT1X6dAh8fwQMkWC9yh4yuvkJaS5NjqY4NvW",
+  "KT1NXdxJkCiPkhwPvaT9CytFowuUoNcwGM1p",
+  "KT1JzZtBeHDBS9XyEqUc9nZhsqcfeNLxVV1T",
+  "KT1X6MJFtzypK6yuMXzg4KQ9FJAccH8PazKz",
+  "KT1C755xS3TLH4HEWaCJvWuoHTcytTBdEjgS",
+  "KT1Ji39TrkVBd6L2SL7H4u9yvA1sPuSygthq",
+  "KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6",
+  "KT1R8eiRrSoSHufHXPqevZZYEUVzBxhcdenP",
+  "KT1XmsFAdPhsDnhGzQLqQQiGkCGoyekGFC8B",
+  "KT1ULad9tYBY39FT8K1Dgtha7jD3qpygbLPG",
+  "KT1LZqFas2GEUe5z5CFkL9Wqq6tZFzQbopm8",
+  "KT1Gdix8LoDoQng7YqdPNhdP5V7JRX8FqWvM",
+  "KT1WREc3cpr36Nqjvegr6WSPgQKwDjL7XxLN",
+  "KT1VEKgCCYCudjfvLZaEh4havFiJMmxMgNdX",
+  "KT1Eg2QesN1tCzScTrvoeKm5W67GgjV32McR",
+  "KT1Vjp7tHoNXRPpd9BbGrq9pbxF1FxMFUFTE",
+  "KT1GFDagtGGQS1gmC3S6Noqns1svCTzL23By",
+  "KT1DksKXvCBJN7Mw6frGj6y6F3CbABWZVpj1",
+  "KT1ANY7962FTf2RqJMMF4paZkuTQA77994yv",
+  "KT1RRgK6eXvCWCiEGWhRZCSVGzhDzwXEEjS4",
+  "KT1ANEFHasacTTZxGPmQmZo7spj5YuLE6TL4",
+  "KT1X1LgNkQShpF9nRLYw3Dgdy4qp38MX617z",
+  "KT1A91CcMx1izXcbBwyH3z8Do3vnEdKpbde2"
 )
 
 # Tezos Domains contracts
