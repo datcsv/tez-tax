@@ -129,7 +129,7 @@ for (i in 1:nrow(cb_is)) {
   }
   
 }
-cb_is <- cb_is[-drop_rows, ]
+if (length(drop_rows) > 0) cb_is <- cb_is[-drop_rows, ]
 
 # Combine with income statement
 is %<>% 

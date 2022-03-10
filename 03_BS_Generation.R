@@ -173,7 +173,12 @@ for (i in 1:nrow(is)) {
       j <- j + 1
       
       # RCS mint assumption
-      if ((j == nrow(bs)) & (tokenBalance > 0) & (rcs_mint) & str_split(is_i$tokenID, "_")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih") {
+      if (
+        (rcs_mint) & 
+        (j == nrow(bs)) & 
+        (tokenBalance > 0) & 
+        (str_split(is_i$tokenID, "_")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih")
+      ) {
         is_i$tokenID <- "RCS_MINT"
         j <- 1
       }
@@ -243,6 +248,7 @@ for (i in 1:nrow(is)) {
     warning(cat("\nRHS error!", is_i$id))
   }
 }
+cat("\n")
 
 # Update gain/loss on token transfers
 is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
