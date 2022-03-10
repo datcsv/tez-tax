@@ -51,7 +51,7 @@ operations %<>%
     -initiatorAlias, -senderAlias, -targetAlias
   )
 
-# Generate income statement from operation data:
+# Generate income statement from operations data:
 source("functions/classify_tx.R")
 
 # Adjust data

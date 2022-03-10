@@ -37,9 +37,6 @@ objkt_v1 <- TRUE
 # Assume RCS tokens with no transaction history were minted at 5tz
 rcs_mint <- TRUE
 
-# Check for hDAO airdrops
-hdao_drop <- TRUE
-
 # Run next steps in process
 if (!file.exists("data/operations.RData")) source("01_Operations_Data.R")
 if (!file.exists("data/is.RData"))         source("02_IS_Generation.R")
