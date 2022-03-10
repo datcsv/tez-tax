@@ -1,15 +1,10 @@
 ################################################################################
 # Notes:
 # (1) Tezos Domains, Randomly Common Skeles, and Pixel Potus tokens may not be 
-#     registered correctly at this time. Bigmap lookups can resolve.
+#     registered correctly at this time. 
 #
 # (2) This code is a messy proof of concept; Modularization would be useful for
 #     future iterations. 
-#
-# (3) hDAO and akaDAO airdrop tokens are not registered correctly at this time.
-#     both have a cost basis of zero, so the issue should not bear major tax
-#     implications. Nevertheless, these can be addressed without too much 
-#     trouble at a later time. 
 #
 ################################################################################
 
