@@ -79,7 +79,6 @@ operations_hash <- operations %>% distinct(., hash)
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
   
-  
   ##############################################################################
   # Define variables, as necessary
   ##############################################################################
@@ -92,16 +91,16 @@ for (i in 1:nrow(operations_hash)) {
       
       # Add token metadata, if possible
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
-        x$tokenID[i] <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
-        x$tokenSender[i] <- list_check(x$parameterValue[i], c("address", "from_"))
+        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
+        x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_"))
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
-        x$tokenAmount[i] <- as.numeric(list_check(x$parameterValue[i], "amount"))
+        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
       }
       
       # Non-FA2 tokens - assuming a token ID of 0
       if (sum(nfa2 %in% x$targetAddress[i]) > 0) {
-        x$tokenID[i] <- paste0(x$targetAddress[i], "_0")
-        x$tokenAmount[i] <- as.numeric(list_check(x$parameterValue[i], "value"))
+        x$tokenID[i]       <- paste0(x$targetAddress[i], "_0")
+        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "value"))
       }
       
     }
@@ -124,7 +123,7 @@ for (i in 1:nrow(operations_hash)) {
   else if (sum(is.na(x$parameterEntry)) == nrow(x)) {
     x %<>%
       filter(., (SenderAddress %in% wallets) | (targetAddress %in% wallets)) %>%
-      mutate(., case="Standard transaction")
+      mutate(., case = "Standard transaction")
     
     # Adjust wallet-to-wallet transfers
     if ((x$SenderAddress %in% wallets) & (x$targetAddress %in% wallets)) {
@@ -757,22 +756,22 @@ for (i in 1:nrow(operations_hash)) {
   
   # Check for hDAO airdrop
   if ("hDAO_batch" %in% y$parameterEntry) {
-    
-    x_h <- y %>% filter(., parameterEntry == "hDAO_batch")
+    x_h         <- filter(y, parameterEntry == "hDAO_batch")
     x_h_wallets <- y$parameterValue[[5]][[1]]
     x_h_amount  <- as.numeric(y$parameterValue[[5]][[2]])
     x_h_index   <- which(x_h_wallets %in% wallets)
-    
-    x_h %<>% 
-      mutate(.,
-        xtzSent=0,
-        xtzReceived=0,
-        tokenID="KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
-        tokenReceiver=x_h_wallets[x_h_index],
-        tokenAmount=sum(x_h_amount[x_h_index]),
-        case="hDAO airdrop"
-      )
-    x %<>% add_row(., x_h)
+    if (length(x_h_index) > 0) {
+      x_h %<>% 
+        mutate(.,
+          xtzSent       = 0,
+          xtzReceived   = 0,
+          tokenID       = "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
+          tokenReceiver = x_h_wallets[x_h_index],
+          tokenAmount   = sum(x_h_amount[x_h_index]),
+          case="hDAO airdrop"
+        )
+      x %<>% add_row(., x_h)
+    }
   }
   
   # Add row(s) to income statement
