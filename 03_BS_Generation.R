@@ -50,7 +50,13 @@ for (i in 1:nrow(is)) {
   
   ##############################################################################
   
-  # Adjust cases where Tezos is both sent and received
+  ##############################################################################
+  # Tezos sent/received assumption:
+  #  (1) If Tezos is sent and received in the same transaction, net the values
+  #  (2) For token transfers, base the calculation on sender/receiver
+  #  (3) For all other transactions, base the calculation on highest value
+  ##############################################################################
+  # Adjust transaction with tokens involved
   if (is_i$tokenSender %in% wallets) {
     is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
     is_i$xtzSent     <- 0
@@ -58,6 +64,17 @@ for (i in 1:nrow(is)) {
   else if (is_i$tokenReceiver %in% wallets) {
     is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
     is_i$xtzReceived <- 0
+  }
+  # Adjust all other transactions
+  if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
+    if (xtzReceived >= xtzSent) {
+      is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
+      is_i$xtzSent     <- 0
+    }
+    else {
+      is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
+      is_i$xtzReceived <- 0
+    }
   }
   
   ##############################################################################
@@ -86,6 +103,7 @@ for (i in 1:nrow(is)) {
         quantity  = is_i$xtzReceived,
         costBasis = is_i$quote
       )
+    # Income should be accounted for in tax form 1040
   }
   
   ##############################################################################
@@ -149,7 +167,7 @@ for (i in 1:nrow(is)) {
         )
     }
     
-    # Log proceeds and gain (loss) in income statement
+    # Log proceeds and gain (loss) to income statement
     is$xtzProceeds[i]  <- xtzProceeds
     is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
   }
@@ -192,7 +210,13 @@ for (i in 1:nrow(is)) {
       }
       j <- j + 1
       
-      # RCS mint assumption
+      ##########################################################################
+      # RCS mint assumption: 
+      #  (1) Assume RCS tokens lacking transaction history were minted at 5tz
+      #  (2) Minted RCS tokens are treated like fungible tokens
+      #  (*) This assumption should be used for estimates only and is not 
+      #      an accurate or long-term solution if RCS tokens are non-fungible
+      ##########################################################################
       if (
         (rcs_mint) & 
         (j == nrow(bs)) & 
@@ -209,13 +233,11 @@ for (i in 1:nrow(is)) {
     if (tokenBalance > 0) {
       
       ##########################################################################
-      #
       # (1) Find bigmap/bigmap key from send
       # (2) Pull bigmap storage updates using bigmap/key
       # (3) Find timestamp of first update in bigmap storage
       # (4) Issue warning if this does not work, only
       # Multi-edition example: https://api.tzkt.io/v1/bigmaps/62879/keys/exprvEzrXbCGsUEcogp7nZke2gJBLojWWBgoHs31SZhafYFz3Z48gA/updates
-      #
       ##########################################################################
       
       warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
@@ -278,7 +300,7 @@ for (i in 1:nrow(is)) {
   }
   
   if ((is_i$xtzReceived > 0) & (is_i$tokenReceived > 0)) {
-    warning(cat("\nRHS error!", is_i$id))
+    warning(cat("\nToken sent and received in same transaction!", is_i$id))
   }
 }
 cat("\n")
