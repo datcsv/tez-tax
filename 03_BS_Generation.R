@@ -240,6 +240,14 @@ for (i in 1:nrow(is)) {
       # Multi-edition example: https://api.tzkt.io/v1/bigmaps/62879/keys/exprvEzrXbCGsUEcogp7nZke2gJBLojWWBgoHs31SZhafYFz3Z48gA/updates
       ##########################################################################
       
+      #def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
+      #def_ops <- filter(def_ops$diffs[[1]], content$key$address %in% wallets)
+      
+      #def_updates <- tzkt_bigmap_updates(def_ops$bigmap
+      
+      #def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
+      #def_ops <- filter(def_ops$diffs[[1]], content$key$address %in% wallets)
+      
       warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 

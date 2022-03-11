@@ -6,7 +6,7 @@ library("readr")
 library("lubridate")
 
 # Load functions
-source("functions/list_check.R") # Does this exist in tidyjson?
+source("functions/list_check.R")
 source("functions/quick_case.R")
 source("functions/tzkt_api.R")
 

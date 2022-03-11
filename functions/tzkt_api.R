@@ -43,6 +43,14 @@ tzkt_bigmap <- function(id, key, base="https://api.tzkt.io/") {
   return(x)
 }
 
+# Get bigmap key updates, https://api.tzkt.io/#operation/BigMaps_GetKeyUpdates
+tzkt_bigmap_updates <- function(id, key, base="https://api.tzkt.io/") {
+  sfx <- paste0("v1/bigmaps/", id, "/keys/", key, "/udpates")
+  url <- paste0(base, sfx)
+  x <- fromJSON(url)
+  return(x)
+}
+
 # Get quotes, https://api.tzkt.io/#operation/Quotes_Get
 tzkt_quote <- function(level, quote="usd", base="https://api.tzkt.io/") {
   sfx <- paste0("v1/quotes?level=", level)
