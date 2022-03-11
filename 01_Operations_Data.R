@@ -22,7 +22,7 @@ op_names <- c(
   "hasInternals", "quote", "initiator", "nonce", "errors", "contractBalance",
   "originatedContract"
 )
-operations %<>% select(., op_names)
+operations %<>% select(., any_of(op_names))
 
 # Get account operations: Second pass (Get operations by hash)
 operations_hash <- operations %>% 
@@ -31,9 +31,7 @@ operations_hash <- operations %>%
 
 for (i in 1:nrow(operations_hash)) {
   operations_i <- tzkt_operations_hash(operations_hash[i, ], quote=currency)
-  operations_i %<>% select(., 
-    names(operations_i)[which(names(operations_i) %in% op_names)]
-  )
+  operations_i %<>% select(., any_of(op_names))
   if ("parameter" %in% names(operations_i)) {
     if ("value" %in% names(operations_i$parameter)) {
       if (class(operations_i$parameter$value) != "list") {
