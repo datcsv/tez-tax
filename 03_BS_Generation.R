@@ -95,9 +95,7 @@ for (i in 1:nrow(is)) {
   }
   
   # Add Tezos income to balance sheet
-  else if (
-    (is_i$xtzReceived > 0) & (is_i$tokenSent == 0) & (is_i$xtzSent == 0)
-  ) {
+  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
@@ -287,13 +285,12 @@ for (i in 1:nrow(is)) {
   ##############################################################################
   
   # Calculate cost basis
-  costBasis <- is_i$xtzProceeds + is_i$tokenProceeds
   if (is.na(is_i$costBasis)) {
-    is$costBasis[i] <- xtzProceeds + tokenProceeds
+    is$costBasis[i] <- is_i$xtzProceeds + is_i$tokenProceeds
   }
   
   # Add xtz to balance sheet
-  if (is_i$xtzReceived > 0) {
+  if ((is_i$xtzReceived > 0) & (is_i$tokenSent > 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
