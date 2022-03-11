@@ -31,6 +31,8 @@ tax_8949 <- tibble(
   Gain_Loss     = double()
 )
 
+################################################################################
+
 # Loop through rows of income statement to generate tax figures
 for (i in 1:nrow(is)) {
   
@@ -150,7 +152,6 @@ for (i in 1:nrow(is)) {
     # Log proceeds and gain (loss) in income statement
     is$xtzProceeds[i]  <- xtzProceeds
     is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
-    
   }
   
   ##############################################################################
@@ -203,16 +204,11 @@ for (i in 1:nrow(is)) {
       }
       
     }
+    
+    # If balance sheet deficit, issue warning and assume cost basis of zero
     if (tokenBalance > 0) {
-      warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
-      bs %<>% 
-        add_row(.,
-          timestamp = is_i$timestamp,
-          asset     = is_i$tokenID,
-          quantity  = -1 * tokenBalance,
-          costBasis = NA
-        )
       
+      warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
           add_row(.,
@@ -226,7 +222,18 @@ for (i in 1:nrow(is)) {
             Gain_Loss     = Proceeds
           )
       }
+      
+      # Add row to balance sheet for debugging
+      bs %<>% 
+        add_row(.,
+          timestamp = is_i$timestamp,
+          asset     = is_i$tokenID,
+          quantity  = -1 * tokenBalance,
+          costBasis = NA
+        )
     }
+    
+    # Log proceeds and gain (loss) in income statement
     is$tokenProceeds[i] <- tokenProceeds
     is$tokenGainLoss[i] <- tokenProceeds - tokenCost
   }
@@ -265,6 +272,8 @@ for (i in 1:nrow(is)) {
   }
 }
 cat("\n")
+
+################################################################################
 
 # Update gain/loss on token transfers
 is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
