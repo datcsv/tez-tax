@@ -45,7 +45,7 @@ tzkt_bigmap <- function(id, key, base="https://api.tzkt.io/") {
 
 # Get bigmap key updates, https://api.tzkt.io/#operation/BigMaps_GetKeyUpdates
 tzkt_bigmap_updates <- function(id, key, base="https://api.tzkt.io/") {
-  sfx <- paste0("v1/bigmaps/", id, "/keys/", key, "/udpates")
+  sfx <- paste0("v1/bigmaps/", id, "/keys/", key, "/updates")
   url <- paste0(base, sfx)
   x <- fromJSON(url)
   return(x)
