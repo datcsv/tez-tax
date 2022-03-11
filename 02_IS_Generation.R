@@ -41,7 +41,7 @@ operations %<>%
     xtzGainLoss    = 0, # Gain (loss) on xtz sent
     tokenProceeds  = 0, # Proceeds on token sent
     tokenGainLoss  = 0, # Gain (loss) on token sent
-    costBasis      = NA  # Cost basis of all xtz/tokens received
+    costBasis      = NA # Cost basis of all xtz/tokens received
   ) %>%
   select(., 
     -initiator, -sender, -target, -parameter, -originatedContract,

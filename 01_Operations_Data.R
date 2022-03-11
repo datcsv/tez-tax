@@ -21,8 +21,18 @@ operations_hash <- operations %>%
 
 for (i in 1:nrow(operations_hash)) {
   operations_i <- tzkt_operations_hash(operations_hash[i, ], quote=currency)
-  if ("storage" %in% names(operations_i)) operations_i %<>% select(., -storage)
-  if ("diffs" %in% names(operations_i))   operations_i %<>% select(., -diffs)
+  if ("storage" %in% names(operations_i)) {
+    operations_i %<>% select(., -storage)
+  }
+  if ("diffs" %in% names(operations_i)) {
+    operations_i %<>% select(., -diffs)
+  }
+  if ("prevDelegate" %in% names(operations_i)) {
+    operations_i %<>% select(., -prevDelegate)
+  }
+  if ("contractDelegate" %in% names(operations_i)) {
+    operations_i %<>% select(., -contractDelegate)
+  }
   if ("parameter" %in% names(operations_i)) {
     if ("value" %in% names(operations_i$parameter)) {
       if (class(operations_i$parameter$value) != "list") {
