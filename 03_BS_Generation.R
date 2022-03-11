@@ -208,6 +208,16 @@ for (i in 1:nrow(is)) {
     # If balance sheet deficit, issue warning and assume cost basis of zero
     if (tokenBalance > 0) {
       
+      ##########################################################################
+      #
+      # (1) Find bigmap/bigmap key from send
+      # (2) Pull bigmap storage updates using bigmap/key
+      # (3) Find timestamp of first update in bigmap storage
+      # (4) Issue warning if this does not work, only
+      # !!!: How are multi-edition tokens treated?
+      #
+      ##########################################################################
+      
       warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
