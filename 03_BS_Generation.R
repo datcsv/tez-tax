@@ -55,6 +55,8 @@ for (i in 1:nrow(is)) {
   #  (1) If Tezos is sent and received in the same transaction, net the values
   #  (2) For token transfers, base the calculation on sender/receiver
   #  (3) For all other transactions, base the calculation on highest value
+  #  (*) This assumption should be used for estimates only and is not 
+  #      an accurate or long-term solution
   ##############################################################################
   # Adjust transaction with tokens involved
   if (is_i$tokenSender %in% wallets) {
@@ -215,7 +217,7 @@ for (i in 1:nrow(is)) {
       #  (1) Assume RCS tokens lacking transaction history were minted at 5tz
       #  (2) Minted RCS tokens are treated like fungible tokens
       #  (*) This assumption should be used for estimates only and is not 
-      #      an accurate or long-term solution if RCS tokens are non-fungible
+      #      an accurate or long-term solution
       ##########################################################################
       if (
         (rcs_mint) & 
@@ -233,26 +235,27 @@ for (i in 1:nrow(is)) {
     if (tokenBalance > 0) {
       
       ##########################################################################
-      # (1) Find bigmap/bigmap key from send
-      # (2) Pull bigmap storage updates using bigmap/key
-      # (3) Find timestamp of first update in bigmap storage
-      # (4) Issue warning if this does not work, only
-      # Multi-edition example: https://api.tzkt.io/v1/bigmaps/62879/keys/exprvEzrXbCGsUEcogp7nZke2gJBLojWWBgoHs31SZhafYFz3Z48gA/updates
+      # Token deficit assumption:
+      #  (1) If there is no record of a token entering the balance sheet,
+      #      the token is assumed to have a cost basis of zero. 
+      #  (2) For tax form 8949, an acquisition date is required; in order to 
+      #      impute this value, the timestamp value is set to the last time
+      #      the wallet had a positive token balance update. 
+      #  (*) This assumption should be used for estimates only and is not 
+      #      an accurate or long-term solution
       ##########################################################################
       
-      def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
-      def_ops <- filter(def_ops$diffs[[1]], content$key$address %in% wallets)
-      def_upd <- tzkt_bigmap_updates(id=def_ops$bigmap, key=def_ops$content$hash)
-      
-      #def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
+      #def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
       #def_ops <- filter(def_ops$diffs[[1]], content$key$address %in% wallets)
+      #def_upd <- tzkt_bigmap_updates(id=def_ops$bigmap, key=def_ops$content$hash)
+      #def_acquired <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
       
       warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
           add_row(.,
             Description   = paste(tokenBalance, bs$asset[j]),
-            Date_Acquired = NA,
+            Date_Acquired = def_acquired,
             Date_Sold     = as_date(is_i$timestamp),
             Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
             Cost_Basis    = 0,
