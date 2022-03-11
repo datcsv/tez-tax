@@ -204,7 +204,7 @@ for (i in 1:nrow(is)) {
               Date_Sold     = as_date(is_i$timestamp),
               Proceeds      = round(subtract_j * (tokenProceeds / is_i$tokenSent), 2),
               Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
-              Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
+              Codes         = ifelse(is_i$tokenID %in% fungible & collectible, NA, "C"),
               Adjustment    = NA,
               Gain_Loss     = Proceeds - Cost_Basis
             )
@@ -259,7 +259,7 @@ for (i in 1:nrow(is)) {
             Date_Sold     = as_date(is_i$timestamp),
             Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
             Cost_Basis    = 0,
-            Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
+            Codes         = ifelse(is_i$tokenID %in% fungible & collectible, NA, "C"),
             Adjustment    = NA,
             Gain_Loss     = Proceeds
           )
