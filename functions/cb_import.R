@@ -87,8 +87,7 @@ for (i in 1:nrow(cb)) {
   
   cb_is %<>% 
     bind_rows(., x) %>%
-    mutate(., walletTx=FALSE) %>%
-    filter(., )
+    mutate(., walletTx=FALSE)
   
 }
 
