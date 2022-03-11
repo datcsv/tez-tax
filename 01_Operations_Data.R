@@ -14,6 +14,16 @@ for (i in 1:length(wallets)) {
   else operations %<>% bind_rows(., operations_i)
 }
 
+# Drop potential excess variables
+op_names <- c(
+  "type", "id", "level", "timestamp", "block", "hash", "counter", "sender",            
+  "gasLimit", "gasUsed", "storageLimit", "storageUsed", "bakerFee", 
+  "storageFee", "allocationFee", "target", "amount", "parameter", "status",
+  "hasInternals", "quote", "initiator", "nonce", "errors", "contractBalance",
+  "originatedContract"
+)
+operations %<>% select(., op_names)
+
 # Get account operations: Second pass (Get operations by hash)
 operations_hash <- operations %>% 
   filter(., target[[2]] %in% wallets) %>%
@@ -22,7 +32,7 @@ operations_hash <- operations %>%
 for (i in 1:nrow(operations_hash)) {
   operations_i <- tzkt_operations_hash(operations_hash[i, ], quote=currency)
   operations_i %<>% select(., 
-    names(operations_i)[which(names(operations_i) %in% names(operations))]
+    names(operations_i)[which(names(operations_i) %in% op_names)]
   )
   if ("parameter" %in% names(operations_i)) {
     if ("value" %in% names(operations_i$parameter)) {
@@ -51,7 +61,6 @@ if (objkt_v1) {
     if (i == 1) objkt_operations <- operations_i
     else objkt_operations %<>% bind_rows(., operations_i)
   }
-  
   objkt_operations_hash <- objkt_operations %>% distinct(., hash)
   for (i in 1:nrow(operations_hash)) {
     operations_i <- filter(objkt_operations, hash == objkt_operations_hash[i, ])
