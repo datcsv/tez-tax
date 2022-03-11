@@ -252,9 +252,3 @@ cat("\n")
 
 # Update gain/loss on token transfers
 is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
-
-# Save income statement and balance sheet data
-is_updated <- is
-save(is_updated, file="data/is_updated.RData")
-save(bs, file="data/bs.RData")
-save(tax_8949, file="data/tax_8949.RData")
