@@ -146,7 +146,7 @@ for (i in 1:nrow(is)) {
     # If balance sheet deficit, issue warning and assume cost basis of zero
     if (xtzBalance > 0) {
       
-      warning(cat("\nNegative XTZ balance, cost basis assumed zero!", is_i$id))
+      warning(cat("\nTezos deficit, cost basis assumed zero:", is_i$id))
       tax_8949 %<>% 
         add_row(.,
           Description   = paste(xtzBalance, bs$asset[j]),
@@ -245,17 +245,21 @@ for (i in 1:nrow(is)) {
       #      an accurate or long-term solution
       ##########################################################################
       
+      warning(cat("\nToken deficit assumption: ", is_i$id, is_i$tokenID))
       #def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
-      #def_ops <- filter(def_ops$diffs[[1]], content$key$address %in% wallets)
-      #def_upd <- tzkt_bigmap_updates(id=def_ops$bigmap, key=def_ops$content$hash)
-      #def_acquired <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
+      #def_dif <- def_ops$diffs[[1]][1, ]
+      #def_key <- tzkt_bigmap_updates(id=def_dif$bigmap, key=def_dif$content$hash)
+      #def_acq <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
       
-      warning(cat("\nNegative token balance, cost basis assumed zero!", is_i$id, is_i$tokenID))
+      # Testing
+      #def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
+      #def_ops <- def_ops$diffs[[1]]
+      
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
           add_row(.,
             Description   = paste(tokenBalance, bs$asset[j]),
-            Date_Acquired = def_acquired,
+            Date_Acquired = def_acq,
             Date_Sold     = as_date(is_i$timestamp),
             Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
             Cost_Basis    = 0,
