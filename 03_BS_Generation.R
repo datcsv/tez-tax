@@ -214,7 +214,7 @@ for (i in 1:nrow(is)) {
       # (2) Pull bigmap storage updates using bigmap/key
       # (3) Find timestamp of first update in bigmap storage
       # (4) Issue warning if this does not work, only
-      # !!!: How are multi-edition tokens treated?
+      # Multi-edition example: https://api.tzkt.io/v1/bigmaps/62879/keys/exprvEzrXbCGsUEcogp7nZke2gJBLojWWBgoHs31SZhafYFz3Z48gA/updates
       #
       ##########################################################################
       
