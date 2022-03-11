@@ -1,7 +1,17 @@
 # Load income statement data
 load(file="data/is.RData")
 
-# Generate empy balance sheet
+# Fungible token list
+fungible <- c(
+  "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
+  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1_0", # PURPLE
+  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9_0", # Hedgehoge
+  "KT18hYjnko76SBVv6TaCT4kU6B32mJk6JWLZ_0", # MATH
+  "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb_0", # QUIPU
+  "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
+)
+
+# Generate empy balance sheet dataset
 bs <- tibble(
   timestamp = POSIXct(),
   asset     = character(),
@@ -9,7 +19,7 @@ bs <- tibble(
   costBasis = double()
 )
 
-# Generate 8949 form
+# Generate empty tax form 8949 dataset
 tax_8949 <- tibble(
   Description   = character(),
   Date_Acquired = Date(),
@@ -21,20 +31,10 @@ tax_8949 <- tibble(
   Gain_Loss     = double()
 )
 
-# Fungible token list
-fungible <- c(
-  "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
-  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1_0", # PURPLE
-  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9_0", # Hedgehoge
-  "KT18hYjnko76SBVv6TaCT4kU6B32mJk6JWLZ_0", # MATH
-  "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb_0", # QUIPU
-  "KT1AM3PV1cwmGRw28DVTgsjjsjHvmL6z4rGh_0"  # akaDAO
-)
-
-# Generate balance sheet, updated income statement, and form 8949
+# Loop through rows of income statement to generate tax figures
 for (i in 1:nrow(is)) {
   
-  # Initiate variables
+  # Initialize variables
   xtzBalance    <- 0
   xtzCost       <- 0
   xtzProceeds   <- 0
@@ -46,7 +46,9 @@ for (i in 1:nrow(is)) {
   # Isolate row
   is_i <- is[i, ]
   
-  # Adjust cases where xtz is sent and received
+  ##############################################################################
+  
+  # Adjust cases where Tezos is both sent and received
   if (is_i$tokenSender %in% wallets) {
     is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
     is_i$xtzSent     <- 0
@@ -56,7 +58,9 @@ for (i in 1:nrow(is)) {
     is_i$xtzReceived <- 0
   }
   
-  # Tezos exchange buy
+  ##############################################################################
+  
+  # Add Tezos purchases to balance sheet
   if (is_i$xtzBuy) {
     bs %<>% 
       add_row(.,
@@ -68,8 +72,11 @@ for (i in 1:nrow(is)) {
         )
       )
   }
-  # Tezos income
-  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0) & (is_i$xtzSent == 0)) {
+  
+  # Add Tezos income to balance sheet
+  else if (
+    (is_i$xtzReceived > 0) & (is_i$tokenSent == 0) & (is_i$xtzSent == 0)
+  ) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
@@ -79,44 +86,45 @@ for (i in 1:nrow(is)) {
       )
   }
   
-  # Calculate gain/loss on sent XTZ
+  ##############################################################################
+  
+  # Calculate gain (loss) on Tezos sent
   if (is_i$xtzSent > 0) {
+    
+    # Initialize variables
     xtzBalance  <- is_i$xtzSent
     xtzCost     <- 0
     xtzProceeds <- is_i$quote * is_i$xtzSent
+    
+    # Subtract Tezos from balance sheet, calculate tax figures
     for (j in 1:nrow(bs)) {
       if (xtzBalance <= 0) break
       if (bs$asset[j] == "xtz" && bs$quantity[j] > 0) {
+        
         subtract_j     <- min(bs$quantity[j], xtzBalance)
         bs$quantity[j] <- bs$quantity[j] - subtract_j
         xtzBalance     <- xtzBalance - subtract_j
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
-      
-      tax_8949 %<>% 
-        add_row(.,
-          Description   = paste(subtract_j, bs$asset[j]),
-          Date_Acquired = as_date(bs$timestamp[j]),
-          Date_Sold     = as_date(is_i$timestamp),
-          Proceeds      = round(subtract_j * (xtzProceeds / is_i$xtzSent), 2),
-          Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
-          Codes         = NA,
-          Adjustment    = NA,
-          Gain_Loss     = Proceeds - Cost_Basis
-        )
-      
+        
+        # Update tax form 8949 dataset
+        tax_8949 %<>% 
+          add_row(.,
+            Description   = paste(subtract_j, bs$asset[j]),
+            Date_Acquired = as_date(bs$timestamp[j]),
+            Date_Sold     = as_date(is_i$timestamp),
+            Proceeds      = round(subtract_j * (xtzProceeds / is_i$xtzSent), 2),
+            Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
+            Codes         = NA,
+            Adjustment    = NA,
+            Gain_Loss     = Proceeds - Cost_Basis
+          )
       }
-      
     }
+    
+    # If balance sheet deficit, issue warning and assume cost basis of zero
     if (xtzBalance > 0) {
-      warning(cat("\nNegative XTZ balance, cost basis assumed zero!", is_i$id))
-      bs %<>% 
-        add_row(.,
-          timestamp = is_i$timestamp,
-          asset     = "xtz",
-          quantity  = -1 * xtzBalance,
-          costBasis = NA
-        )
       
+      warning(cat("\nNegative XTZ balance, cost basis assumed zero!", is_i$id))
       tax_8949 %<>% 
         add_row(.,
           Description   = paste(xtzBalance, bs$asset[j]),
@@ -129,23 +137,34 @@ for (i in 1:nrow(is)) {
           Gain_Loss     = Proceeds
         )
       
+      # Add row to balance sheet for debugging
+      bs %<>% 
+        add_row(.,
+          timestamp = is_i$timestamp,
+          asset     = "xtz",
+          quantity  = -1 * xtzBalance,
+          costBasis = NA
+        )
     }
+    
+    # Log proceeds and gain (loss) in income statement
     is$xtzProceeds[i]  <- xtzProceeds
     is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
-  } 
-  else {
-    is$xtzProceeds[i]  <- 0
-    is$xtzGainLoss[i]  <- 0
+    
   }
   
-  # Calculate gain/loss on sent tokens
+  ##############################################################################
+  
+  # Calculate gain (loss) on tokens sent
   if (is_i$tokenSent > 0) {
     
+    # Initialize variables
     tokenBalance  <- is_i$tokenSent
     tokenCost     <- 0
     tokenProceeds <- is_i$xtzReceived * is_i$quote
-    
     j <- 1
+    
+    # Subtract tokens from balance sheet, calculate tax figures
     while (j <= nrow(bs)) {
       if (tokenBalance <= 0) break
       if (bs$asset[j] == is_i$tokenID && bs$quantity[j] > 0) {
@@ -155,7 +174,8 @@ for (i in 1:nrow(is)) {
         tokenBalance   <- tokenBalance - subtract_j
         tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
         
-        if (is_i$case != "Token transfer") {
+        # Update tax form 8949 dataset, ignore transfers
+        if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))) {
           tax_8949 %<>% 
             add_row(.,
               Description   = paste(subtract_j, bs$asset[j]),
@@ -168,7 +188,6 @@ for (i in 1:nrow(is)) {
               Gain_Loss     = Proceeds - Cost_Basis
             )
         }
-        
       }
       j <- j + 1
       
@@ -194,7 +213,7 @@ for (i in 1:nrow(is)) {
           costBasis = NA
         )
       
-      if (is_i$case != "Token transfer") {
+      if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
           add_row(.,
             Description   = paste(tokenBalance, bs$asset[j]),
@@ -207,15 +226,12 @@ for (i in 1:nrow(is)) {
             Gain_Loss     = Proceeds
           )
       }
-      
     }
     is$tokenProceeds[i] <- tokenProceeds
     is$tokenGainLoss[i] <- tokenProceeds - tokenCost
   }
-  else {
-    is$tokenProceeds[i] <- 0
-    is$tokenGainLoss[i] <- 0
-  }
+
+  ##############################################################################
   
   # Calculate cost basis
   costBasis <- is_i$xtzProceeds + is_i$tokenProceeds
