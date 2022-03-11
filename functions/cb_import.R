@@ -32,6 +32,10 @@ for (i in 1:nrow(cb)) {
   x$xtzBuy    <- FALSE
   x$xtzSell   <- FALSE
   
+  x$xtzProceeds   <- 0
+  x$xtzGainLoss   <- 0
+  x$tokenProceeds <- 0
+  x$tokenGainLoss <- 0
   x$tokenSent     <- 0
   x$tokenReceived <- 0
   
@@ -84,7 +88,7 @@ for (i in 1:nrow(cb)) {
     x$costBasis     <- 0
     x$case          <- "Coinbase income"
   }
-  
+
   cb_is %<>% 
     bind_rows(., x) %>%
     mutate(., walletTx=FALSE)
