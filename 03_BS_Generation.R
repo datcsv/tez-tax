@@ -69,7 +69,7 @@ for (i in 1:nrow(is)) {
   }
   # Adjust all other transactions
   if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
-    if (xtzReceived >= xtzSent) {
+    if (is_i$xtzReceived >= is_i$xtzSent) {
       is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
       is_i$xtzSent     <- 0
     }
