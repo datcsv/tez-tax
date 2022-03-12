@@ -80,6 +80,7 @@ for (i in 1:nrow(is)) {
   #  (2) If Tezos are received but no tokens are sent, mark as income
   ##############################################################################
   
+  xtzIncome <- 0
   if (is_i$xtzBuy) {
     bs %<>% 
       add_row(.,
@@ -100,7 +101,7 @@ for (i in 1:nrow(is)) {
         quantity  = is_i$xtzReceived,
         costBasis = is_i$quote
       )
-    # Income should be accounted for in tax form 1040 (Calculate here)
+    xtzIncome <- xtzIncome + is_i$quote * is_i$quantity
     next
   }
   
