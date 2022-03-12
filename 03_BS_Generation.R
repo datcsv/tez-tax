@@ -1,3 +1,8 @@
+# To do: 
+#  -Fix missing token dates
+#  -Look into "1 NA" label in balance sheet...
+#  -Fix coinbase tezos conversion code
+
 # Load income statement data
 load(file="data/is.RData")
 
