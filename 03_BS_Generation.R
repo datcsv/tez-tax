@@ -31,6 +31,9 @@ tax_8949 <- tibble(
   Gain_Loss     = double()
 )
 
+# Initialize variables
+xtzIncome <- 0
+
 # Loop through rows of income statement to generate tax figures
 for (i in 1:nrow(is)) {
   
@@ -55,6 +58,7 @@ for (i in 1:nrow(is)) {
   #      an accurate or long-term solution
   ##############################################################################
   
+  # Adjust XTZ sent/received when tokens are involved
   if (is_i$tokenSender %in% wallets) {
     is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
     is_i$xtzSent     <- 0
@@ -63,6 +67,8 @@ for (i in 1:nrow(is)) {
     is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
     is_i$xtzReceived <- 0
   }
+  
+  # Adjust XTZ sent/received when tokens are not involved
   else if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
     if (is_i$xtzReceived >= is_i$xtzSent) {
       is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
@@ -80,7 +86,7 @@ for (i in 1:nrow(is)) {
   #  (2) If Tezos are received but no tokens are sent, mark as income
   ##############################################################################
   
-  xtzIncome <- 0
+  # Add Tezos purchases to balance sheet
   if (is_i$xtzBuy) {
     bs %<>% 
       add_row(.,
@@ -93,6 +99,8 @@ for (i in 1:nrow(is)) {
       )
     next
   }
+  
+  # Add Tezos income to balance sheet
   else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
     bs %<>% 
       add_row(.,
@@ -101,13 +109,14 @@ for (i in 1:nrow(is)) {
         quantity  = is_i$xtzReceived,
         costBasis = is_i$quote
       )
-    xtzIncome <- xtzIncome + is_i$quote * is_i$quantity
+    xtzIncome <- xtzIncome + is_i$quote * is_i$xtzReceived
     next
   }
   
   ##############################################################################
-  
   # Calculate gain (loss) on Tezos sent
+  ##############################################################################
+
   if (is_i$xtzSent > 0) {
     
     # Initialize variables
