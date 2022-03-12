@@ -31,8 +31,6 @@ tax_8949 <- tibble(
   Gain_Loss     = double()
 )
 
-################################################################################
-
 # Loop through rows of income statement to generate tax figures
 for (i in 1:nrow(is)) {
   
@@ -49,16 +47,14 @@ for (i in 1:nrow(is)) {
   is_i <- is[i, ]
   
   ##############################################################################
-  
-  ##############################################################################
-  # Tezos sent/received assumption:
+  # Adjust Tezos sent/received:
   #  (1) If Tezos is sent and received in the same transaction, net the values
   #  (2) For token transfers, base the calculation on sender/receiver
   #  (3) For all other transactions, base the calculation on highest value
   #  (*) This assumption should be used for estimates only and is not 
   #      an accurate or long-term solution
   ##############################################################################
-  # Adjust transaction with tokens involved
+  
   if (is_i$tokenSender %in% wallets) {
     is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
     is_i$xtzSent     <- 0
@@ -67,8 +63,7 @@ for (i in 1:nrow(is)) {
     is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
     is_i$xtzReceived <- 0
   }
-  # Adjust all other transactions
-  if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
+  else if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
     if (is_i$xtzReceived >= is_i$xtzSent) {
       is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
       is_i$xtzSent     <- 0
@@ -80,8 +75,11 @@ for (i in 1:nrow(is)) {
   }
   
   ##############################################################################
+  # Do not calculate gain (loss) for purchases or income:
+  #  (1) If 'xtzBuy' is TRUE, mark as purchase
+  #  (2) If Tezos are received but no tokens are sent, mark as income
+  ##############################################################################
   
-  # Add Tezos purchases to balance sheet
   if (is_i$xtzBuy) {
     bs %<>% 
       add_row(.,
@@ -94,9 +92,7 @@ for (i in 1:nrow(is)) {
       )
     next
   }
-  
-  # Add Tezos income to balance sheet
-  if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
+  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
