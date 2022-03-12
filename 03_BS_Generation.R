@@ -130,18 +130,18 @@ for (i in 1:nrow(is)) {
       if (bs$asset[j] == "xtz" & bs$quantity[j] > 0) {
         
         # Find how much can be reduced from the balance sheet
-        subtract_j     <- min(bs$quantity[j], xtzBalance)
+        subtract_j <- min(bs$quantity[j], xtzBalance)
         
         # Reduce the balance sheet accordingly
         bs$quantity[j] <- bs$quantity[j] - subtract_j
         
         # Calculate remaining transaction balance
-        xtzBalance     <- xtzBalance - subtract_j
+        xtzBalance <- xtzBalance - subtract_j
         
         # Calculate transaction cost basis
-        xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
+        xtzCost <- xtzCost + subtract_j * bs$costBasis[j]
         
-        # Update tax form 8949 dataset
+        # Update tax form 8949 dataset (Transfers adjusted in 'classify_tx.R')
         tax_8949 %<>% 
           add_row(.,
             Description   = paste(subtract_j, bs$asset[j]),
@@ -183,13 +183,14 @@ for (i in 1:nrow(is)) {
     }
     
     # Log proceeds and gain (loss) to income statement
-    is$xtzProceeds[i]  <- xtzProceeds
-    is$xtzGainLoss[i]  <- xtzProceeds - xtzCost
+    is$xtzProceeds[i]  <- round(xtzProceeds, 2)
+    is$xtzGainLoss[i]  <- round(xtzProceeds, 2) - round(xtzCost, 2)
   }
   
   ##############################################################################
-  
   # Calculate gain (loss) on tokens sent
+  ##############################################################################
+  
   if (is_i$tokenSent > 0) {
     
     # Initialize variables
@@ -203,10 +204,17 @@ for (i in 1:nrow(is)) {
       if (tokenBalance <= 0) break
       if (bs$asset[j] == is_i$tokenID & bs$quantity[j] > 0) {
         
-        subtract_j     <- min(bs$quantity[j], tokenBalance)
+        # Find how much can be reduced from the balance sheet
+        subtract_j <- min(bs$quantity[j], tokenBalance)
+        
+        # Reduce the balance sheet accordingly
         bs$quantity[j] <- bs$quantity[j] - subtract_j
-        tokenBalance   <- tokenBalance - subtract_j
-        tokenCost      <- tokenCost + subtract_j * bs$costBasis[j]
+        
+        # Calculate remaining transaction balance
+        tokenBalance <- tokenBalance - subtract_j
+        
+        # Calculate transaction cost basis
+        tokenCost <- tokenCost + subtract_j * bs$costBasis[j]
         
         # Update tax form 8949 dataset, ignore transfers
         if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))) {
@@ -223,6 +231,8 @@ for (i in 1:nrow(is)) {
             )
         }
       }
+      
+      # While loop is used to account for the RCS mint assumption
       j <- j + 1
       
       ##########################################################################
