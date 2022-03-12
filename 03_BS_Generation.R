@@ -273,7 +273,6 @@ for (i in 1:nrow(is)) {
       #def_dif <- def_ops$diffs[[1]][1, ]
       #def_key <- tzkt_bigmap_updates(id=def_dif$bigmap, key=def_dif$content$hash)
       #def_acq <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
-      
       # Testing
       #def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
       #def_ops <- def_ops$diffs[[1]]
@@ -303,8 +302,8 @@ for (i in 1:nrow(is)) {
     }
     
     # Log proceeds and gain (loss) in income statement
-    is$tokenProceeds[i] <- tokenProceeds
-    is$tokenGainLoss[i] <- tokenProceeds - tokenCost
+    is$tokenProceeds[i] <- round(tokenProceeds, 2)
+    is$tokenGainLoss[i] <- round(tokenProceeds, 2) - round(tokenCost, 2)
   }
 
   ##############################################################################
