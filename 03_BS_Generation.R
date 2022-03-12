@@ -114,8 +114,7 @@ for (i in 1:nrow(is)) {
   }
   
   ##############################################################################
-  # Calculate gain (loss) on Tezos spent
-  #  (1) 
+  # Calculate gain (loss) on Tezos sent
   ##############################################################################
 
   if (is_i$xtzSent > 0) {
@@ -130,9 +129,16 @@ for (i in 1:nrow(is)) {
       if (xtzBalance <= 0) break
       if (bs$asset[j] == "xtz" & bs$quantity[j] > 0) {
         
+        # Find how much can be reduced from the balance sheet
         subtract_j     <- min(bs$quantity[j], xtzBalance)
+        
+        # Reduce the balance sheet accordingly
         bs$quantity[j] <- bs$quantity[j] - subtract_j
+        
+        # Calculate remaining transaction balance
         xtzBalance     <- xtzBalance - subtract_j
+        
+        # Calculate transaction cost basis
         xtzCost        <- xtzCost + subtract_j * bs$costBasis[j]
         
         # Update tax form 8949 dataset
@@ -141,7 +147,7 @@ for (i in 1:nrow(is)) {
             Description   = paste(subtract_j, bs$asset[j]),
             Date_Acquired = as_date(bs$timestamp[j]),
             Date_Sold     = as_date(is_i$timestamp),
-            Proceeds      = round(subtract_j * (xtzProceeds / is_i$xtzSent), 2),
+            Proceeds      = round(subtract_j * is_i$quote, 2),
             Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
             Codes         = NA,
             Adjustment    = NA,
