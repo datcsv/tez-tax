@@ -301,32 +301,35 @@ for (i in 1:nrow(is)) {
         )
     }
     
-    # Log proceeds and gain (loss) in income statement
+    # Log proceeds and gain (loss) to income statement
     is$tokenProceeds[i] <- round(tokenProceeds, 2)
     is$tokenGainLoss[i] <- round(tokenProceeds, 2) - round(tokenCost, 2)
+    
+    # Add Tezos received in token transactions to balance sheet
+    if (is_i$xtzReceived > 0) {
+      bs %<>%
+        add_row(.,
+          timestamp = is_i$timestamp,
+          asset     = "xtz",
+          quantity  = is_i$xtzReceived,
+          costBasis = is_i$quote
+        )
+    }
+    
   }
 
   ##############################################################################
+  # Log any tokens received to balance sheet
+  ##############################################################################
   
-  # Calculate cost basis
-  costBasis <- is_i$xtzProceeds + is_i$tokenProceeds
+  # Calculate total transaction proceeds (as cost basis)
   if (is.na(is_i$costBasis)) {
     is$costBasis[i] <- xtzProceeds + tokenProceeds
   }
   
-  # Add xtz to balance sheet
-  if (is_i$xtzReceived > 0) {
-    bs %<>% 
-      add_row(.,
-        timestamp = is_i$timestamp,
-        asset     = "xtz",
-        quantity  = is_i$xtzReceived,
-        costBasis = is$costBasis[i] / is_i$xtzReceived
-      )
-  }
-  
+  # Add tokens received to balance sheet
   if (is_i$tokenReceived > 0) {
-    bs %<>% 
+    bs %<>%
       add_row(.,
         timestamp = is_i$timestamp,
         asset     = is_i$tokenID,
@@ -335,8 +338,9 @@ for (i in 1:nrow(is)) {
       )
   }
   
-  if ((is_i$xtzReceived > 0) & (is_i$tokenReceived > 0)) {
-    warning(cat("\nToken sent and received in same transaction!", is_i$id))
+  # If token sent and token received in same transaction, issue warning
+  if ((is_i$tokenSent > 0) & (is_i$tokenReceived > 0)) {
+     warning(cat("\nToken sent and received in same transaction!", is_i$id))
   }
 }
 cat("\n")
@@ -344,4 +348,4 @@ cat("\n")
 ################################################################################
 
 # Update gain/loss on token transfers
-is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
+#is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
