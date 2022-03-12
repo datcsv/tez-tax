@@ -114,7 +114,8 @@ for (i in 1:nrow(is)) {
   }
   
   ##############################################################################
-  # Calculate gain (loss) on Tezos sent
+  # Calculate gain (loss) on Tezos spent
+  #  (1) 
   ##############################################################################
 
   if (is_i$xtzSent > 0) {
@@ -127,7 +128,7 @@ for (i in 1:nrow(is)) {
     # Subtract Tezos from balance sheet, calculate tax figures
     for (j in 1:nrow(bs)) {
       if (xtzBalance <= 0) break
-      if (bs$asset[j] == "xtz" && bs$quantity[j] > 0) {
+      if (bs$asset[j] == "xtz" & bs$quantity[j] > 0) {
         
         subtract_j     <- min(bs$quantity[j], xtzBalance)
         bs$quantity[j] <- bs$quantity[j] - subtract_j
@@ -194,7 +195,7 @@ for (i in 1:nrow(is)) {
     # Subtract tokens from balance sheet, calculate tax figures
     while (j <= nrow(bs)) {
       if (tokenBalance <= 0) break
-      if (bs$asset[j] == is_i$tokenID && bs$quantity[j] > 0) {
+      if (bs$asset[j] == is_i$tokenID & bs$quantity[j] > 0) {
         
         subtract_j     <- min(bs$quantity[j], tokenBalance)
         bs$quantity[j] <- bs$quantity[j] - subtract_j
