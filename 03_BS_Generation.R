@@ -251,7 +251,6 @@ for (i in 1:nrow(is)) {
         is_i$tokenID <- "RCS_MINT"
         j <- 1
       }
-      
     }
     
     # If balance sheet deficit, issue warning and assume cost basis of zero
@@ -344,8 +343,3 @@ for (i in 1:nrow(is)) {
   }
 }
 cat("\n")
-
-################################################################################
-
-# Update gain/loss on token transfers
-#is %<>% mutate(., tokenGainLoss = ifelse(case == "Token transfer", 0, tokenGainLoss))
