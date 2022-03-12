@@ -267,7 +267,7 @@ for (i in 1:nrow(is)) {
       #      an accurate or long-term solution
       ##########################################################################
       
-      warning(cat("\nToken deficit assumption: ", is_i$id, is_i$tokenID))
+      warning(cat("\nToken deficit assumption:", is_i$id, is_i$tokenID))
       #def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
       #def_dif <- def_ops$diffs[[1]][1, ]
       #def_key <- tzkt_bigmap_updates(id=def_dif$bigmap, key=def_dif$content$hash)
