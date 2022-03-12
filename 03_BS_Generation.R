@@ -92,10 +92,11 @@ for (i in 1:nrow(is)) {
           is.na(is_i$costBasis), is_i$quote, is_i$costBasis / is_i$xtzReceived
         )
       )
+    next
   }
   
   # Add Tezos income to balance sheet
-  else if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
+  if ((is_i$xtzReceived > 0) & (is_i$tokenSent == 0)) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
@@ -103,7 +104,8 @@ for (i in 1:nrow(is)) {
         quantity  = is_i$xtzReceived,
         costBasis = is_i$quote
       )
-    # Income should be accounted for in tax form 1040
+    # Income should be accounted for in tax form 1040 (Calculate here)
+    next
   }
   
   ##############################################################################
@@ -285,12 +287,13 @@ for (i in 1:nrow(is)) {
   ##############################################################################
   
   # Calculate cost basis
+  costBasis <- is_i$xtzProceeds + is_i$tokenProceeds
   if (is.na(is_i$costBasis)) {
-    is$costBasis[i] <- is_i$xtzProceeds + is_i$tokenProceeds
+    is$costBasis[i] <- xtzProceeds + tokenProceeds
   }
   
   # Add xtz to balance sheet
-  if ((is_i$xtzReceived > 0) & (is_i$tokenSent > 0)) {
+  if (is_i$xtzReceived > 0) {
     bs %<>% 
       add_row(.,
         timestamp = is_i$timestamp,
