@@ -74,11 +74,20 @@ for (i in 1:nrow(cb)) {
   
   # Coinbase convert
   else if (cb_i$`Transaction Type` == "Convert") {
-    x$xtzSent       <- 0
-    x$xtzReceived   <- cb_i$`Quantity Transacted`
-    x$costBasis     <- cb_i$`Total (inclusive of fees)`
-    x$case          <- "Coinbase convert"
-    x$xtzBuy        <- TRUE
+    if (substr(cb_i$Notes, nchar(cb_i$Notes)-2, nchar(cb_i$Notes)) == "XTZ") {
+      x$xtzSent       <- 0
+      x$xtzReceived   <- cb_i$`Quantity Transacted`
+      x$costBasis     <- cb_i$`Total (inclusive of fees)`
+      x$case          <- "Coinbase convert"
+      x$xtzBuy        <- TRUE
+    }
+    else {
+      x$xtzSent       <- cb_i$`Quantity Transacted`
+      x$xtzReceived   <- 0
+      x$costBasis     <- NA
+      x$case          <- "Coinbase convert"
+      x$xtzBuy        <- FALSE
+    }
   }
   
   # Coinbase income
