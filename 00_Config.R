@@ -41,6 +41,8 @@ rcs_mint <- TRUE
 collectible <- TRUE
 
 # Run next steps in process
+# Note: Once a step has been ran, it is not necessary to run the step again
+# unless the code or configuration file have been updated.
 source("01_Operations_Data.R")
 source("02_IS_Generation.R")
 source("03_BS_Generation.R")
