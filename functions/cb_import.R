@@ -83,7 +83,6 @@ for (i in 1:nrow(cb)) {
       x$case          <- "Coinbase convert"
       x$xtzBuy        <- TRUE
       x$quote         <- NA
-      print(strsplit(cb_i$Notes, " ")[[1]][5])
     }
     else {
       x$xtzSent       <- cb_i$`Quantity Transacted`
