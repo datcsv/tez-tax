@@ -77,7 +77,7 @@ for (i in 1:nrow(cb)) {
   else if (cb_i$`Transaction Type` == "Convert") {
     if (cb_i$Asset2 == "XTZ") {
       x$xtzSent       <- 0
-      x$xtzReceived   <- as.numeric(strsplit(cb[1,]$Notes, " ")[[1]][5])
+      x$xtzReceived   <- as.numeric(strsplit(cb_i$Notes, " ")[[1]][5])
       x$costBasis     <- cb_i$`Total (inclusive of fees)`
       x$case          <- "Coinbase convert"
       x$xtzBuy        <- TRUE
