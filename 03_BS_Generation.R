@@ -255,7 +255,7 @@ for (i in 1:nrow(is)) {
         (rcs_mint) & 
         (j == nrow(bs)) & 
         (tokenBalance > 0) & 
-        (str_split(is_i$tokenID, "_")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih")
+        (str_split(is_i$tokenID, "/")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih")
       ) {
         is_i$tokenID <- "RCS_MINT"
         j <- 1
