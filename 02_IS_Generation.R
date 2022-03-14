@@ -36,7 +36,6 @@ operations %<>%
     tokenReceived  = 0,
     walletTx       = TRUE,
     xtzBuy         = FALSE,
-    xtzSell        = FALSE,
     xtzProceeds    = 0, # Proceeds on xtz sent
     xtzGainLoss    = 0, # Gain (loss) on xtz sent
     tokenProceeds  = 0, # Proceeds on token sent
@@ -48,8 +47,8 @@ operations %<>%
     "SenderAddress", "targetAddress", "parameterEntry", "parameterValue", 
     "xtzAmount", "xtzFee", "xtzSent", "xtzReceived", "tokenID", "tokenAmount",
     "tokenSender", "tokenReceiver", "tokenSent", "tokenReceived", "walletTx", 
-    "xtzBuy", "xtzSell", "xtzProceeds", "xtzGainLoss",  "tokenProceeds", 
-    "tokenGainLoss", "costBasis"
+    "xtzBuy", "xtzProceeds", "xtzGainLoss",  "tokenProceeds", "tokenGainLoss", 
+    "costBasis"
   )))
 
 # Generate income statement from operations data:

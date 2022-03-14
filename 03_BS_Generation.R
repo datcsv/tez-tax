@@ -6,7 +6,7 @@
 # Load income statement data
 load(file="data/is.RData")
 
-# Fungible token list
+# Fungible token list (Only necessary if 'collectible' is set to TRUE)
 fungible <- c(
   "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
   "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1_0", # PURPLE
