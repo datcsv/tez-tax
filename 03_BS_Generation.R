@@ -289,7 +289,7 @@ for (i in 1:nrow(is)) {
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
           add_row(.,
-            Description   = paste(tokenBalance, bs$asset[j]),
+            Description   = paste(tokenBalance, is_i$tokenID),
             Date_Acquired = def_acq,
             Date_Sold     = as_date(is_i$timestamp),
             Proceeds      = round(tokenBalance * (tokenProceeds / is_i$tokenSent), 2),
