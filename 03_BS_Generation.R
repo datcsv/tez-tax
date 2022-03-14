@@ -347,6 +347,10 @@ for (i in 1:nrow(is)) {
       )
   }
   
+  if (is.na(is_i$tokenReceived)) {
+    print(is_i$id)
+  }
+  
   # If token sent and token received in same transaction, issue warning
   if ((is_i$tokenSent > 0) & (is_i$tokenReceived > 0)) {
      warning(cat("\nToken sent and received in same transaction!", is_i$id))

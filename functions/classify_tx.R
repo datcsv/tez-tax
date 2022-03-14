@@ -799,7 +799,7 @@ for (i in 1:nrow(operations_hash)) {
           xtzSent       = 0,
           xtzReceived   = 0,
           tokenID       = "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
-          tokenReceiver = x_h_wallets[x_h_index],
+          tokenReceiver = x_h_wallets[x_h_index][1],
           tokenAmount   = sum(x_h_amount[x_h_index]),
           case="hDAO airdrop"
         )
