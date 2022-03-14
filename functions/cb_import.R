@@ -31,7 +31,6 @@ for (i in 1:nrow(cb)) {
   x$status    <- "applied"
   x$quote     <- cb_i$`Spot Price at Transaction`
   x$xtzBuy    <- FALSE
-  x$xtzSell   <- FALSE
   
   x$xtzProceeds   <- 0
   x$xtzGainLoss   <- 0
