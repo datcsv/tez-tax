@@ -280,6 +280,7 @@ for (i in 1:nrow(is)) {
       # Testing
       #def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
       #def_ops <- def_ops$diffs[[1]]
+      def_acq <- NA
       
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
         tax_8949 %<>% 
