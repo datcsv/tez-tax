@@ -58,3 +58,12 @@ tzkt_quote <- function(level, quote="usd", base="https://api.tzkt.io/") {
   x <- fromJSON(url)
   return(x)
 }
+
+# Get balance at level, https://api.tzkt.io/#operation/Accounts_GetBalanceAtLevel
+tzkt_balance <- function(address, level, base="https://api.tzkt.io/") {
+  sfx <- paste0("v1/accounts/", address, "/balance_history/", level)
+  url <- paste0(base, sfx)
+  x <- fromJSON(url) / 1000000
+  return(x)
+}
+
