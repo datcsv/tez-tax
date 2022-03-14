@@ -43,13 +43,14 @@ operations %<>%
     tokenGainLoss  = 0, # Gain (loss) on token sent
     costBasis      = NA # Cost basis of all xtz/tokens received
   ) %>%
-  select(., 
-    -initiator, -sender, -target, -parameter, -originatedContract,
-    -block, -nonce, -gasLimit, -gasUsed, -storageLimit, -storageUsed, 
-    -hasInternals, -contractBalance, -errors, -bakerFee, -storageFee, 
-    -allocationFee, -amount, -type, -level, -counter, -parameter, 
-    -initiatorAlias, -senderAlias, -targetAlias
-  )
+  select(., any_of(c(
+    "id", "timestamp", "hash", "status", "quote", "initiatorAddress", 
+    "SenderAddress", "targetAddress", "parameterEntry", "parameterValue", 
+    "xtzAmount", "xtzFee", "xtzSent", "xtzReceived", "tokenID", "tokenAmount",
+    "tokenSender", "tokenReceiver", "tokenSent", "tokenReceived", "walletTx", 
+    "xtzBuy", "xtzSell", "xtzProceeds", "xtzGainLoss",  "tokenProceeds", 
+    "tokenGainLoss", "costBasis"
+  )))
 
 # Generate income statement from operations data:
 source("functions/classify_tx.R")
