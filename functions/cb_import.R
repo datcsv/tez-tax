@@ -2,7 +2,7 @@
 # Notes:
 # (1) Download Coinbase data using: https://www.coinbase.com/report
 #       Transaction history -> Generate report
-#       [YEAR], [XTZ], [All transactions]
+#       [YEAR], [All Assets], [All transactions]
 #       CSV -> Generate report -> Download
 #
 ################################################################################
@@ -10,8 +10,9 @@
 # Import Coinbase data
 cb <- read_csv(file=cb_path, skip=7, show_col_types=FALSE)
 cb %<>% 
+  mutate(., Asset2 = substr(Notes, nchar(Notes)-2, nchar(Notes))) %>%
   filter(., 
-    Asset == "XTZ", 
+    Asset == "XTZ" | Asset2 == "XTZ",
     Timestamp >= date_span[1], 
     Timestamp <= date_span[2]
   )
@@ -74,7 +75,7 @@ for (i in 1:nrow(cb)) {
   
   # Coinbase convert
   else if (cb_i$`Transaction Type` == "Convert") {
-    if (substr(cb_i$Notes, nchar(cb_i$Notes)-2, nchar(cb_i$Notes)) == "XTZ") {
+    if (cb_i$Asset2 == "XTZ") {
       x$xtzSent       <- 0
       x$xtzReceived   <- cb_i$`Quantity Transacted`
       x$costBasis     <- cb_i$`Total (inclusive of fees)`

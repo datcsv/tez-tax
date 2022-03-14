@@ -165,7 +165,7 @@ for (i in 1:nrow(is)) {
     # If balance sheet deficit, issue warning and assume cost basis of zero
     if (xtzBalance > 0) {
       
-      warning(cat("\nTezos deficit, cost basis assumed zero:", is_i$id))
+      warning(cat("\nTezos deficit, cost basis assumed zero:", i, is_i$id))
       tax_8949 %<>% 
         add_row(.,
           Description   = paste(xtzBalance, bs$asset[j]),
