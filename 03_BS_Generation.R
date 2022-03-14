@@ -6,6 +6,9 @@
 # Load income statement data
 load(file="data/is.RData")
 
+# Adjust tokenID for easier debugging
+is %<>% mutate(., tokenID = str_replace(tokenID, "_", "/"))
+
 # Fungible token list (Only necessary if 'collectible' is set to TRUE)
 fungible <- c(
   "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
@@ -349,4 +352,3 @@ for (i in 1:nrow(is)) {
      warning(cat("\nToken sent and received in same transaction!", is_i$id))
   }
 }
-cat("\n")
