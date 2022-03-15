@@ -656,7 +656,7 @@ for (i in 1:nrow(operations_hash)) {
     if (rcs_mint) {
       x %<>% 
         mutate(., 
-          tokenID       = "RCS_MINT",
+          tokenID       = "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih_0",
           tokenReceiver = SenderAddress,
           tokenAmount   = round((xtzSent - xtzFee) / 5.00, 0)
         )

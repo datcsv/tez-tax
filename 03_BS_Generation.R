@@ -253,11 +253,11 @@ for (i in 1:nrow(is)) {
       ##########################################################################
       if (
         (rcs_mint) & 
-        (j == nrow(bs)) & 
-        (tokenBalance > 0) & 
+        (j == nrow(bs)) &
+        (tokenBalance > 0) &
         (str_split(is_i$tokenID, "/")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih")
       ) {
-        is_i$tokenID <- "RCS_MINT"
+        is_i$tokenID <- "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih/0"
         j <- 1
       }
     }
