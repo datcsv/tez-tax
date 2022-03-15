@@ -57,7 +57,6 @@ for (i in 1:nrow(cb)) {
     x$xtzReceived   <- 0
     x$xtzProceeds   <- cb_i$`Total (inclusive of fees)`
     x$case          <- "Coinbase sell"
-    x$xtzSell       <- TRUE
   }
   
   # Coinbase send
