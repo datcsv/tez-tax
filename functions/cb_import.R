@@ -7,6 +7,9 @@
 #
 ################################################################################
 
+# Reload income statement data
+load(file="data/is_exchange.RData")
+
 # Import Coinbase data
 cb <- read_csv(file=cb_path, skip=7, show_col_types=FALSE)
 cb %<>% 

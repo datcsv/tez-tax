@@ -65,7 +65,7 @@ is %<>%
   arrange(., timestamp)
 
 # Add exchange data:
-#save(is, file="data/is_debug.RData")
+save(is, file="data/is_exchange.RData")
 if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data
