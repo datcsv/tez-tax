@@ -43,7 +43,7 @@ operations %<>%
     costBasis      = NA # Cost basis of all xtz/tokens received
   ) %>%
   select(., any_of(c(
-    "id", "timestamp", "hash", "status", "quote", "initiatorAddress", 
+    "id", "level", "timestamp", "hash", "status", "quote", "initiatorAddress", 
     "SenderAddress", "targetAddress", "parameterEntry", "parameterValue", 
     "xtzAmount", "xtzFee", "xtzSent", "xtzReceived", "tokenID", "tokenAmount",
     "tokenSender", "tokenReceiver", "tokenSent", "tokenReceived", "walletTx", 
