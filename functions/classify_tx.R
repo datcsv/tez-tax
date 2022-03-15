@@ -803,6 +803,9 @@ for (i in 1:nrow(operations_hash)) {
           tokenAmount   = sum(x_h_amount[x_h_index]),
           case="hDAO airdrop"
         )
+        if (sum(c("failed", "backtracked") %in% x$status) > 0) {
+          x_h %<>% mutate(., tokenAmount=0, case="Failed transaction")
+        }
       x %<>% add_row(., x_h)
     }
   }
