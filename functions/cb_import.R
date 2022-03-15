@@ -82,15 +82,15 @@ for (i in 1:nrow(cb)) {
         str_replace(strsplit(cb_i$Notes, " ")[[1]][5], ",", "")
       )
       x$costBasis     <- cb_i$`Total (inclusive of fees)`
-      x$case          <- "Coinbase convert"
+      x$case          <- "Coinbase convert (buy)"
       x$xtzBuy        <- TRUE
-      x$quote         <- NA
+      x$quote         <- NAis %>% f
     }
     else {
       x$xtzSent       <- cb_i$`Quantity Transacted`
       x$xtzReceived   <- 0
       x$costBasis     <- NA
-      x$case          <- "Coinbase convert"
+      x$case          <- "Coinbase convert (sell)"
       x$xtzBuy        <- FALSE
     }
   }
@@ -112,7 +112,7 @@ for (i in 1:nrow(cb)) {
 # Identify and adjust Coinbase/wallet transfers
 drop_rows <- c()
 for (i in 1:nrow(cb_is)) {
-  
+
   if (cb_is$case[i] == "Coinbase send") {
     time_i <- cb_is$timestamp[i]
     xtz_i  <- cb_is$xtzSent[i] + cb_is$xtzReceived[i]
@@ -120,7 +120,7 @@ for (i in 1:nrow(cb_is)) {
       between(timestamp, time_i - 300, time_i + 300),
       between(xtzReceived + xtzFee, xtz_i - 0.1, xtz_i + 0.1)
     )
-    if (nrow(is_i) == 1) { 
+    if (nrow(is_i) == 1) {
       id_i <- is_i$id[1]
       is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
       is[is$id == id_i, "xtzReceived"] <- 0
@@ -128,7 +128,7 @@ for (i in 1:nrow(cb_is)) {
       drop_rows <- c(drop_rows, i)
     }
   }
-  
+
   else if (cb_is$case[i] == "Coinbase receive") {
     time_i <- cb_is$timestamp[i]
     xtz_i  <- cb_is$xtzSent[i] + cb_is$xtzReceived[i]
@@ -136,7 +136,7 @@ for (i in 1:nrow(cb_is)) {
       between(timestamp, time_i - 300, time_i + 300),
       between(xtzSent - xtzFee, xtz_i - 0.1, xtz_i + 0.1)
     )
-    if (nrow(is_i) == 1) { 
+    if (nrow(is_i) == 1) {
       id_i <- is_i$id[1]
       is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
       is[is$id == id_i, "xtzReceived"] <- 0
@@ -144,11 +144,11 @@ for (i in 1:nrow(cb_is)) {
       drop_rows <- c(drop_rows, i)
     }
   }
-  
+
 }
 if (length(drop_rows) > 0) cb_is <- cb_is[-drop_rows, ]
 
 # Combine with income statement
-is %<>% 
+is %<>%
   bind_rows(., cb_is) %>%
   arrange(., timestamp)
