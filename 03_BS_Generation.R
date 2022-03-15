@@ -67,17 +67,17 @@ for (i in 1:nrow(is)) {
   ##############################################################################
   
   # Adjust XTZ sent/received when tokens are involved
-  if (is_i$tokenSender %in% wallets) {
-    is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
-    is_i$xtzSent     <- 0
-  }
-  else if (is_i$tokenReceiver %in% wallets) {
-    is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
-    is_i$xtzReceived <- 0
-  }
+  # if (is_i$tokenSender %in% wallets) {
+  #   is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
+  #   is_i$xtzSent     <- 0
+  # }
+  # else if (is_i$tokenReceiver %in% wallets) {
+  #   is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
+  #   is_i$xtzReceived <- 0
+  # }
   
-  # Adjust XTZ sent/received when tokens are not involved
-  else if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
+  # Adjust XTZ sent/received
+  if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
     if (is_i$xtzReceived >= is_i$xtzSent) {
       is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
       is_i$xtzSent     <- 0
@@ -354,4 +354,7 @@ for (i in 1:nrow(is)) {
   if ((is_i$tokenSent > 0) & (is_i$tokenReceived > 0)) {
      warning(cat("\nToken sent and received in same transaction!", is_i$id))
   }
+  
+  print(is_i$id)
+  
 }
