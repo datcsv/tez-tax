@@ -354,11 +354,4 @@ for (i in 1:nrow(is)) {
      warning(cat("\nToken sent and received in same transaction!", is_i$id))
   }
   
-  # Balance debug code
-  # if (i == 1000) {
-  #   cat("\nTzKT balance1:", tzkt_balance("tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", is_i$level))
-  #   cat("\nTzKT balance2:", tzkt_balance("tz1L5vaycmTzEDekjDJSFZJ1V8FPwAUCVSDM", is_i$level))
-  #   cat("\nBS Balance:", sum(select(filter(bs, asset == "xtz"), "quantity")))
-  # }
-  
 }
