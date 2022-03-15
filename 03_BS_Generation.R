@@ -92,7 +92,6 @@ for (i in 1:nrow(is)) {
   # Do not calculate gain (loss) for purchases or income:
   #  (1) If 'xtzBuy' is TRUE, mark as purchase
   #  (2) If Tezos are received but no tokens are sent, mark as income
-  #  WARNING: Needs to be updated such that income cost basis is quoted price.
   ##############################################################################
   
   # Add Tezos purchases to balance sheet
