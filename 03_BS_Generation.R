@@ -358,7 +358,7 @@ for (i in 1:nrow(is)) {
   # if ((i %% 500) == 0) {
   #   cat(
   #     "\n\nLevel:", is_i$level,
-  #     "\nTzKT balance:", 
+  #     "\nTzKT balance:",
   #     tzkt_balance("tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", is_i$level) +
   #     tzkt_balance("tz1L5vaycmTzEDekjDJSFZJ1V8FPwAUCVSDM", is_i$level),
   #     "\nBalance sheet:", sum(select(filter(bs, asset == "xtz"), "quantity")),

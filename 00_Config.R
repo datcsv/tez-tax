@@ -1,9 +1,10 @@
 # Import packages
 library("tidyverse")
 library("jsonlite")
+library("lubridate")
 library("magrittr")
 library("readr")
-library("lubridate")
+library("staplr")
 
 # Load functions
 source("functions/list_check.R")
