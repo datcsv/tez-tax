@@ -16,9 +16,9 @@ operations$quote            <- operations$quote[[1]]
 operations %<>%
   group_by(., hash) %>%
   mutate(.,
-    maxBakerFee      = max(bakerFee, na.rm=TRUE),
-    maxStorageFee    = max(storageFee, na.rm=TRUE),
-    maxAllocationFee = max(allocationFee, na.rm=TRUE)
+    sumBakerFee      = sum(bakerFee, na.rm=TRUE),
+    sumStorageFee    = sum(storageFee, na.rm=TRUE),
+    sumAllocationFee = sum(allocationFee, na.rm=TRUE)
   ) %>%
   ungroup(.)
 
@@ -27,10 +27,11 @@ operations %<>%
   distinct(., id, hash, .keep_all=TRUE) %>%
   mutate(., 
     xtzAmount      = ifelse(
-      (status != "backtracked") & (status != "failed") & (!is.na(amount)),
+      (status != "backtracked") & (status != "failed") & (!is.na(amount)) &
+      (type == "transaction"),
       amount / 1000000, 0
     ),
-    xtzFee         = (maxBakerFee + maxStorageFee + maxAllocationFee) / 1000000,
+    xtzFee         = (sumBakerFee + sumStorageFee + sumAllocationFee) / 1000000,
     xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount + xtzFee, 0),
     xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),

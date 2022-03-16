@@ -154,9 +154,7 @@ for (i in 1:nrow(operations_hash)) {
 
   # Adjust delegation operations
   else if ("delegation" %in% x$type) {
-    x %<>% 
-      quick_case(., case="Delegation", type=2) %>%
-      mutate(., xtzSent = xtzFee)
+    x %<>% quick_case(., case="Delegation", type=2) 
   }
   
   # Adjust other non-transactionary operations
