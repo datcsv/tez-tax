@@ -404,7 +404,12 @@ for (i in 1:nrow(operations_hash)) {
     else if ("retract_bid" %in% x$parameterEntry) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
-        mutate(., xtzReceived=0, case="OBJKT retract bid")
+        mutate(., 
+          xtzReceived = 0, 
+          xtzSent     = xtzSent / 2,
+          xtzFee      = xtzFee / 2,
+          case        = "OBJKT retract bid"
+        )
     }
     
     # OBJKT fulfill ask (trade)
