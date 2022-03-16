@@ -812,8 +812,9 @@ for (i in 1:nrow(operations_hash)) {
   # Check for hDAO airdrop
   if ("hDAO_batch" %in% y$parameterEntry) {
     x_h         <- filter(y, parameterEntry == "hDAO_batch")
-    x_h_wallets <- y$parameterValue[[5]][[1]]
-    x_h_amount  <- as.numeric(y$parameterValue[[5]][[2]])
+    y2 <-filter(y, type == "transaction")
+    x_h_wallets <- y2$parameterValue[[5]][[1]]
+    x_h_amount  <- as.numeric(y2$parameterValue[[5]][[2]])
     x_h_index   <- which(x_h_wallets %in% wallets)
     if (length(x_h_index) > 0) {
       x_h %<>% 
