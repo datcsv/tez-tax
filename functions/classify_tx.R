@@ -340,50 +340,54 @@ for (i in 1:nrow(operations_hash)) {
           case=ifelse(SenderAddress %in% wallets, "OBJKT bid", "OBJKT outbid")
         )
       
-      # Check if auction was won, starting with a check to minimize API calls.
-      tx_value <- x$parameterValue[1][[1]]
-      if (
-        (length(tx_value) == 1) & 
-        (class(tx_value) == "character")
-      ) {
-        tx_id         <- x$id[1]
-        tx_hash       <- x$hash[1]
-        tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
-        tx_operations %<>% filter(., id == tx_id)
-        id  <- tx_operations$diffs[[1]]$bigmap
-        key <- tx_operations$diffs[[1]]$content$key
+      # Check if auction was won
+      tx_id         <- x$id[1]
+      tx_hash       <- x$hash[1]
+      tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
+      tx_operations %<>% filter(., id == tx_id)
+      id  <- tx_operations$diffs[[1]]$bigmap
+      key <- tx_operations$diffs[[1]]$content$key
+      bigmap <- tzkt_bigmap(id=id, key=key)
+      
+      # Omit early OBJKT contract
+      if (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z") {
         
-        bigmap <- tzkt_bigmap(id=id, key=key)
-        
-        # Omit early OBJKT contract
-        if (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z") {
+        if ("state" %in% names(bigmap$value)) {
           state    <- as.numeric(bigmap$value$state)
           price    <- as.numeric(bigmap$value$current_price) / 1000000
           buyer    <- bigmap$value$highest_bidder
           time     <- bigmap$value$end_time
           token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
-          
-          if (
-            (state == 2) &
-            (as.Date(time) >= as.Date(date_span[1])) &
-            (as.Date(time) <= as.Date(date_span[2])) &
-            (buyer %in% wallets) &
-            (price == x$xtzAmount[1])
-          ) {
-            x2 <- mutate(x,
-              timestamp    = time,
-              quote        = tx_operations$quote[[1]],
-              xtzSent      = price,
-              xtzReceived  = 0,
-              tokenID      = token_id,
-              tokenAmount  = 1,
-              tokenReceiver= buyer,
-              case         = "OBJKT win auction"
-            )
-            x %<>% bind_rows(., x2)
-          }
-        } 
-      }
+        }
+        else {
+          state    <- ifelse(bigmap$active == "FALSE", 2, 1)
+          price    <- as.numeric(bigmap$value$xtz_per_objkt) / 1000000
+          buyer    <- bigmap$value$issuer
+          time     <- x$timestamp
+          token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
+        }
+        
+        if (
+          (state == 2) &
+          (as.Date(time) >= as.Date(date_span[1])) &
+          (as.Date(time) <= as.Date(date_span[2])) &
+          (buyer %in% wallets) &
+          (price == x$xtzAmount[1])
+        ) {
+          x2 <- mutate(x,
+            timestamp    = time,
+            quote        = tx_operations$quote[[1]],
+            xtzSent      = price,
+            xtzReceived  = 0,
+            tokenID      = token_id,
+            tokenAmount  = 1,
+            tokenReceiver= buyer,
+            case         = "OBJKT win auction"
+          )
+          x %<>% bind_rows(., x2)
+        }
+      } 
+
       
     }
     

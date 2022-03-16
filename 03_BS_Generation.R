@@ -1,13 +1,12 @@
-# To do: 
-#  -Fix missing token dates
-#  -Look into "1 NA" label in balance sheet...
-#  -Fix coinbase tezos conversion code
-
 # Load income statement data
 load(file="data/is.RData")
 
 # Adjust tokenID for easier debugging
 is %<>% mutate(., tokenID = str_replace(tokenID, "_", "/"))
+
+# is$balTZ <- NA
+# is$balBS <- NA
+
 
 # Fungible token list (Only necessary if 'collectible' is set to TRUE)
 fungible <- c(
@@ -355,7 +354,11 @@ for (i in 1:nrow(is)) {
   }
   
   # Balance debugging
-  # is$balTZ[i] <- tzkt_balance("tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", is_i$level)
-  # is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
-
+  # #if (is_i$level >= 1524418) {
+  # if (i %% 100 == 0) {
+  #   is$balTZ[i] <- tzkt_balance("tz1L5vaycmTzEDekjDJSFZJ1V8FPwAUCVSDM", is_i$level)
+  #   is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
+  #   
+  #   #is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
+  # }
 }
