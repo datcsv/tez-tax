@@ -67,3 +67,11 @@ tzkt_balance <- function(address, level, base="https://api.tzkt.io/") {
   return(x)
 }
 
+# Get block by hash, https://api.tzkt.io/#operation/Blocks_GetByHash
+tzkt_block <- function(level, base="https://api.tzkt.io/") {
+  sfx <- paste0("v1/blocks/", level)
+  url <- paste0(base, sfx)
+  x <- fromJSON(url)
+  return(x)
+}
+

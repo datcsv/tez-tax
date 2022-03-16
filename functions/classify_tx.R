@@ -363,7 +363,7 @@ for (i in 1:nrow(operations_hash)) {
           state    <- ifelse(bigmap$active == "FALSE", 2, 1)
           price    <- as.numeric(bigmap$value$xtz_per_objkt) / 1000000
           buyer    <- bigmap$value$issuer
-          time     <- x$timestamp
+          time     <- tzkt_block(1992815)$timestamp
           token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
         }
         
