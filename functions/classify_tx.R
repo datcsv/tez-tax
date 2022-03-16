@@ -138,7 +138,7 @@ for (i in 1:nrow(operations_hash)) {
       
     }
   }
-  x$xtzSent     <- sum(x$xtzSent)
+  x$xtzSent     <- max(x$xtzSent, na.rm=TRUE)
   x$xtzReceived <- sum(x$xtzReceived)
   xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
   

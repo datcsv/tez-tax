@@ -27,11 +27,15 @@ operations %<>%
   distinct(., id, hash, .keep_all=TRUE) %>%
   mutate(., 
     xtzAmount      = ifelse(
-      (status != "backtracked") & (status != "failed") & (!is.na(amount)) &
-      (type == "transaction"),
+      (status != "backtracked") & (status != "failed") & 
+      (!is.na(amount)) &  (type == "transaction"),
       amount / 1000000, 0
     ),
-    xtzFee         = (sumBakerFee + sumStorageFee + sumAllocationFee) / 1000000,
+    xtzFee         = ifelse(
+      (status != "backtracked") & (status != "failed"),
+      (sumBakerFee + sumStorageFee + sumAllocationFee) / 1000000,
+      (sumBakerFee) / 1000000
+    ),
     xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount + xtzFee, 0),
     xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
