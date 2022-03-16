@@ -13,20 +13,26 @@ operations$parameterValue   <- operations$parameter$value
 operations$quote            <- operations$quote[[1]]
 
 # Clean operations data
+operations %<>%
+  group_by(., hash) %>%
+  mutate(.,
+    sumBakerFee      = sum(bakerFee, na.rm=TRUE),
+    sumStorageFee    = sum(storageFee, na.rm=TRUE),
+    sumAllocationFee = sum(allocationFee, na.rm=TRUE)
+  ) %>%
+  ungroup(.)
+
 operations %<>% 
-  filter(., type == "transaction") %>%
+  filter(., (type == "transaction") | (SenderAddress %in% wallets)) %>%
   distinct(., id, hash, .keep_all=TRUE) %>%
   mutate(., 
     xtzAmount      = ifelse(
       (status != "backtracked") & (status != "failed") & (!is.na(amount)),
       amount / 1000000, 0
     ),
-    bakerFee       = ifelse(!is.na(bakerFee), bakerFee, 0),
-    storageFee     = ifelse(!is.na(storageFee), storageFee, 0),
-    allocationFee  = ifelse(!is.na(allocationFee), allocationFee, 0),
-    xtzFee         = (bakerFee + storageFee + allocationFee) / 1000000,
-    xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount+xtzFee, 0),
-    xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
+    xtzFee         = (sumBakerFee + sumStorageFee + sumAllocationFee) / 1000000,
+    xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount, 0),
+    xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount + xtzFee, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
     tokenID        = NA,
     tokenAmount    = 0,
@@ -43,12 +49,12 @@ operations %<>%
     costBasis      = NA # Cost basis of all xtz/tokens received
   ) %>%
   select(., any_of(c(
-    "id", "level", "timestamp", "hash", "status", "quote", "initiatorAddress", 
-    "SenderAddress", "targetAddress", "parameterEntry", "parameterValue", 
-    "xtzAmount", "xtzFee", "xtzSent", "xtzReceived", "tokenID", "tokenAmount",
-    "tokenSender", "tokenReceiver", "tokenSent", "tokenReceived", "walletTx", 
-    "xtzBuy", "xtzProceeds", "xtzGainLoss",  "tokenProceeds", "tokenGainLoss", 
-    "costBasis"
+    "id", "level", "timestamp", "hash", "type", "status", "quote", 
+    "initiatorAddress", "SenderAddress", "targetAddress", "parameterEntry", 
+    "parameterValue", "xtzAmount", "xtzFee", "xtzSent", "xtzReceived", 
+    "tokenID", "tokenAmount", "tokenSender", "tokenReceiver", "tokenSent", 
+    "tokenReceived", "walletTx", "xtzBuy", "xtzProceeds", "xtzGainLoss",  
+    "tokenProceeds", "tokenGainLoss", "costBasis"
   )))
 
 # Generate income statement from operations data:

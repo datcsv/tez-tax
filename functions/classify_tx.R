@@ -109,13 +109,16 @@ operations_hash <- operations %>% distinct(., hash)
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
   
+  
   ##############################################################################
   # Define variables, as necessary
   ##############################################################################
   
   # Helper variables, etc
-  x <- filter(operations, hash == operations_hash[i, ])
+  x <- filter(operations, hash == operations_hash[[1]][i])
   y <- x
+  
+  # Update token data
   if (sum(c("transfer", "mint") %in% x$parameterEntry) > 0) {
     for (i in 1:nrow(x)) {
       
@@ -147,6 +150,18 @@ for (i in 1:nrow(operations_hash)) {
   if (sum(c("failed", "backtracked") %in% x$status) > 0) {
     x %<>% quick_case(., case="Failed transaction", type=2)
     x %<>% mutate(., tokenAmount=0)
+  }
+
+  # Adjust delegation operations
+  else if ("delegation" %in% x$type) {
+    x %<>% 
+      quick_case(., case="Delegation", type=2) %>%
+      mutate(., xtzSent = xtzFee)
+  }
+  
+  # Adjust other non-transactionary operations
+  else if (!("transaction" %in% x$type)) {
+    x %<>% quick_case(., case="Non-transaction", type=2)
   }
   
   # Standard transaction

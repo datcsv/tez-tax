@@ -84,7 +84,7 @@ for (i in 1:nrow(cb)) {
       x$costBasis     <- cb_i$`Total (inclusive of fees)`
       x$case          <- "Coinbase convert (buy)"
       x$xtzBuy        <- TRUE
-      x$quote         <- NAis %>% f
+      x$quote         <- NA
     }
     else {
       x$xtzSent       <- cb_i$`Quantity Transacted`
