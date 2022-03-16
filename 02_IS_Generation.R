@@ -31,8 +31,8 @@ operations %<>%
       amount / 1000000, 0
     ),
     xtzFee         = (sumBakerFee + sumStorageFee + sumAllocationFee) / 1000000,
-    xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount, 0),
-    xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount + xtzFee, 0),
+    xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount + xtzFee, 0),
+    xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
     tokenID        = NA,
     tokenAmount    = 0,
