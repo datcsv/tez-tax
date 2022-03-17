@@ -106,6 +106,9 @@ is <- operations[0, ]
 # Identify unique operation groups
 operations_hash <- operations %>% distinct(., hash)
 
+# Adjust operation data
+operations %<>% mutate(., bidKey = "")
+
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
   
@@ -358,15 +361,17 @@ for (i in 1:nrow(operations_hash)) {
           buyer    <- bigmap$value$highest_bidder
           time     <- bigmap$value$end_time
           token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
+          bidHash     <- NA
         }
         else {
           state    <- ifelse(bigmap$active == "FALSE", 2, 1)
           price    <- as.numeric(bigmap$value$xtz_per_objkt) / 1000000
           buyer    <- bigmap$value$issuer
-          time     <- tzkt_block(1992815)$timestamp
+          time     <- tzkt_block(bigmap$lastLevel)$timestamp
           token_id <- paste0(bigmap$value$fa2, "_", bigmap$value$objkt_id)
+          bidHash     <- tx_operations$diffs[[1]]$content$hash
         }
-        
+
         if (
           (state == 2) &
           (as.Date(time) >= as.Date(date_span[1])) &
@@ -382,12 +387,12 @@ for (i in 1:nrow(operations_hash)) {
             tokenID      = token_id,
             tokenAmount  = 1,
             tokenReceiver= buyer,
-            case         = "OBJKT win auction"
+            case         = "OBJKT win auction",
+            bidKey       = bidHash
           )
           x %<>% bind_rows(., x2)
         }
-      } 
-
+      }
       
     }
     
@@ -414,6 +419,18 @@ for (i in 1:nrow(operations_hash)) {
           xtzFee      = xtzFee / 2,
           case        = "OBJKT retract bid"
         )
+      
+      # Check if bid recorded, zero out if so
+      tx_id         <- x$id[1]
+      tx_hash       <- x$hash[1]
+      tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
+      tx_operations %<>% filter(., type == "transaction")
+      id  <- tx_operations$diffs[[1]]$bigmap
+      key <- tx_operations$diffs[[1]]$content$hash
+      
+      if ((!is.na(key)) & (key %in% is$bidKey)) {
+        is %<>% mutate(., xtzSent = ifelse(bidKey == key, xtzFee, xtzSent))
+      }
     }
     
     # OBJKT fulfill ask (trade)
@@ -428,9 +445,10 @@ for (i in 1:nrow(operations_hash)) {
         tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
         tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
         case=ifelse(
-          xtzCollect > xtzReceived, 
-          "OBJKT fulfill ask (royalties)", 
-          "OBJKT fulfill ask (trade)")
+            xtzCollect > xtzReceived, 
+            "OBJKT fulfill ask (royalties)", 
+            "OBJKT fulfill ask (trade)"
+          )
         )
     }
     
@@ -836,3 +854,7 @@ for (i in 1:nrow(operations_hash)) {
   # Add row(s) to income statement
   is %<>% bind_rows(., x)
 }
+
+# Adjust income statement data
+is %<>% select(., -bidKey)
+
