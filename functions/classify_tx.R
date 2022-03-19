@@ -717,7 +717,10 @@ for (i in 1:nrow(operations_hash)) {
     
     # Pixel Potus claim
     if ("claim" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="claim_paid", case="Pixel Potus claim")
+      claim_paid <- sum(filter(x, parameterEntry == "claim_paid")$xtzAmount)
+      x %<>% 
+        quick_case(., entry="claim", case="Pixel Potus claim") %>%
+        mutate(., xtzSent = claim_paid + xtzFee)
     }
     
     # Pixel Potus trade
