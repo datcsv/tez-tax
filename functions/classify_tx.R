@@ -717,7 +717,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Pixel Potus claim
     if ("claim" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="claim", case="Pixel Potus claim")
+      x %<>% quick_case(., entry="claim_paid", case="Pixel Potus claim")
     }
     
     # Pixel Potus trade
