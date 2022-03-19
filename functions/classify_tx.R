@@ -366,10 +366,10 @@ for (i in 1:nrow(operations_hash)) {
       id  <- tx_operations$diffs[[1]]$bigmap
       key <- tx_operations$diffs[[1]]$content$hash
       
-      if ((!is.na(key)) & (key %in% is$bidKey) & !("OBJKT win auction (6210)" %in% is$case)) {
+      if ((!is.na(key)) & (key %in% is$bidKey)) {
         is %<>% mutate(.,
-          xtzSent = ifelse(bidKey == key, xtzFee, xtzSent),
-          case    = ifelse(bidKey == key, "OBJKT bid retract", case)
+          xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", xtzFee, xtzSent),
+          case    = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
         )
       }
     }
