@@ -4,8 +4,8 @@ load(file="data/is.RData")
 # Adjust tokenID for easier debugging
 is %<>% mutate(., tokenID = str_replace(tokenID, "_", "/"))
 
-# is$balTZ <- NA
-# is$balBS <- NA
+is$balTZ <- NA
+is$balBS <- NA
 
 # Fungible token list (Only necessary if 'collectible' is set to TRUE)
 fungible <- c(
@@ -353,10 +353,10 @@ for (i in 1:nrow(is)) {
   }
   
   # Balance debugging
-  # if (is_i$level >= 1654732) {
-  # if (i %% 100 == 0) {
-    # is$balTZ[i] <- tzkt_balance("tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", is_i$level)
-    # is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
-    # is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
-  # }
+  #if (is_i$level >= 1654732) {
+  if (i %% 100 == 0) {
+    is$balTZ[i] <- tzkt_balance("tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", is_i$level)
+    is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
+    #is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
+  }
 }

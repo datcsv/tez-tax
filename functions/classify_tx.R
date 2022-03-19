@@ -149,12 +149,17 @@ for (i in 1:nrow(operations_hash)) {
   # Identify operation groups, filter and classify as necessary
   ##############################################################################
   
+  # Adjust reveals
+  if (("reveal" %in% x$type) & (nrow(x) > 1)) {
+    x %<>% filter(., type != "reveal")
+  }
+  
   # Failed transaction
   if (sum(c("failed", "backtracked") %in% x$status) > 0) {
     x %<>% quick_case(., case="Failed transaction", type=2)
     x %<>% mutate(., tokenAmount=0)
   }
-
+  
   # Adjust delegation operations
   else if ("delegation" %in% x$type) {
     x %<>% quick_case(., case="Delegation", type=2) 
@@ -253,7 +258,6 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      
       x %<>% quick_case(., entry="transfer", case="HEN collect")
     }
     
