@@ -383,7 +383,7 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzReceived=ifelse(SenderAddress %in% wallets, 0, xtzReceived),
+          xtzReceived=ifelse(SenderAddress %in% wallets, 0, 0),
           xtzSent=ifelse(SenderAddress %in% wallets, xtzSent - xtzAmount, 0),
           case=ifelse(SenderAddress %in% wallets, "OBJKT bid", "OBJKT outbid")
         )
