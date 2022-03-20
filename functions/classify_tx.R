@@ -819,11 +819,13 @@ for (i in 1:nrow(operations_hash)) {
     # fxhash offer
     else if ("offer" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="offer", case="fxhash offer")
+      x <- x[1, ]
     }
     
     # fxhash cancel offer
     else if ("cancel_offer" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="cancel_offer", case="fxhash cancel offer")
+      x <- x[1, ]
     }
     
     # fxhash trade
