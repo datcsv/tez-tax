@@ -286,6 +286,11 @@ for (i in 1:nrow(operations_hash)) {
   # QuipuSwap contracts
   else if (sum(quipu_contracts %in% x$targetAddress) > 0) {
     
+    # Drop extra approval data
+    if (("approve" %in% x$parameterEntry) & (nrow(x) > 1)) {
+      x %<>% mutate(., xtzSent = xtzSent - xtzFee / 2)
+    }
+    
     # QuipuSwap trade
     if (sum(c("tezToTokenPayment", "tokenToTezPayment") %in% x$parameterEntry) > 0) {
       x %<>% 
