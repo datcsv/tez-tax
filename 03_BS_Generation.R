@@ -362,3 +362,9 @@ for (i in 1:nrow(is)) {
   #   # is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
   # }
 }
+
+# Save income statement, balance sheet, and tax data
+save(is, file="data/is_updated.RData")
+save(bs, file="data/bs.RData")
+save(tax_8949, file="data/tax_8949.RData")
+save(xtzIncome_data, file="data/xtzIncome_data")
