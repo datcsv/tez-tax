@@ -367,4 +367,4 @@ for (i in 1:nrow(is)) {
 save(is, file="data/is_updated.RData")
 save(bs, file="data/bs.RData")
 save(tax_8949, file="data/tax_8949.RData")
-save(xtzIncome_data, file="data/xtzIncome_data")
+save(xtzIncome_data, file="data/xtzIncome_data.RData")

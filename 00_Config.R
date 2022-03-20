@@ -41,6 +41,12 @@ rcs_mint <- TRUE
 # Assume NFT tokens are collectibles (TRUE/FALSE)
 collectible <- TRUE
 
+# Legal name (to be used on tax documents)
+legal_name <- "datcsv"
+
+# Social security # (to be used on tax documents)
+ssn <- "000-00-0000"
+
 # Run next steps in process
 # Note: Once a step has been run, it is not necessary to run the step again
 # unless the code has been updated.
