@@ -837,7 +837,7 @@ for (i in 1:nrow(operations_hash)) {
       ("match_orders" %in% x$parameterEntry) &
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% quick_case(., entry="trnasfer", case="Rarible collect")
+      x %<>% quick_case(., entry="transfer", case="Rarible collect")
     }
     
     # Rarible update operators
