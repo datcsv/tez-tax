@@ -263,7 +263,7 @@ for (i in 1:nrow(is)) {
     if (tokenBalance > 0) {
       
       ##########################################################################
-      # Token deficit assumption:
+      # Token deficit assumption (In progress):
       #  (1) If there is no record of a token entering the balance sheet,
       #      the token is assumed to have a cost basis of zero. 
       #  (2) For tax form 8949, an acquisition date is required; in order to 
@@ -274,13 +274,13 @@ for (i in 1:nrow(is)) {
       ##########################################################################
       
       warning(cat("\nToken deficit assumption:", is_i$id, is_i$tokenID))
-      #def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
-      #def_dif <- def_ops$diffs[[1]][1, ]
-      #def_key <- tzkt_bigmap_updates(id=def_dif$bigmap, key=def_dif$content$hash)
-      #def_acq <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
+      # def_ops <- tzkt_operations_hash(hash=is_i$hash, quote=currency)
+      # def_dif <- def_ops$diffs[[1]][1, ]
+      # def_key <- tzkt_bigmap_updates(id=def_dif$bigmap, key=def_dif$content$hash)
+      # def_acq <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
       # Testing
-      #def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
-      #def_ops <- def_ops$diffs[[1]]
+      # def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
+      # def_ops <- def_ops$diffs[[1]]
       def_acq <- NA
       
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
@@ -353,10 +353,10 @@ for (i in 1:nrow(is)) {
   }
   
   # Balance debugging
-  #if (is_i$level >= 1654732) {
-  if (i %% 100 == 0) {
-    is$balTZ[i] <- tzkt_balance("tz1a2ZeWmyNQ8BiuFNTE4vmFEP9MBaP76QPX", is_i$level)
-    is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
-    #is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
-  }
+  # # if (is_i$level >= 1654732) {
+  # if (i %% 50 == 0) {
+  #   is$balTZ[i] <- tzkt_balance(wallets[1], is_i$level)
+  #   is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
+  #   # is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
+  # }
 }
