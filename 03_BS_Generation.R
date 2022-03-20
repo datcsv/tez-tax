@@ -39,6 +39,7 @@ tax_8949 <- tibble(
 
 # Initialize variables
 xtzIncome <- 0
+xtzIncome_data <- is[0, ]
 
 # Loop through rows of income statement to generate tax figures
 for (i in 1:nrow(is)) {
@@ -116,6 +117,7 @@ for (i in 1:nrow(is)) {
         costBasis = is_i$quote
       )
     xtzIncome <- xtzIncome + is_i$quote * is_i$xtzReceived
+    xtzIncome_data %<>% bind_rows(., is_i)
     next
   }
   
@@ -353,7 +355,7 @@ for (i in 1:nrow(is)) {
   }
   
   # Balance debugging
-  # # if (is_i$level >= 1654732) {
+  # if (is_i$level >= 1654732) {
   # if (i %% 50 == 0) {
   #   is$balTZ[i] <- tzkt_balance(wallets[1], is_i$level)
   #   is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
