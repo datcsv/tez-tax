@@ -496,18 +496,50 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_bid" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., 
-          tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-          case=ifelse(
-            xtzCollect > xtzReceived, 
-            "OBJKT fulfill bid (royalties)", 
-            "OBJKT fulfill bid (trade)"
+      
+      # Adjust for batch trades
+      x <- x[-c(1, nrow(x)), ]
+      collectN <- sum(x$parameterEntry == "fulfill_bid", na.rm=TRUE)
+      entries <- (nrow(x) / collectN)
+      
+      for (i in 1:collectN) {
+        x2 <- x[(1 + (i - 1) * entries):(i * entries), ]
+        token_sender <- x2$targetAddress[which(x2$targetAddress %in% wallets)][1]
+        
+        x2 %<>% mutate(., xtzReceived = ifelse(targetAddress %in% wallets, xtzAmount, 0))
+        x2$xtzReceived <- sum(x2$xtzReceived)
+        
+        x2 %<>% 
+          filter(., parameterEntry == "transfer") %>% 
+          mutate(., 
+            tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+            tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+            xtzSent=xtzFee / collectN,
+            case=ifelse(
+              xtzCollect > xtzReceived,
+              "OBJKT fulfill bid (royalties)",
+              "OBJKT fulfill bid (trade)"
+            )
           )
-        )
+        
+        if (i == 1) x3 <- x2
+        else x3 %<>% bind_rows(., x2)
+      }
+      x <- x3
+      
+      # token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      # x %<>% 
+      #   filter(., parameterEntry == "transfer") %>% 
+      #   mutate(., 
+      #     tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+      #     tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+      #     case=ifelse(
+      #       xtzCollect > xtzReceived, 
+      #       "OBJKT fulfill bid (royalties)", 
+      #       "OBJKT fulfill bid (trade)"
+      #     )
+      #   )
+      
     }
     
     # OBJKT fulfill bid (collect)
