@@ -372,7 +372,7 @@ for (i in 1:nrow(operations_hash)) {
       
       if ((!is.na(key)) & (key %in% is$bidKey)) {
         is %<>% mutate(.,
-          xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", xtzFee, xtzSent),
+          xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, xtzSent),
           case    = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
         )
       }
