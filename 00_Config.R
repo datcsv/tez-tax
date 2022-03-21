@@ -39,7 +39,7 @@ objkt_v1 <- TRUE
 rcs_mint <- TRUE
 
 # Assume NFT tokens are collectibles (TRUE/FALSE)
-collectible <- TRUE
+collectible <- FALSE
 
 # Legal name (to be used on tax documents)
 legal_name <- "datcsv"
@@ -53,3 +53,4 @@ ssn <- "000-00-0000"
 source("01_Operations_Data.R")
 source("02_IS_Generation.R")
 source("03_BS_Generation.R")
+source("04_Tax_Generation.R")
