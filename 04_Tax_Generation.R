@@ -27,6 +27,7 @@ if (xtzIncome > 100) {
   f1040s1_fields[[29]][[3]] <- sprintf("%.2f", xtzIncome)
   f1040s1_fields[[30]][[3]] <- sprintf("%.2f", xtzIncome)
   f1040s1_fields[[31]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[62]][[3]] <- sprintf("%.2f", xtzIncome)
   
   # Generate PDF file
   set_fields(
@@ -82,6 +83,6 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
 # Merge PDF files
 staple_pdf(
   input_directory=tax_8949_dir,
-  output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf"),
+  output_filepath=paste0(tax_8949_dir, "/f8949_Final_", ssn, ".pdf"),
   overwrite=TRUE
 )
