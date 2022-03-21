@@ -14,9 +14,9 @@ The authors of 'tez-tax' are not certified tax professionals and 'tez-tax' is no
 	+ Currently, 'tez-tax' only provides support for Coinbase as an exchange, alternative exchange data will need to be manually imported and added to the income initial income statement, please refer to 'functions/cb_import.R' for example. 
 	+ To download Coinbase exchange data, navigate to [Coinbase.com/reports](https://www.coinbase.com/reports) and generate a transaction history CSV report. 
 
-* Download operations data via the TzKT API by running '01_Operations_Data.R'.
+* Download operations data via the [TzKT API](https://api.tzkt.io/) by running '01_Operations_Data.R'.
 	+ This step will likely take the longest as it downloads blockchain data for all wallets included in the configuration file.
-	+ It is important to note that the TzKT API calls may not download transactions where both a wallet listed in the configuration file did not initiate a transaction and a wallet listed in the configuration file did not receive XTZ. For example, airdropped FA2 tokens will not be downloaded in this step due to this limitation. 
+	+ It is important to note that the [TzKT API](https://api.tzkt.io/) calls may not download transactions where both a wallet listed in the configuration file did not initiate a transaction and a wallet listed in the configuration file did not receive XTZ. For example, airdropped FA2 tokens will not be downloaded in this step due to this limitation. 
 	+ Once the code has been run once, it does not need to be run again unless the configuration or code itself has been updated.
 
 * Classify operation groups and generate an initial income statement by running '02_IS_Generation.R'.
@@ -31,6 +31,7 @@ The authors of 'tez-tax' are not certified tax professionals and 'tez-tax' is no
 		+ A warning will appear if one of these tokens is otherwise interacted with, as such an interaction will result in a deficient token balance. 
 		+ When a deficient token balance is encountered, the code will assume the token was acquired with a cost basis of 0 XTZ and no acquisition date will be provided for the token in the 'tax_8949' output. 
 	+ A number of additional, strong assumptions are made during this process that should be thoroughly reviewed in the code.
+	+ Once the code has finished running, the balances provided in the balance sheet data should be recoonciled to those provided via the [TzKT API](https://api.tzkt.io/) at various points in time. 
 	
 * For U.S. users, it may be useful to generate tax documents using '04_Tax_Generation.R'. **The outputs of this step should be used for informational purposes only and are provided as-is. Only a certified tax professional can accurately assess the tax implications of trading XTZ or associated tokens on the Tezos blockchain.**
 	+ This step relies on the ['staplr' R package](https://cran.r-project.org/web/packages/staplr/index.html) which, in turn, may rely on [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/) to generate PDF outputs.
