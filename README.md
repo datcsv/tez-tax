@@ -1,17 +1,13 @@
 # tez-tax
 
-Tezos tax tracking.
+'tez-tax' is comprised of a series of R code and supplementary files which may provide potentially useful information for estimating gains or losses realized through trading XTZ and associated tokens on the Tezos blockchain. The code makes use of a first in, first out (FIFO) accounting methodology for gain or loss estimates and is geared toward U.S.-based users. 'tez-tax' and any code, outputs, or information derived thereof are provided as-is. Only a certified tax professional can accurately assess the tax implications of trading XTZ or associated tokens on the Tezos blockchain.
 
-## Description
+**'tez-tax' is not a tax solution and should not be treated as such.** 
 
+## Disclaimer
 
-## R Crash Course
+The authors of 'tez-tax' are not certified tax professionals and 'tez-tax' is not a tax solution. 'tez-tax' and any code, outputs, or information derived thereof  should not be considered a substitute for legal advice, tax advice, audit advice, accounting advice, or brokerage advice under the guidance of a licensed professional. 
 
-R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS (https://cran.r-project.org/). The most commonly used IDE for R is "RStudio" (https://www.rstudio.com/).
+**The authors of 'tez-tax' do not assume any responsibility for 'tez-tax' and any code, outputs, or information derived thereof.**
 
-1. Assignment is "<-".
-2. Indexing starts at 1.
-3. We like the tidyverse (https://r4ds.had.co.nz/tidy-data.html). 
-4. Piping is taken from the "magrittr" package.
-    1. Pipe operator is "%<%".
-    2. Pipe + assignment operator is "%<>%".
+## Instructions
