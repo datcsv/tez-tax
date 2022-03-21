@@ -80,9 +80,13 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
   )
 }
 
-# Merge PDF files
-staple_pdf(
+# Merge PDF files (Note: staple_pdf will fail with a large number of files)
+staple <- staple_pdf(
   input_directory=tax_8949_dir,
-  output_filepath=paste0(tax_8949_dir, "/f8949_Final_", ssn, ".pdf"),
+  output_filepath=paste0(tax_8949_dir, "/f8949_", ssn, "Final_.pdf"),
   overwrite=TRUE
+)
+if (staple > 0) warning(
+  "Staple function failed to combined pages of tax form 8949. PDF files found in 
+  'data/pdf_8949/' will needd to be manually combined."
 )
