@@ -233,7 +233,7 @@ for (i in 1:nrow(is)) {
               Date_Sold     = as_date(is_i$timestamp),
               Proceeds      = round(subtract_j * (tokenProceeds / is_i$tokenSent), 2),
               Cost_Basis    = round(subtract_j * bs$costBasis[j], 2),
-              Codes         = ifelse(is_i$tokenID %in% fungible & collectible, NA, "C"),
+              Codes         = ifelse(is_i$tokenID %in% fungible, NA, "C"),
               Adjustment    = NA,
               Gain_Loss     = Proceeds - Cost_Basis
             )
@@ -362,6 +362,9 @@ for (i in 1:nrow(is)) {
   #   # is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
   # }
 }
+
+# Adjust collectibles
+if (!collectible) tax_8949 %<>% mutate(., Codes = NA)
 
 # Save income statement, balance sheet, and tax data
 save(is, file="data/is_updated.RData")

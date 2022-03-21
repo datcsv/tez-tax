@@ -50,7 +50,8 @@ ssn <- "000-00-0000"
 # Run next steps in process
 # Note: Once a step has been run, it is not necessary to run the step again
 # unless the code has been updated.
-source("01_Operations_Data.R")
+#source("01_Operations_Data.R")
 source("02_IS_Generation.R")
+source("data/XX_IS_Adjustments.R")
 source("03_BS_Generation.R")
 source("04_Tax_Generation.R")

@@ -48,12 +48,13 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
     input_filepath=f8949,
     output_filepath=paste0(tax_8949_dir, "/f8949_", ssn, "_", str_pad(k, 4, pad="0"), ".pdf"),
     fields=f8949_fields,
-    overwrite=TRUE,
+    overwrite=TRUE
   )
 }
 
 # Merge PDF files
 staple_pdf(
   input_directory=tax_8949_dir,
-  output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf")
+  output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf"),
+  overwrite=TRUE
 )
