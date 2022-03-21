@@ -13,3 +13,4 @@ The authors of 'tez-tax' are not certified tax professionals and 'tez-tax' is no
 * Update the contents of configuration file, '00_Config.R'.
 	+ Currently, 'tez-tax' only provides support for Coinbase as an exchange. 
 	+ To download Coinbase exchange data, navigate to [Coinbase.com/reports](https://www.coinbase.com/reports) and generate a transaction history CSV report. 
+
