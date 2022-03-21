@@ -11,7 +11,8 @@ tax_8949 <- tax_8949[1:59, ]
 f8949 <- "forms/f8949.pdf"
 
 # Create pdf directories
-dir.create("data/pdf", showWarnings=FALSE)
+tax_8949_dir <- "data/pdf_8949"
+dir.create(tax_8949_dir, showWarnings=FALSE)
 
 # Generate tax form 8949
 for (i in seq(1, nrow(tax_8949), by=14)) {
@@ -48,8 +49,14 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
   # Generate PDF file
   set_fields(
     input_filepath=f8949,
-    output_filepath=paste0("data/pdf/f8949_", ssn, "_", str_pad(k, 4, pad="0"), ".pdf"),
+    output_filepath=paste0(tax_8949_dir, "/f8949_", ssn, "_", str_pad(k, 4, pad="0"), ".pdf"),
     fields=f8949_fields,
     overwrite=TRUE,
   )
 }
+
+# Merge PDF files
+staple_pdf(
+  input_directory=tax_8949_dir,
+  output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf")
+)
