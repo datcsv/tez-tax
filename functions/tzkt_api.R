@@ -1,13 +1,30 @@
+################################################################################
+#                                                                              #
+# Copyright 2022 datcsv                                                        #
+#                                                                              #
+# Licensed under the Apache License, Version 2.0 (the "License");              #
+# you may not use this file except in compliance with the License.             #
+# You may obtain a copy of the License at                                      #
+#                                                                              #
+#   http://www.apache.org/licenses/LICENSE-2.0                                 #
+#                                                                              #  
+# Unless required by applicable law or agreed to in writing, software          #
+# distributed under the License is distributed on an "AS IS" BASIS,            #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     #
+# See the License for the specific language governing permissions and          #
+# limitations under the License.                                               #
+#                                                                              #
+################################################################################
 
 ################################################################################
-# Notes:
-# (1) TzKT Explorer provides free REST API and WebSocket API for accessing
-#     detailed Tezos blockchain data and helps developers build more services 
-#     and applications on top of Tezos. The following functions were built for
-#     TzKT API (1.7.0).
-#
-#     Additional API documentation is available at: https://api.tzkt.io/
-#
+# Notes:                                                                       #
+# (1) TzKT Explorer provides free REST API and WebSocket API for accessing     #
+#     detailed Tezos blockchain data and helps developers build more services  #
+#     and applications on top of Tezos. The following functions were built for #
+#     TzKT API (1.7.0).                                                        #
+#                                                                              #
+#     Additional API documentation is available at: https://api.tzkt.io/       #
+#                                                                              #
 ################################################################################
 
 # Get account operations, https://api.tzkt.io/#operation/Accounts_GetOperations

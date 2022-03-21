@@ -1,3 +1,21 @@
+################################################################################
+#                                                                              #
+# Copyright 2022 datcsv                                                        #
+#                                                                              #
+# Licensed under the Apache License, Version 2.0 (the "License");              #
+# you may not use this file except in compliance with the License.             #
+# You may obtain a copy of the License at                                      #
+#                                                                              #
+#   http://www.apache.org/licenses/LICENSE-2.0                                 #
+#                                                                              #  
+# Unless required by applicable law or agreed to in writing, software          #
+# distributed under the License is distributed on an "AS IS" BASIS,            #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     #
+# See the License for the specific language governing permissions and          #
+# limitations under the License.                                               #
+#                                                                              #
+################################################################################
+
 # Load income statement data
 load(file="data/is.RData")
 
@@ -57,12 +75,12 @@ for (i in 1:nrow(is)) {
   is_i <- is[i, ]
   
   ##############################################################################
-  # Adjust Tezos sent/received:
-  #  (1) If Tezos is sent and received in the same transaction, net the values
-  #  (2) For token transfers, base the calculation on sender/receiver
-  #  (3) For all other transactions, base the calculation on highest value
-  #  (*) This assumption should be used for estimates only and is not 
-  #      an accurate or long-term solution
+  # Adjust Tezos sent/received:                                                #
+  #  (1) If Tezos is sent and received in the same transaction, net the values.#
+  #  (2) For token transfers, base the calculation on sender/receiver.         #
+  #  (3) For all other transactions, base the calculation on highest value.    #
+  #  (*) This assumption should be used for estimates only and is not          #
+  #      an accurate or long-term solution.                                    #
   ##############################################################################
   
   # Adjust XTZ sent/received when tokens are involved
@@ -88,9 +106,9 @@ for (i in 1:nrow(is)) {
   }
   
   ##############################################################################
-  # Do not calculate gain (loss) for purchases or income:
-  #  (1) If 'xtzBuy' is TRUE, mark as purchase
-  #  (2) If Tezos are received but no tokens are sent, mark as income
+  # Do not calculate gain (loss) for purchases or income:                      #
+  #  (1) If 'xtzBuy' is TRUE, mark as purchase.                                #
+  #  (2) If Tezos are received but no tokens are sent, mark as income.         #
   ##############################################################################
   
   # Add Tezos purchases to balance sheet
@@ -122,7 +140,7 @@ for (i in 1:nrow(is)) {
   }
   
   ##############################################################################
-  # Calculate gain (loss) on Tezos sent
+  # Calculate gain (loss) on Tezos sent.                                       #
   ##############################################################################
 
   if (is_i$xtzSent > 0) {
@@ -196,7 +214,7 @@ for (i in 1:nrow(is)) {
   }
   
   ##############################################################################
-  # Calculate gain (loss) on tokens sent
+  # Calculate gain (loss) on tokens sent.                                      #
   ##############################################################################
   
   if (is_i$tokenSent > 0) {
@@ -244,11 +262,11 @@ for (i in 1:nrow(is)) {
       j <- j + 1
       
       ##########################################################################
-      # RCS mint assumption: 
-      #  (1) Assume RCS tokens lacking transaction history were minted at 5tz
-      #  (2) Minted RCS tokens are treated like fungible tokens
-      #  (*) This assumption should be used for estimates only and is not 
-      #      an accurate or long-term solution
+      # RCS mint assumption:                                                   #
+      #  (1) Assume RCS tokens lacking transaction history were minted at 5tz. #
+      #  (2) Minted RCS tokens are treated like fungible tokens.               #
+      #  (*) This assumption should be used for estimates only and is not      #
+      #      an accurate or long-term solution.                                #
       ##########################################################################
       if (
         (rcs_mint) & 
@@ -265,14 +283,14 @@ for (i in 1:nrow(is)) {
     if (tokenBalance > 0) {
       
       ##########################################################################
-      # Token deficit assumption (In progress):
-      #  (1) If there is no record of a token entering the balance sheet,
-      #      the token is assumed to have a cost basis of zero. 
-      #  (2) For tax form 8949, an acquisition date is required; in order to 
-      #      impute this value, the timestamp value is set to the last time
-      #      the wallet had a positive token balance update. 
-      #  (*) This assumption should be used for estimates only and is not 
-      #      an accurate or long-term solution
+      # Token deficit assumption (In progress):                                #
+      #  (1) If there is no record of a token entering the balance sheet,      #
+      #      the token is assumed to have a cost basis of zero.                #
+      #  (2) For tax form 8949, an acquisition date is required; in order to   #
+      #      impute this value, the timestamp value is set to the last time    #
+      #      the wallet had a positive token balance update.                   #
+      #  (*) This assumption should be used for estimates only and is not      #
+      #      an accurate or long-term solution.                                #
       ##########################################################################
       
       warning(cat("\nToken deficit assumption:", is_i$id, is_i$tokenID))
@@ -326,7 +344,7 @@ for (i in 1:nrow(is)) {
   }
 
   ##############################################################################
-  # Log any tokens received to balance sheet
+  # Log any tokens received to balance sheet.                                  #
   ##############################################################################
   
   # Calculate total transaction proceeds (as cost basis)
