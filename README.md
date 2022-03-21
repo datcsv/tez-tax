@@ -8,9 +8,29 @@ The authors of 'tez-tax' are not certified tax professionals and 'tez-tax' is no
 
 ## Instructions
 
-'tez-tax' is a work in progress and a number of simplifying assumptions are made during the course of the code logic. As such, it is important to thoroughly understand and debug each step in order to ensure any provided estimates are as accurate as possible.
+'tez-tax' is a work in progress and a number of simplifying assumptions are made during the course of the code logic. Further, the identification and classification of smart contract operations is exceedingly complex by nature. It is important to thoroughly understand and debug each step in order to ensure any provided estimates are as accurate as possible. 'tez-tax' will never provide perfectly accurate operations and only seeks to provide potentially useful innformation for estimating gain or loss estimates. 'tez-tax' is not a tax solution.
 
-* Update the contents of configuration file, '00_Config.R'.
-	+ Currently, 'tez-tax' only provides support for Coinbase as an exchange. 
+* Update the contents of configuration file, '00_Config.R', and run it.
+	+ Currently, 'tez-tax' only provides support for Coinbase as an exchange, alternative exchange data will need to be manually imported and added to the income initial income statement, please refer to 'functions/cb_import.R' for example. 
 	+ To download Coinbase exchange data, navigate to [Coinbase.com/reports](https://www.coinbase.com/reports) and generate a transaction history CSV report. 
 
+* Download operations data via the TzKT API by running '01_Operations_Data.R'.
+	+ This step will likely take the longest as it downloads blockchain data for all wallets included in the configuration file.
+	+ It is important to note that the TzKT API calls may not download transactions where both a wallet listed in the configuration file did not initiate a transaction and a wallet listed in the configuration file did not receive XTZ. For example, airdropped FA2 tokens will not be downloaded in this step due to this limitation. 
+	+ Once the code has been run once, it does not need to be run again unless the configuration or code itself has been updated.
+
+* Classify operation groups and generate an initial income statement by running '02_IS_Generation.R'.
+	+ This step relies on 'functions/classify_tx.R' to classify transactions and calculate applicable income statement fields.  
+	+ Once the code has finished running, users should verify that all transactions have been classified correctly. 
+		+ Any misclassified or miscalculated rows or fields should be manually adjusted. 
+		+ In the event that any operations are unclassified, nrow(filter(is, is.na(case))) > 0, the unclassified rows should be manually adjusted.
+
+*  Generate necessary gain or loss data via a dynamic income statement/balance sheet relationship by running '03_BS_Generation.R'. 
+	+ This step attempts to calculate gains or losses using the provided income statement and exchange data. 
+	+ It is important to note that, due to the API limitations mentioned above, airdropped FA2 tokens and similar transactions do not appear in the initial generated income statement. 
+		+ A warning will appear if one of these tokens is otherwise interacted with, as such an interaction will result in a deficient token balance. 
+		+ When a deficient token balance is encountered, the code will assume the token was acquired with a cost basis of 0 XTZ and no acquisition date will be provided for the token in the 'tax_8949' output. 
+	+ A number of additional, strong assumptions are made during this process that should be thoroughly reviewed in the code.
+	
+* For U.S. users, it may be useful to generate tax documents using '04_Tax_Generation.R'. **The outputs of this step should be used for informational purposes only and are provided as-is. Only a certified tax professional can accurately assess the tax implications of trading XTZ or associated tokens on the Tezos blockchain.**
+	+ This step relies on the ['staplr' R package](https://cran.r-project.org/web/packages/staplr/index.html) which, in turn, may rely on [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/) to generate PDF outputs.
