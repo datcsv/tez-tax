@@ -4,12 +4,38 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
-# Define template filepaths
-f8949 <- "forms/f8949.pdf"
+# Define template file paths
+f8949   <- "forms/f8949.pdf"
+f1040s1 <- "forms/f1040s1.pdf"
 
 # Create pdf directories
 tax_8949_dir <- "data/pdf_8949"
 dir.create(tax_8949_dir, showWarnings=FALSE)
+pdf_f1040s1_dir <- "data/pdf_f1040s1"
+dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
+
+# Generate tax form 1040 schedule 1
+xtzIncome <- sum(xtzIncome_data$quote * (xtzIncome_data$xtzReceived - xtzIncome_data$xtzSent))
+if (xtzIncome > 100) {
+  
+  # Update fields
+  f1040s1_fields <- get_fields(input_filepath=f1040s1)
+  f1040s1_fields[[1]][[3]]  <- legal_name
+  f1040s1_fields[[2]][[3]]  <- ssn
+  f1040s1_fields[[27]][[3]] <- ""
+  f1040s1_fields[[28]][[3]] <- "Cryptocurrency (Tezos) staking rewards, NFT royalties, and payments."
+  f1040s1_fields[[29]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[30]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[31]][[3]] <- sprintf("%.2f", xtzIncome)
+  
+  # Generate PDF file
+  set_fields(
+    input_filepath=f1040s1,
+    output_filepath=paste0(pdf_f1040s1_dir, "/f1040s1_", ssn, ".pdf"),
+    fields=f1040s1_fields,
+    overwrite=TRUE
+  )
+}
 
 # Generate tax form 8949
 for (i in seq(1, nrow(tax_8949), by=14)) {
