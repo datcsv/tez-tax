@@ -4,9 +4,6 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
-# Testing data
-tax_8949 <- tax_8949[1:59, ]
-
 # Define template filepaths
 f8949 <- "forms/f8949.pdf"
 
