@@ -2,7 +2,6 @@
 # Notes:
 # (1) Download Coinbase data using: https://www.coinbase.com/report
 #       Transaction history -> Generate report
-#       [YEAR], [All Assets], [All transactions]
 #       CSV -> Generate report -> Download
 #
 ################################################################################
