@@ -32,10 +32,10 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
   }
   
   # Update capital gain/loss total fields
-  f8949_fields[[118]][[3]] <- sum(tax_8949[i:(i + 13), 4])
-  f8949_fields[[119]][[3]] <- sum(tax_8949[i:(i + 13), 5])
-  f8949_fields[[121]][[3]] <- sum(tax_8949[i:(i + 13), 7])
-  f8949_fields[[122]][[3]] <- sum(tax_8949[i:(i + 13), 8])
+  f8949_fields[[118]][[3]] <- sum(tax_8949[i:(i + 13), 4], na.rm=TRUE)
+  f8949_fields[[119]][[3]] <- sum(tax_8949[i:(i + 13), 5], na.rm=TRUE)
+  f8949_fields[[121]][[3]] <- sum(tax_8949[i:(i + 13), 7], na.rm=TRUE)
+  f8949_fields[[122]][[3]] <- sum(tax_8949[i:(i + 13), 8], na.rm=TRUE)
   
 }
 
