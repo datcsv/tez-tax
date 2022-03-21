@@ -14,6 +14,7 @@ dir.create(tax_8949_dir, showWarnings=FALSE)
 # Generate tax form 8949
 for (i in seq(1, nrow(tax_8949), by=14)) {
   
+  # Iterator for file name
   if (i == 1) k <- 1
   else k <- k + 1
 
