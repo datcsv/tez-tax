@@ -4,6 +4,9 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
+# Testing data
+tax_8949 <- tax_8949[1:14, ]
+
 # Define form filepaths
 f8949 <- "forms/f8949.pdf"
 
@@ -14,17 +17,17 @@ f8949_fields[[2]][[3]] <- ssn
 f8949_fields[[5]][[3]] <- "3"
 
 # Update form tax form rows
-for (i in 1:14) {
-  
-  f8949_fields[[6 + (i - 1) * 8]][[3]]  <- "TEST"
-  f8949_fields[[7 + (i - 1) * 8]][[3]]  <- "TEST"
-  f8949_fields[[8 + (i - 1) * 8]][[3]]  <- "TEST"
-  f8949_fields[[9 + (i - 1) * 8]][[3]]  <- "TEST"
-  f8949_fields[[10 + (i - 1) * 8]][[3]] <- "TEST"
-  f8949_fields[[11 + (i - 1) * 8]][[3]] <- "TEST"
-  f8949_fields[[12 + (i - 1) * 8]][[3]] <- "TEST"
-  f8949_fields[[13 + (i - 1) * 8]][[3]] <- "TEST"
-  
+for (i in seq(1, nrow(tax_8949), by=14)) {
+  for (j in 1:min(14, nrow(tax_8949) + 1 - i)) {
+    f8949_fields[[6  + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 1]
+    f8949_fields[[7  + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 2]
+    f8949_fields[[8  + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 3]
+    f8949_fields[[9  + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 4]
+    f8949_fields[[10 + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 5]
+    f8949_fields[[11 + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 6]
+    f8949_fields[[12 + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 7]
+    f8949_fields[[13 + (j - 1) * 8]][[3]] <- tax_8949[i + j - 1, 8]
+  }
 }
 
 # Generate PDF file
