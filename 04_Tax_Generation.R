@@ -48,12 +48,15 @@ f1040sd_fields <- get_fields(input_filepath=f1040sd)
 f1040sd_fields[[1]][[3]]  <- legal_name
 f1040sd_fields[[2]][[3]]  <- ssn
 f1040sd_fields[[4]][[3]]  <- "2"
-f1040sd_fields[[17]][[3]] <- "TEST"
-f1040sd_fields[[18]][[3]] <- "TEST"
-f1040sd_fields[[19]][[3]] <- "TEST"
-f1040sd_fields[[20]][[3]] <- "TEST"
-f1040sd_fields[[24]][[3]] <- "TEST"
-f1040sd_fields[[46]][[3]] <- "TEST"
+f1040sd_fields[[17]][[3]] <- sprintf("%.2f", sum(tax_8949$Proceeds))
+f1040sd_fields[[18]][[3]] <- sprintf("%.2f", sum(tax_8949$Cost_Basis))
+if (sum(!is.na(tax_8949$Adjustment)) > 0) {
+  f1040sd_fields[[19]][[3]] <- sprintf("%.2f", sum(tax_8949$Adjustments), na.rm=TRUE) 
+}
+f1040sd_fields[[20]][[3]] <- sprintf("%.2f", sum(tax_8949$Gain_Loss))
+f1040sd_fields[[24]][[3]] <- sprintf("%.2f", sum(tax_8949$Gain_Loss))
+f1040sd_fields[[46]][[3]] <- sprintf("%.2f", sum(tax_8949$Gain_Loss))
+f1040sd_fields[[48]][[3]] <- "2"
 f1040sd_fields[[55]][[3]] <- "2"
 
 # Generate PDF file
