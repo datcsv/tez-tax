@@ -6,11 +6,16 @@ load(file="data/xtzIncome_data.RData")
 
 # Define template file paths
 f8949   <- "forms/f8949.pdf"
+f1040sd <- "forms/f1040sd.pdf"
 f1040s1 <- "forms/f1040s1.pdf"
 
 # Create pdf directories
 tax_8949_dir <- "data/pdf_8949"
 dir.create(tax_8949_dir, showWarnings=FALSE)
+
+pdf_f1040sd_dir <- "data/f1040sd"
+dir.create(pdf_f1040sd_dir, showWarnings=FALSE)
+
 pdf_f1040s1_dir <- "data/pdf_f1040s1"
 dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
 
@@ -37,6 +42,28 @@ if (xtzIncome > 100) {
     overwrite=TRUE
   )
 }
+
+# Generate tax form 1040 schedule D
+f1040sd_fields <- get_fields(input_filepath=f1040sd)
+f1040sd_fields[[1]][[3]]  <- legal_name
+f1040sd_fields[[2]][[3]]  <- ssn
+f1040sd_fields[[4]][[3]]  <- "2"
+f1040sd_fields[[17]][[3]] <- "TEST"
+f1040sd_fields[[18]][[3]] <- "TEST"
+f1040sd_fields[[19]][[3]] <- "TEST"
+f1040sd_fields[[20]][[3]] <- "TEST"
+f1040sd_fields[[24]][[3]] <- "TEST"
+f1040sd_fields[[46]][[3]] <- "TEST"
+f1040sd_fields[[55]][[3]] <- "2"
+
+# Generate PDF file
+set_fields(
+  input_filepath=f1040sd,
+  output_filepath=paste0(pdf_f1040sd_dir, "/f1040sd_", ssn, ".pdf"),
+  fields=f1040sd_fields,
+  overwrite=TRUE
+)
+
 
 # Generate tax form 8949
 for (i in seq(1, nrow(tax_8949), by=14)) {
