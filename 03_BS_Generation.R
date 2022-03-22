@@ -22,9 +22,6 @@ load(file="data/is.RData")
 # Adjust tokenID for easier debugging
 is %<>% mutate(., tokenID = str_replace(tokenID, "_", "/"))
 
-is$balTZ <- NA
-is$balBS <- NA
-
 # Fungible token list (Only necessary if 'collectible' is set to TRUE)
 fungible <- c(
   "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0", # hDAO
@@ -82,16 +79,6 @@ for (i in 1:nrow(is)) {
   #  (*) This assumption should be used for estimates only and is not          #
   #      an accurate or long-term solution.                                    #
   ##############################################################################
-  
-  # Adjust XTZ sent/received when tokens are involved
-  # if (is_i$tokenSender %in% wallets) {
-  #   is_i$xtzReceived <- is_i$xtzReceived - is_i$xtzSent
-  #   is_i$xtzSent     <- 0
-  # }
-  # else if (is_i$tokenReceiver %in% wallets) {
-  #   is_i$xtzSent     <- is_i$xtzSent - is_i$xtzReceived
-  #   is_i$xtzReceived <- 0
-  # }
   
   # Adjust XTZ sent/received
   if (is_i$xtzSent > 0 & is_i$xtzReceived > 0) {
@@ -283,7 +270,7 @@ for (i in 1:nrow(is)) {
     if (tokenBalance > 0) {
       
       ##########################################################################
-      # Token deficit assumption (In progress):                                #
+      # Token deficit assumption (In progress, not working):                   #
       #  (1) If there is no record of a token entering the balance sheet,      #
       #      the token is assumed to have a cost basis of zero.                #
       #  (2) For tax form 8949, an acquisition date is required; in order to   #
@@ -298,9 +285,6 @@ for (i in 1:nrow(is)) {
       # def_dif <- def_ops$diffs[[1]][1, ]
       # def_key <- tzkt_bigmap_updates(id=def_dif$bigmap, key=def_dif$content$hash)
       # def_acq <- as_datetime(tail(filter(def_upd, value > 0), 1)$timestamp)
-      # Testing
-      # def_ops <- tzkt_operations_hash(hash="oozftNvMU6akmx1QaUBnNnA1RiqGTutDR3cpgLwx8AohkvXHNem", quote=currency)
-      # def_ops <- def_ops$diffs[[1]]
       def_acq <- NA
       
       if (!(is_i$case %in% c("Token transfer", "Wallet transfer"))){
@@ -372,12 +356,10 @@ for (i in 1:nrow(is)) {
      warning(cat("\nToken sent and received in same transaction!", is_i$id))
   }
   
-  # Balance debugging
-  # if (is_i$level >= 1654732) {
+  # Balance reconciliation
   # if (i %% 50 == 0) {
   #   is$balTZ[i] <- tzkt_balance(wallets[1], is_i$level)
   #   is$balBS[i] <- sum(select(filter(bs, asset == "xtz"), "quantity"))
-  #   # is %>% mutate(., delta = round(balBS - balTZ, 2)) %>% filter(., balTZ > 0) %>% View(.)
   # }
 }
 
