@@ -22,7 +22,9 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
-# Generate Turbotax compaitable capital gains files
+# Remove zero proceed sales 
+
+# Generate Turbotax compatible capital gains files
 for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
   
   tax_8949_intuit <- tax_8949 %>%
