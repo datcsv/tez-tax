@@ -50,7 +50,6 @@ if (xtzIncome > 100) {
   f1040s1_fields[[29]][[3]] <- sprintf("%.2f", xtzIncome)
   f1040s1_fields[[30]][[3]] <- sprintf("%.2f", xtzIncome)
   f1040s1_fields[[31]][[3]] <- sprintf("%.2f", xtzIncome)
-  f1040s1_fields[[62]][[3]] <- sprintf("%.2f", xtzIncome)
   
   # Generate PDF file
   set_fields(
