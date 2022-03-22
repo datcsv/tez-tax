@@ -22,7 +22,7 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
-# Generate Turbotax compaitable capital gains spreadsheet
+# Generate Turbotax compaitable capital gains files
 for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
   
   tax_8949_intuit <- tax_8949 %>%
@@ -39,6 +39,13 @@ for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
       `Gain (USD)`       = Gain_Loss
     ) %>%
     mutate(.,
+      `Asset Amount`     = sprintf("%.8f", as.numeric(`Asset Amount`)), 
+      `Asset Name`       = toupper(str_replace(`Asset Name`, "/", "_")),
+      `Received Date`    = format(`Received Date`, "%m/%d/%Y"),
+      `Date Sold`        = format(`Date Sold`, "%m/%d/%Y"),
+      `Proceeds (USD)`   = sprintf("%.8f", `Proceeds (USD)`), 
+      `Cost Basis (USD)` = sprintf("%.8f", `Cost Basis (USD)`), 
+      `Gain (USD)`       = sprintf("%.8f", `Gain (USD)`), 
       `Type`             = "Short Term"
     ) %>%
     write_csv(., 
