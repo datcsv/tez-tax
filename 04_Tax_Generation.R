@@ -38,7 +38,7 @@ pdf_f1040s1_dir <- "data/f1040s1"
 dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
 
 # Remove zero proceed sales 
-tax_8949 %<>% filter(., round(Proceeds, 2) > 0.00)
+# tax_8949 %<>% filter(., round(Proceeds, 2) > 0.00)
 
 # Format tax form 8949 data for export
 tax_8949_intuit <- tax_8949 %>%
