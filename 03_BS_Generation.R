@@ -390,8 +390,8 @@ tax_8949 %<>%
     Token_Quantity = str_split(Description, " ", simplify=TRUE)[, 1],
     Token_ID       = str_split(Description, " ", simplify=TRUE)[, 2],
     Token_ID_Short = ifelse(
-      nchar(Token_ID) > 32,
-      substr(Token_ID, nchar(Token_ID) - 31, nchar(Token_ID)),
+      nchar(Token_ID) > 16,
+      substr(Token_ID, nchar(Token_ID) - 15, nchar(Token_ID)),
       Token_ID
     ),
     Description    = paste(Token_Quantity, Token_ID_Short)
