@@ -125,15 +125,30 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
     fields=f8949_fields,
     overwrite=TRUE
   )
+  
+  # Merge PDF files (Note: staple_pdf will fail with a large number of files)
+  if (k == 1) {
+    set_fields(
+      input_filepath=f8949,
+      output_filepath=paste0(tax_8949_dir, "/f8949_Temp.pdf"),
+      fields=f8949_fields,
+      overwrite=TRUE
+    )
+  }
+  else {
+    # Adjust sleep time if file renaming warnings arise
+    Sys.sleep(0.1)
+    file.rename(
+      from = paste0(tax_8949_dir, "/f8949_Final.pdf"),
+      to   = paste0(tax_8949_dir, "/f8949_Temp.pdf")
+    )
+    staple <- staple_pdf(
+      input_files=c(
+        paste0(tax_8949_dir, "/f8949_Temp.pdf"),
+        paste0(tax_8949_dir, "/f8949_", str_pad(k, 4, pad="0"), ".pdf")
+      ),
+      output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf"),
+      overwrite=TRUE
+    )
+  }
 }
-
-# Merge PDF files (Note: staple_pdf will fail with a large number of files)
-staple <- staple_pdf(
-  input_directory=tax_8949_dir,
-  output_filepath=paste0(tax_8949_dir, "/f8949_Final_.pdf"),
-  overwrite=TRUE
-)
-if (staple > 0) warning(
-  "Staple function failed to combined pages of tax form 8949. PDF files found in 
-  'data/pdf_8949/' will need to be manually combined."
-)
