@@ -384,8 +384,22 @@ for (i in 1:nrow(is)) {
 # Adjust collectibles
 if (!collectible) tax_8949 %<>% mutate(., Codes = NA)
 
+# Add token ID column to tax data
+tax_8949 %<>%
+  mutate(., 
+    Token_Quantity = str_split(Description, " ", simplify=TRUE)[, 1],
+    Token_ID       = str_split(Description, " ", simplify=TRUE)[, 2],
+    Token_ID_Short = ifelse(
+      nchar(Token_ID) > 32,
+      substr(Token_ID, nchar(Token_ID) - 31, nchar(Token_ID)),
+      Token_ID
+    ),
+    Description    = paste(Token_Quantity, Token_ID_Short)
+  ) 
+
 # Save income statement, balance sheet, and tax data
 save(is, file="data/is_updated.RData")
 save(bs, file="data/bs.RData")
 save(tax_8949, file="data/tax_8949.RData")
+save(tax_8949, file="data/tax_8949_original.RData")
 save(xtzIncome_data, file="data/xtzIncome_data.RData")
