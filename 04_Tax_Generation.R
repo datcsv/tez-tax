@@ -23,36 +23,38 @@ load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
 # Remove zero proceed sales 
+tax_8949 %<>% filter(., round(Proceeds, 2) > 0.00)
 
-# Generate Turbotax compatible capital gains files
+# Format tax form 8949 data for export
+tax_8949_intuit <- tax_8949 %>%
+  select(.,
+    `Asset Amount`     = Token_Quantity,
+    `Asset Name`       = Token_ID_Short,
+    `Received Date`    = Date_Acquired,
+    `Date Sold`        = Date_Sold,
+    `Proceeds (USD)`   = Proceeds,
+    `Cost Basis (USD)` = Cost_Basis,
+    `Gain (USD)`       = Gain_Loss
+  ) %>%
+  mutate(.,
+    `Asset Amount`     = sprintf("%.8f", as.numeric(`Asset Amount`)), 
+    `Asset Name`       = toupper(str_replace(`Asset Name`, "/", "_")),
+    `Received Date`    = format(`Received Date`, "%m/%d/%Y"),
+    `Date Sold`        = format(`Date Sold`, "%m/%d/%Y"),
+    `Proceeds (USD)`   = sprintf("%.8f", `Proceeds (USD)`), 
+    `Cost Basis (USD)` = sprintf("%.8f", `Cost Basis (USD)`), 
+    `Gain (USD)`       = sprintf("%.8f", `Gain (USD)`), 
+    `Type`             = "Short Term"
+  )
+
+# Write tax form 8949 data to CSV file
+tax_8949_intuit %>% write_csv(., file=paste0("data/tax_8949_full.csv"))
+
+# Write tax form 8949 to turbotax compatible CSV files
 for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
-  
-  tax_8949_intuit <- tax_8949 %>%
-    filter(.,
-      row_number() %in% (1 + (i - 1) * 3999):(i * 3999)
-    ) %>%
-    select(.,
-      `Asset Amount`     = Token_Quantity,
-      `Asset Name`       = Token_ID_Short,
-      `Received Date`    = Date_Acquired,
-      `Date Sold`        = Date_Sold,
-      `Proceeds (USD)`   = Proceeds,
-      `Cost Basis (USD)` = Cost_Basis,
-      `Gain (USD)`       = Gain_Loss
-    ) %>%
-    mutate(.,
-      `Asset Amount`     = sprintf("%.8f", as.numeric(`Asset Amount`)), 
-      `Asset Name`       = toupper(str_replace(`Asset Name`, "/", "_")),
-      `Received Date`    = format(`Received Date`, "%m/%d/%Y"),
-      `Date Sold`        = format(`Date Sold`, "%m/%d/%Y"),
-      `Proceeds (USD)`   = sprintf("%.8f", `Proceeds (USD)`), 
-      `Cost Basis (USD)` = sprintf("%.8f", `Cost Basis (USD)`), 
-      `Gain (USD)`       = sprintf("%.8f", `Gain (USD)`), 
-      `Type`             = "Short Term"
-    ) %>%
-    write_csv(., 
-      file=paste0("data/tax_8949_intuit_", str_pad(i, 2, pad="0"), ".csv")
-    )
+  tax_8949_intuit %>%
+    filter(., row_number() %in% (1 + (i - 1) * 3999):(i * 3999)) %>%
+    write_csv(., file=paste0("data/tax_8949_", str_pad(i, 2, pad="0"), ".csv"))
 }
 
 # Define template file paths
