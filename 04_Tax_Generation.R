@@ -137,7 +137,7 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
   }
   else {
     # Adjust sleep time if file renaming warnings arise
-    Sys.sleep(0.1)
+    Sys.sleep(0.05)
     file.rename(
       from = paste0(tax_8949_dir, "/f8949_Final.pdf"),
       to   = paste0(tax_8949_dir, "/f8949_Temp.pdf")
