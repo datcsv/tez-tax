@@ -55,7 +55,7 @@ if (xtzIncome > 100) {
   # Generate PDF file
   set_fields(
     input_filepath=f1040s1,
-    output_filepath=paste0(pdf_f1040s1_dir, "/f1040s1_", ssn, ".pdf"),
+    output_filepath=paste0(pdf_f1040s1_dir, "/f1040s1.pdf"),
     fields=f1040s1_fields,
     overwrite=TRUE
   )
@@ -80,7 +80,7 @@ f1040sd_fields[[55]][[3]] <- "2"
 # Generate PDF file
 set_fields(
   input_filepath=f1040sd,
-  output_filepath=paste0(pdf_f1040sd_dir, "/f1040sd_", ssn, ".pdf"),
+  output_filepath=paste0(pdf_f1040sd_dir, "/f1040sd.pdf"),
   fields=f1040sd_fields,
   overwrite=TRUE
 )
@@ -122,7 +122,7 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
   # Generate PDF file
   set_fields(
     input_filepath=f8949,
-    output_filepath=paste0(tax_8949_dir, "/f8949_", ssn, "_", str_pad(k, 4, pad="0"), ".pdf"),
+    output_filepath=paste0(tax_8949_dir, "/f8949_", str_pad(k, 4, pad="0"), ".pdf"),
     fields=f8949_fields,
     overwrite=TRUE
   )
@@ -131,7 +131,7 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
 # Merge PDF files (Note: staple_pdf will fail with a large number of files)
 staple <- staple_pdf(
   input_directory=tax_8949_dir,
-  output_filepath=paste0(tax_8949_dir, "/f8949_", ssn, "Final_.pdf"),
+  output_filepath=paste0(tax_8949_dir, "/f8949_Final_.pdf"),
   overwrite=TRUE
 )
 if (staple > 0) warning(
