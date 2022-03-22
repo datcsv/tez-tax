@@ -22,6 +22,21 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
+# Define template file paths
+f8949   <- "forms/f8949.pdf"
+f1040sd <- "forms/f1040sd.pdf"
+f1040s1 <- "forms/f1040s1.pdf"
+
+# Create pdf directories
+tax_8949_dir <- "data/8949"
+dir.create(tax_8949_dir, showWarnings=FALSE)
+
+pdf_f1040sd_dir <- "data/f1040sd"
+dir.create(pdf_f1040sd_dir, showWarnings=FALSE)
+
+pdf_f1040s1_dir <- "data/f1040s1"
+dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
+
 # Remove zero proceed sales 
 tax_8949 %<>% filter(., round(Proceeds, 2) > 0.00)
 
@@ -48,29 +63,14 @@ tax_8949_intuit <- tax_8949 %>%
   )
 
 # Write tax form 8949 data to CSV file
-tax_8949_intuit %>% write_csv(., file=paste0("data/tax_8949_full.csv"))
+tax_8949_intuit %>% write_csv(., file=paste0(tax_8949_dir, "/tax_8949_full.csv"))
 
 # Write tax form 8949 to turbotax compatible CSV files
 for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
   tax_8949_intuit %>%
     filter(., row_number() %in% (1 + (i - 1) * 3999):(i * 3999)) %>%
-    write_csv(., file=paste0("data/tax_8949_", str_pad(i, 2, pad="0"), ".csv"))
+    write_csv(., file=paste0(tax_8949_dir, "/tax_8949_", str_pad(i, 2, pad="0"), ".csv"))
 }
-
-# Define template file paths
-f8949   <- "forms/f8949.pdf"
-f1040sd <- "forms/f1040sd.pdf"
-f1040s1 <- "forms/f1040s1.pdf"
-
-# Create pdf directories
-tax_8949_dir <- "data/pdf_8949"
-dir.create(tax_8949_dir, showWarnings=FALSE)
-
-pdf_f1040sd_dir <- "data/f1040sd"
-dir.create(pdf_f1040sd_dir, showWarnings=FALSE)
-
-pdf_f1040s1_dir <- "data/pdf_f1040s1"
-dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
 
 # Generate tax form 1040 schedule 1
 xtzIncome <- sum(xtzIncome_data$quote * (xtzIncome_data$xtzReceived - xtzIncome_data$xtzSent))
