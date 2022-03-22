@@ -135,5 +135,5 @@ staple <- staple_pdf(
 )
 if (staple > 0) warning(
   "Staple function failed to combined pages of tax form 8949. PDF files found in 
-  'data/pdf_8949/' will needd to be manually combined."
+  'data/pdf_8949/' will need to be manually combined."
 )
