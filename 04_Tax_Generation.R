@@ -22,6 +22,30 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
+# Generate Turbotax compaitable capital gains spreadsheet
+for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
+  
+  tax_8949_intuit <- tax_8949 %>%
+    filter(.,
+      row_number() %in% (1 + (i - 1) * 3999):(i * 3999)
+    ) %>%
+    select(.,
+      `Asset Amount`     = Token_Quantity,
+      `Asset Name`       = Token_ID_Short,
+      `Received Date`    = Date_Acquired,
+      `Date Sold`        = Date_Sold,
+      `Proceeds (USD)`   = Proceeds,
+      `Cost Basis (USD)` = Cost_Basis,
+      `Gain (USD)`       = Gain_Loss
+    ) %>%
+    mutate(.,
+      `Type`             = "Short Term"
+    ) %>%
+    write_csv(., 
+      file=paste0("data/tax_8949_intuit_", str_pad(i, 2, pad="0"), ".csv")
+    )
+}
+
 # Define template file paths
 f8949   <- "forms/f8949.pdf"
 f1040sd <- "forms/f1040sd.pdf"
@@ -126,29 +150,12 @@ for (i in seq(1, nrow(tax_8949), by=14)) {
     overwrite=TRUE
   )
   
-  # Merge PDF files (Note: staple_pdf will fail with a large number of files)
-  if (k == 1) {
-    set_fields(
-      input_filepath=f8949,
-      output_filepath=paste0(tax_8949_dir, "/f8949_Temp.pdf"),
-      fields=f8949_fields,
-      overwrite=TRUE
-    )
-  }
-  else {
-    # Adjust sleep time if file renaming warnings arise
-    Sys.sleep(0.05)
-    file.rename(
-      from = paste0(tax_8949_dir, "/f8949_Final.pdf"),
-      to   = paste0(tax_8949_dir, "/f8949_Temp.pdf")
-    )
-    staple <- staple_pdf(
-      input_files=c(
-        paste0(tax_8949_dir, "/f8949_Temp.pdf"),
-        paste0(tax_8949_dir, "/f8949_", str_pad(k, 4, pad="0"), ".pdf")
-      ),
-      output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf"),
-      overwrite=TRUE
-    )
-  }
 }
+
+# Merge PDF files (Note: staple_pdf will fail with a large number of files)
+staple <- staple_pdf(
+  input_directory=tax_8949_dir,
+  output_filepath=paste0(tax_8949_dir, "/f8949_Final.pdf"),
+  overwrite=TRUE
+)
+if (staple > 0) warning("Failed to merge 8949 forms.")
