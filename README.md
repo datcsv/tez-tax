@@ -27,7 +27,7 @@ The authors of 'tez-tax' are not tax professionals and 'tez-tax' is not a tax so
 
 *  Generate necessary gain or loss data via a dynamic income statement/balance sheet relationship by running '03_BS_Generation.R'. 
 	+ This step attempts to calculate gains or losses using the provided income statement and exchange data. 
-	+ It is important to note that, due to the API limitations mentioned above, airdropped FA2 tokens and similar transactions do not appear in the initial generated income statement. 
+	+ It is important to note that, due to the API limitations mentioned above, airdropped FA2 tokens from external accounts and similar transactions may not appear in the initial generated income statement. 
 		+ A warning will appear if one of these tokens is otherwise interacted with, as such an interaction will result in a deficient token balance. 
 		+ When a deficient token balance is encountered, the code will assume the token was acquired with a cost basis of 0 XTZ and no acquisition date will be provided for the token in the 'tax_8949' output. 
 	+ A number of additional, strong assumptions are made during this process that should be thoroughly reviewed in the code.
