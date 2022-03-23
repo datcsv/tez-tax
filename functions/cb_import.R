@@ -66,6 +66,7 @@ for (i in 1:nrow(cb)) {
     x$xtzReceived   <- 0
     x$xtzProceeds   <- cb_i$`Total (inclusive of fees)`
     x$case          <- "Coinbase sell"
+    x$quote         <- cb_i$`Total (inclusive of fees)` / cb_i$`Quantity Transacted`
   }
   
   # Coinbase send
@@ -101,6 +102,7 @@ for (i in 1:nrow(cb)) {
       x$costBasis     <- NA
       x$case          <- "Coinbase convert (sell)"
       x$xtzBuy        <- FALSE
+      x$quote         <- cb_i$`Total (inclusive of fees)` / cb_i$`Quantity Transacted`
     }
   }
   
