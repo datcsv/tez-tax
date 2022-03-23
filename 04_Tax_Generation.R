@@ -82,8 +82,8 @@ if (xtzIncome > 100) {
   f1040s1_fields <- get_fields(input_filepath=f1040s1)
   f1040s1_fields[[1]][[3]]  <- legal_name
   f1040s1_fields[[2]][[3]]  <- ssn
-  f1040s1_fields[[27]][[3]] <- ""
-  f1040s1_fields[[28]][[3]] <- "Tezos (cryptocurrency) staking rewards, NFT royalties, etc."
+  f1040s1_fields[[27]][[3]] <- "Miscellaneous crypto income"
+  f1040s1_fields[[28]][[3]] <- ""
   f1040s1_fields[[29]][[3]] <- sprintf("%.2f", xtzIncome)
   f1040s1_fields[[30]][[3]] <- sprintf("%.2f", xtzIncome)
   f1040s1_fields[[31]][[3]] <- sprintf("%.2f", xtzIncome)
