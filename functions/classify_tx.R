@@ -375,7 +375,6 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          tokenReceived = 0,
           xtzReceived   = 0, 
           xtzSent       = xtzSent / 2,
           xtzFee        = xtzFee / 2,
@@ -392,6 +391,7 @@ for (i in 1:nrow(operations_hash)) {
       
       if ((!is.na(key)) & (key %in% is$bidKey)) {
         is %<>% mutate(.,
+          tokenReceived = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, tokenReceived), 
           xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, xtzSent),
           case    = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
         )
