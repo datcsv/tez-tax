@@ -375,10 +375,11 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzReceived = 0, 
-          xtzSent     = xtzSent / 2,
-          xtzFee      = xtzFee / 2,
-          case        = "OBJKT retract bid"
+          tokenReceived = 0,
+          xtzReceived   = 0, 
+          xtzSent       = xtzSent / 2,
+          xtzFee        = xtzFee / 2,
+          case          = "OBJKT retract bid"
         )
       
       # Check if bid recorded, zero out if so
