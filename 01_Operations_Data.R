@@ -47,17 +47,19 @@ operations_hash <- operations %>%
   filter(., target[[2]] %in% wallets) %>%
   distinct(., hash)
 
-for (i in 1:nrow(operations_hash)) {
-  operations_i <- tzkt_operations_hash(operations_hash[i, ], quote=currency)
-  operations_i %<>% select(., any_of(op_names))
-  if ("parameter" %in% names(operations_i)) {
-    if ("value" %in% names(operations_i$parameter)) {
-      if (class(operations_i$parameter$value) != "list") {
-        operations_i$parameter$value <- list(operations_i$parameter$value)
+if (nrow(operations_hash) > 0) {
+  for (i in 1:nrow(operations_hash)) {
+    operations_i <- tzkt_operations_hash(operations_hash[i, ], quote=currency)
+    operations_i %<>% select(., any_of(op_names))
+    if ("parameter" %in% names(operations_i)) {
+      if ("value" %in% names(operations_i$parameter)) {
+        if (class(operations_i$parameter$value) != "list") {
+          operations_i$parameter$value <- list(operations_i$parameter$value)
+        }
       }
     }
+    operations %<>% bind_rows(., operations_i)
   }
-  operations %<>% bind_rows(., operations_i)
 }
 
 # Get account operations: OBJKT v1 contract (Early auction data)
