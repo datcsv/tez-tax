@@ -8,11 +8,14 @@ The authors of 'tez-tax' are not tax professionals and 'tez-tax' is not a tax so
 
 ## Instructions
 
-'tez-tax' is a work in progress and a number of simplifying assumptions are made during the course of the code logic. Further, the identification and classification of smart contract operations is exceedingly complex by nature. It is important to thoroughly understand and debug each step in order to ensure any provided estimates are as accurate as possible. 'tez-tax' will never provide perfectly accurate outputs and only seeks to provide potentially useful information for estimating gain or loss estimates. It is worth noting that it is not possible to comprehensively categorize all smart contract operations and is important to validate all outputs at each step of the process. Currently, the code is not able to handle most 'defi' operations. 
+'tez-tax' is a work in progress and a number of simplifying assumptions are made during the course of the code logic. Further, the identification and classification of smart contract operations is exceedingly complex by nature. It is important to thoroughly understand and debug each step in order to ensure any provided estimates are as accurate as possible. 'tez-tax' will never provide perfectly accurate outputs and only seeks to provide potentially useful information for estimating gain or loss estimates. It is worth noting that it is not possible to comprehensively categorize all smart contract operations and is important to validate all outputs at each step of the process. Currently, the code is not able to handle most 'defi'. 
 
-* Update the contents of configuration file, '00_Config.R', and run it.
+Users of 'tez-tax' should have a firm understanding of the R programming language and the tax implications of their Tezos blockchain activity. All 'tez-tax' outputs should be thoroughly reviewed for accuracy. Failure to critically validate the outputs can result in erroneous estimates.  
+
+* Update the contents of configuration file, '00_Config.R', and run it. The configuration file should be run prior to each 'tez-tax' session.
 	+ Currently, 'tez-tax' only provides support for Coinbase as an exchange, alternative exchange data will need to be manually imported and added to the income initial income statement, please refer to 'functions/cb_import.R' for example. 
 	+ To download Coinbase exchange data, navigate to [Coinbase.com/reports](https://www.coinbase.com/reports) and generate a transaction history CSV report. 
+	+ Currently 'tez-tax' does not support any exchanges other than Coinbase. Other exchange transactiosn will have to be added or modified manually.
 
 * Download operations data via the [TzKT API](https://api.tzkt.io/) by running '01_Operations_Data.R'.
 	+ This step will likely take the longest as it downloads blockchain data for all wallets included in the configuration file.
@@ -24,12 +27,14 @@ The authors of 'tez-tax' are not tax professionals and 'tez-tax' is not a tax so
 	+ Once the code has finished running, users should verify that all transactions have been classified correctly. 
 		+ Any misclassified or miscalculated rows or fields should be manually adjusted. 
 		+ In the event that any operations are unclassified, nrow(filter(is, is.na(case))) > 0, the unclassified rows should be manually adjusted.
+		+ Please note that sales of self-minted tokens (e.g., sales of an art piece by the artist it was created by), are currently classified by 'tez-tax' as capital gains income (i.e., Schedule D) rather than other income (i.e., Schedule 1). Please consult with a tax professional on how best to approach such transactions and ensure that they are classified correctly.
 
 *  Generate necessary gain or loss data via a dynamic income statement/balance sheet relationship by running '03_BS_Generation.R'. 
 	+ This step attempts to calculate gains or losses using the provided income statement and exchange data. 
 	+ It is important to note that, due to the API limitations mentioned above, airdropped FA2 tokens from external accounts and similar transactions may not appear in the initial generated income statement. 
 		+ A warning will appear if one of these tokens is otherwise interacted with, as such an interaction will result in a deficient token balance. 
 		+ When a deficient token balance is encountered, the code will assume the token was acquired with a cost basis of 0 XTZ and no acquisition date will be provided for the token in the 'tax_8949' output. 
+		+ Missing acquisition dates should be manually input by the user. 
 	+ A number of additional, strong assumptions are made during this process that should be thoroughly reviewed in the code.
 	+ Once the code has finished running, the balances provided in the balance sheet data should be recoonciled to those provided via the [TzKT API](https://api.tzkt.io/) at various points in time. 
 	
