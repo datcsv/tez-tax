@@ -36,7 +36,8 @@ Users of 'tez-tax' should have a firm understanding of the R programming languag
 		+ When a deficient token balance is encountered, the code will assume the token was acquired with a cost basis of 0 XTZ and no acquisition date will be provided for the token in the 'tax_8949' output. 
 		+ Missing acquisition dates should be manually input by the user. 
 	+ A number of additional, strong assumptions are made during this process that should be thoroughly reviewed in the code.
-	+ Once the code has finished running, the balances provided in the balance sheet data should be recoonciled to those provided via the [TzKT API](https://api.tzkt.io/) at various points in time. 
+	+ Once the code has finished running, the balances provided in the balance sheet data should be recoonciled to those provided via the [TzKT API](https://api.tzkt.io/) at various points in time.
+	+ Data included in the 'tax_8949' dataset are used to calculate capital gains income (i.e., Schedule D). Data included in 'xtzIncome_data' are used to calculate other income (i.e., Schedule 1). It is important to ensure that these classifications are correct.
 	
 * For U.S. users, it may be useful to generate tax documents using '04_Tax_Generation.R'. **The outputs of this step should be used for informational purposes only and are provided as-is. Only a certified tax professional can accurately assess the tax implications of trading XTZ or associated tokens on the Tezos blockchain.**
 	+ This step relies on the ['staplr' R package](https://cran.r-project.org/web/packages/staplr/index.html) which, in turn, may rely on [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/) to generate PDF outputs.
