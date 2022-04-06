@@ -44,7 +44,7 @@ operations %<>% select(., any_of(op_names))
 
 # Get account operations: Second pass (Get operations by hash)
 operations_hash <- operations %>% 
-  filter(., target[[2]] %in% wallets) %>%
+  filter(., target[[2]] %in% wallets | target[[1]] %in% wallets) %>%
   distinct(., hash)
 
 if (nrow(operations_hash) > 0) {
