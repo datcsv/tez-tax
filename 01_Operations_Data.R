@@ -61,6 +61,9 @@ if (nrow(operations_hash) > 0) {
     operations %<>% bind_rows(., operations_i)
   }
 }
+else {
+  warning(cat("\nNo contract operations found."))
+}
 
 # Get account operations: OBJKT v1 contract (Early auction data)
 if (objkt_v1) {
