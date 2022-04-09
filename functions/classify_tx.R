@@ -126,7 +126,6 @@ operations %<>% mutate(., bidKey = "")
 # Iterate over unique operation groups to build income statement
 for (i in 1:nrow(operations_hash)) {
   
-  
   ##############################################################################
   # Define variables, as necessary
   ##############################################################################
@@ -245,26 +244,32 @@ for (i in 1:nrow(operations_hash)) {
       # Adjust for batch trades
       collectN <- sum(x$parameterEntry == "collect", na.rm=TRUE)
       entries <- (nrow(x) / collectN)
-      for (i in 1:collectN) {
-        x2 <- x[(1 + (i - 1) * entries):(i * entries), ] %>%
-          mutate(., xtzReceived = ifelse(targetAddress %in% wallets, xtzAmount, 0))
-        x2$xtzReceived <- sum(x2$xtzReceived)
-        token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
-        x2 %<>% 
-          filter(., parameterEntry == "transfer") %>% 
-          mutate(., 
-            tokenAmount=ifelse(
-              xtzCollect <= xtzReceived, 
-              as.numeric(list_check(parameterValue, "amount")), 0
-            ),
-            tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-            case=ifelse(xtzCollect <= xtzReceived, "HEN trade", "HEN royalties")
-          )
-        
-        if (i == 1) x3 <- x2
-        else x3 %<>% bind_rows(., x2)
+      
+      if (entries != round(entries)) {
+        x <- y  
       }
-      x <- x3
+      else {
+        for (i in 1:collectN) {
+          x2 <- x[(1 + (i - 1) * entries):(i * entries), ] %>%
+            mutate(., xtzReceived = ifelse(targetAddress %in% wallets, xtzAmount, 0))
+          x2$xtzReceived <- sum(x2$xtzReceived)
+          token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+          x2 %<>% 
+            filter(., parameterEntry == "transfer") %>% 
+            mutate(., 
+              tokenAmount=ifelse(
+                xtzCollect <= xtzReceived, 
+                as.numeric(list_check(parameterValue, "amount")), 0
+              ),
+              tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+              case=ifelse(xtzCollect <= xtzReceived, "HEN trade", "HEN royalties")
+            )
+          
+          if (i == 1) x3 <- x2
+          else x3 %<>% bind_rows(., x2)
+        }
+        x <- x3
+      }
     }
     
     # HEN collect
@@ -940,4 +945,3 @@ for (i in 1:nrow(operations_hash)) {
 
 # Adjust income statement data
 is %<>% select(., -bidKey)
-
