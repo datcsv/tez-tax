@@ -61,8 +61,7 @@ if (nrow(operations_hash) > 0) {
     }
     operations %<>% bind_rows(., operations_i)
   }
-}
-else {
+} else {
   warning(cat("\nNo contract operations found."))
 }
 
