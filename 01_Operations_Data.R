@@ -16,16 +16,17 @@
 #                                                                              #
 ################################################################################
 
-# Get account operations: First pass 
+# Get account operations: First pass
 limit_ops <- 1000
 for (i in 1:length(wallets)) {
   operations_i <- tzkt_operations(
     address=wallets[i], limit=limit_ops, span=date_span, quote=currency
   )
-  while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
+  while ((nrow(operations_i) > 0) & (nrow(operations_i) %% limit_ops) == 0) {
+    # Add one to level to ensure overlap between pulls
     level <- min(operations_i$level + 1)
     operations_i %<>% bind_rows(.,
-      tzkt_operations(address=wallets[i], level=level, limit=limit_ops)
+      tzkt_operations(address=wallets[i], level=level, limit=limit_ops, span=date_span, quote=currency)
     )
   }
   if (i == 1) operations <- operations_i
