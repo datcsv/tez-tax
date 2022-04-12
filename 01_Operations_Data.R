@@ -26,7 +26,10 @@ for (i in 1:length(wallets)) {
     # Add one to level to ensure overlap between pulls
     level <- min(operations_i$level + 1)
     operations_i %<>% bind_rows(.,
-      tzkt_operations(address=wallets[i], level=level, limit=limit_ops, span=date_span, quote=currency)
+      tzkt_operations(
+        address=wallets[i], level=level, limit=limit_ops, span=date_span, 
+        quote=currency
+      )
     )
   }
   if (i == 1) operations <- operations_i
