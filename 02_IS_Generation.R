@@ -19,7 +19,7 @@
 # Load operations data
 load(file="data/operations.RData")
 
-# Split nested features in operations data (Better way using tidyverse?)
+# Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
 operations$initiatorAddress <- operations$initiator$address
 operations$senderAlias      <- operations$sender$alias
