@@ -541,19 +541,6 @@ for (i in 1:nrow(operations_hash)) {
       }
       x <- x3
       
-      # token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
-      # x %<>% 
-      #   filter(., parameterEntry == "transfer") %>% 
-      #   mutate(., 
-      #     tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-      #     tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-      #     case=ifelse(
-      #       xtzCollect > xtzReceived, 
-      #       "OBJKT fulfill bid (royalties)", 
-      #       "OBJKT fulfill bid (trade)"
-      #     )
-      #   )
-      
     }
     
     # OBJKT fulfill bid (collect)
