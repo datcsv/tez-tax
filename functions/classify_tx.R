@@ -16,12 +16,6 @@
 #                                                                              #
 ################################################################################
 
-################################################################################
-# Notes:                                                                       #
-# (1) Tezos Domains, Randomly Common Skeles, and Pixel Potus tokens may not be #
-#     registered correctly at this time.                                       #
-################################################################################
-
 # Non-FA2 tokens
 nfa2 <- c(
   "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9",
