@@ -64,6 +64,12 @@ tax_8949_intuit <- tax_8949 %>%
     `Type`             = "Short Term"
   )
 
+# Adjust date format for 8949 report
+tax_8949 %<>% mutate(.,
+  Date_Acquired    = format(Date_Acquired, "%m/%d/%Y"),
+  Date_Sold        = format(Date_Sold, "%m/%d/%Y")
+)
+
 # Write tax form 8949 data to CSV file
 tax_8949_intuit %>% write_csv(., file=paste0(tax_8949_dir, "/tax_8949_full.csv"))
 
