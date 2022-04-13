@@ -246,8 +246,8 @@ for (i in 1:nrow(operations_hash)) {
             tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
             case=ifelse(
               xtzCollect > xtzReceived,
-              "OBJKT fulfill bid (royalties)",
-              "OBJKT fulfill bid (trade)"
+              "HEN collect (royalties)",
+              "HEN collect (trade)"
             )
           )
       }
