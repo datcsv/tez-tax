@@ -254,6 +254,7 @@ for (i in 1:nrow(operations_hash)) {
       else {
         x <- y
       }
+    }
     
     # HEN collect
     else if (
