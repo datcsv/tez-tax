@@ -235,43 +235,40 @@ for (i in 1:nrow(operations_hash)) {
       (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
       
-      # Adjust for batch trades
-      collectN <- sum(x$parameterEntry == "collect", na.rm=TRUE)
-      entries <- (nrow(x) / collectN)
-      
-      if (entries != round(entries)) {
-        x <- y  
+      # Do not classify batch trades
+      n_collect <- sum(x$parameterEntry == "collect", na.rm=TRUE)
+      if (n_collect == 1) {
+        token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+        x %<>%
+          filter(., parameterEntry == "transfer") %>%
+          mutate(.,
+            tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+            tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+            case=ifelse(
+              xtzCollect > xtzReceived,
+              "OBJKT fulfill bid (royalties)",
+              "OBJKT fulfill bid (trade)"
+            )
+          )
       }
       else {
-        for (i in 1:collectN) {
-          x2 <- x[(1 + (i - 1) * entries):(i * entries), ] %>%
-            mutate(., xtzReceived = ifelse(targetAddress %in% wallets, xtzAmount, 0))
-          x2$xtzReceived <- sum(x2$xtzReceived)
-          token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
-          x2 %<>% 
-            filter(., parameterEntry == "transfer") %>% 
-            mutate(., 
-              tokenAmount=ifelse(
-                xtzCollect <= xtzReceived, 
-                as.numeric(list_check(parameterValue, "amount")), 0
-              ),
-              tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-              case=ifelse(xtzCollect <= xtzReceived, "HEN trade", "HEN royalties")
-            )
-          
-          if (i == 1) x3 <- x2
-          else x3 %<>% bind_rows(., x2)
-        }
-        x <- x3
+        x <- y
       }
-    }
     
     # HEN collect
     else if (
       ("collect" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% quick_case(., entry="transfer", case="HEN collect")
+      
+      # Do not classify batch trades
+      n_collect <- sum(x$parameterEntry == "collect", na.rm=TRUE)
+      if (n_collect == 1) {
+        x %<>% quick_case(., entry="transfer", case="HEN collect")
+      }
+      else {
+        x <- y
+      }
     }
     
     # HEN curate
