@@ -873,6 +873,25 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="transfer", case="Rarible collect")
     }
     
+    # Rarible trade
+    else if (
+      ("match_orders" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      xtzCollect <- sort(x$xtzAmount, decreasing=TRUE)[5]
+      x %<>% 
+        quick_case(., entry="transfer", case="Rarible trade") %>%
+        mutate(.,
+          tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case=ifelse(
+            xtzCollect > xtzReceived,
+            "Rarible collect (royalties)",
+            "Rarible collect (trade)"
+          )
+        )
+    }
+	
     # Rarible update operators
     else if ("update_operators_for_all" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="update_operators_for_all", case="Rarible update operators")
