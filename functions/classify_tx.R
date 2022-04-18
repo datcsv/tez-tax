@@ -136,7 +136,7 @@ for (i in 1:nrow(operations_hash)) {
       
       # Add token metadata, if possible
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
-        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], "token_id"))
+        x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], c("token_id", "itokenid")))
         x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_"))
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
         x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
@@ -884,6 +884,11 @@ for (i in 1:nrow(operations_hash)) {
             "Rarible collect (trade)"
           )
         )
+    }
+    
+    # Rarible mint
+    else if ("mint" %in% x$parameterEntry) {
+      x %<>% mutate(., case="Rarible mint")
     }
     
     # Rarible update operators
