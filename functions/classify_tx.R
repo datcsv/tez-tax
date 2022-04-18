@@ -124,8 +124,10 @@ for (i in 1:nrow(operations_hash)) {
   # Define variables, as necessary
   ##############################################################################
   
-  # Helper variables, etc
-  x <- filter(operations, hash == operations_hash[[1]][i])
+  # Helper variables, hash adjustment, etc
+  x <- operations %>% 
+    filter(., hash == operations_hash[[1]][i]) %>%
+    mutate(., hash = str_split(hash, "_", simplify=TRUE)[, 1])
   y <- x
   
   # Update token data
@@ -261,15 +263,7 @@ for (i in 1:nrow(operations_hash)) {
       ("collect" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      
-      # Do not classify batch trades
-      n_collect <- sum(x$parameterEntry == "collect", na.rm=TRUE)
-      if (n_collect == 1) {
-        x %<>% quick_case(., entry="transfer", case="HEN collect")
-      }
-      else {
-        x <- y
-      }
+      x %<>% quick_case(., entry="transfer", case="HEN collect")
     }
     
     # HEN curate
@@ -891,7 +885,7 @@ for (i in 1:nrow(operations_hash)) {
           )
         )
     }
-	
+    
     # Rarible update operators
     else if ("update_operators_for_all" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="update_operators_for_all", case="Rarible update operators")

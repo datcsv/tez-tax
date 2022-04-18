@@ -30,6 +30,28 @@ operations$parameterEntry   <- operations$parameter$entrypoint
 operations$parameterValue   <- operations$parameter$value
 operations$quote            <- operations$quote[[1]]
 
+# Adjust batch transactions
+op_hash <- "0"
+j <- 0
+for (i in 1:nrow(operations)) {
+  if (i > 1) {
+    if (
+      ((sum(operations$parameterEntry[i] %in% "collect") > 0) |
+      (operations$hash[i] == op_hash)) & 
+      (operations$hash[i] != operations$hash[i-1])
+    ) {
+      if (sum(operations$parameterEntry[i] %in% "collect") > 0) {
+        op_hash <- operations$hash[i]
+        j <- j + 1
+      }
+      else {
+        op_hash <- operations$hash[i]
+      }
+      operations$hash[i] <- paste0(op_hash, "_", j)
+    }
+  }
+}
+
 # Clean operations data
 operations %<>%
   group_by(., hash) %>%
