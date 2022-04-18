@@ -109,24 +109,29 @@ rari_contracts <- c(
 )
 
 # Adjust batch transactions
-# op_hash <- "0"
-# j       <- 0
-# for (i in 1:nrow(operations)) {
-#   if (
-#     (operations$targetAddress[i] %in% hen_contracts) | 
-#     (operations$hash[i] == op_hash)
-#   ) {
-#     if (operations$hash[i] == op_hash) {
-#       if (is.na(operations$initiatorAddress[i])) {
-#          j <- j + 1
-#       }
-#     } else {
-#       op_hash <- operations$hash[i]
-#       j <- 0
-#     }
-#     operations$hash[i] <- paste0(op_hash, "_", j)
-#   }
-# }
+op_hash <- "0"
+j <- 0
+for (i in 1:nrow(operations)) {
+  if (
+    (operations$targetAddress[i] %in% hen_contracts) |
+    (operations$hash[i] == op_hash)
+  ) {
+    if (
+      (operations$hash[i] == op_hash)
+    ) {
+      if (
+        (is.na(operations$initiatorAddress[i])) & 
+        (sum(operations$parameterEntry[i] %in% "collect") > 0)
+      ) {
+         j <- j + 1
+      }
+    } else {
+      op_hash <- operations$hash[i]
+      j <- 0
+    }
+    operations$hash[i] <- paste0(op_hash, "_", j)
+  }
+}
 
 # Create null income statement
 is <- operations[0, ]
