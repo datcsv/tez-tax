@@ -63,7 +63,10 @@ quipu_contracts <- c(
   "KT1RRgK6eXvCWCiEGWhRZCSVGzhDzwXEEjS4",
   "KT1ANEFHasacTTZxGPmQmZo7spj5YuLE6TL4",
   "KT1X1LgNkQShpF9nRLYw3Dgdy4qp38MX617z",
-  "KT1A91CcMx1izXcbBwyH3z8Do3vnEdKpbde2"
+  "KT1A91CcMx1izXcbBwyH3z8Do3vnEdKpbde2",
+  "KT1BgezWwHBxA9NrczwK9x3zfgFnUkc7JJ4b",
+  "KT1Evsp2yA19Whm24khvFPcwimK6UaAJu8Zo",
+  "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w"
 )
 
 # Tezos Domains contracts
