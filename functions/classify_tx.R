@@ -86,8 +86,8 @@ objkt_contracts <- c(
   "KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU",
   "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih",
   "KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r",
-  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM",
-  "KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc"
+  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM"
+  #"KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc"
 )
 
 # akaSwap contracts
@@ -412,7 +412,7 @@ for (i in 1:nrow(operations_hash)) {
       key <- tx_operations$diffs[[1]]$content$key
       bigmap <- tzkt_bigmap(id=id, key=key)
       
-      # Omit early OBJKT contract
+      # Omit early OBJKT contracts
       if (x$targetAddress[1] != "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z") {
         
         if (id == 6210) {
