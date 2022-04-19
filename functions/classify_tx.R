@@ -721,12 +721,34 @@ for (i in 1:nrow(operations_hash)) {
   ) {
     tz <- as.numeric(x$parameterValue[[1]])
     x %<>%
-      filter(., parameterEntry == "mint", !row_number() == 1) %>% 
+      filter(., 
+        parameterEntry == "mint", 
+        !row_number() == 1
+      ) %>% 
       mutate(., 
         xtzSent=xtzSent / tz,
         tokenSender=targetAddress,
         tokenReceiver=list_check(parameterValue, "address"),
         case="Neonz mint"
+      )
+  }
+  
+  # Ziggurats mint
+  else if (
+    ("KT1NC4pPLbhcw5JRq89NnHgwXg9uGztSZm1k" %in% x$targetAddress) & 
+    ("mint" %in% x$parameterEntry)
+  ) {
+    tz <- as.numeric(x$parameterValue[[1]])
+    x %<>%
+      filter(., 
+        parameterEntry == "mint", 
+        !row_number() == 1
+      ) %>% 
+      mutate(., 
+        xtzSent=xtzSent / tz,
+        tokenSender=targetAddress,
+        tokenReceiver=list_check(parameterValue, "address"),
+        case="Ziggurats mint"
       )
   }
   
