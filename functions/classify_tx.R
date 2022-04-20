@@ -991,7 +991,7 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
-    # WRAP mint
+    # WRAP unwrap
     else if ("unwrap_erc20" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "burn_tokens") %>%
