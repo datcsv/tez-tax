@@ -80,17 +80,17 @@ operations %<>%
     xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
     tokenID        = NA,
-    tokenAmount    = 0,
+    tokenAmount    = 0.00,
     tokenSender    = NA,
     tokenReceiver  = NA,
-    tokenSent      = 0,
-    tokenReceived  = 0,
+    tokenSent      = 0.00,
+    tokenReceived  = 0.00,
     walletTx       = TRUE,
     xtzBuy         = FALSE,
-    xtzProceeds    = 0, # Proceeds on xtz sent
-    xtzGainLoss    = 0, # Gain (loss) on xtz sent
-    tokenProceeds  = 0, # Proceeds on token sent
-    tokenGainLoss  = 0, # Gain (loss) on token sent
+    xtzProceeds    = 0.00, # Proceeds on xtz sent
+    xtzGainLoss    = 0.00, # Gain (loss) on xtz sent
+    tokenProceeds  = 0.00, # Proceeds on token sent
+    tokenGainLoss  = 0.00, # Gain (loss) on token sent
     costBasis      = NA # Cost basis of all xtz/tokens received
   ) %>%
   select(., any_of(c(

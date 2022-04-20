@@ -370,7 +370,7 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzReceived   = 0, 
+          tokenAmount   = 0, 
           xtzSent       = xtzSent / 2,
           xtzFee        = xtzFee / 2,
           case          = "OBJKT retract bid"
@@ -386,7 +386,7 @@ for (i in 1:nrow(operations_hash)) {
       
       if ((!is.na(key)) & (key %in% is$bidKey)) {
         is %<>% mutate(.,
-          tokenReceived = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, tokenReceived), 
+          tokenAmount = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, tokenAmount), 
           xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, xtzSent),
           case    = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
         )
@@ -931,6 +931,27 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
+  }
+  
+  # Goren tokens
+  else if ("KT1JBThDEqyqrEHimhxoUBCSnsKAqFcuHMkP" %in% x$targetAddress) {
+    
+    # Goren mint
+    if ("mint" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "mint") %>%
+        mutate(., 
+          tokenReceiver = SenderAddress,
+          tokenAmount   = 1,
+          case = "Goren mint"
+        )
+    }
+
+    # Goren unidentified
+    else {
+      x <- y
+    }
+    
   }
   
   # Unidentified
