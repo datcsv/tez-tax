@@ -946,6 +946,11 @@ for (i in 1:nrow(operations_hash)) {
           case = "Goren mint"
         )
     }
+    
+    # Goren update
+    else if ("update_operators" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="update_operators", case="Goren update")
+    }
 
     # Goren unidentified
     else {
