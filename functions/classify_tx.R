@@ -112,6 +112,11 @@ rari_contracts <- c(
   "KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS"
 )
 
+wrap_contracts <- c(
+  "KT1DLif2x9BtK6pUq9ZfFVVyW5wN2kau9rkW",
+  "KT1MTnKjFSN2u4myPRBqnFuCYCPX8kTdUEnv"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -966,7 +971,7 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # WRAP tokens
-  else if ("KT1DLif2x9BtK6pUq9ZfFVVyW5wN2kau9rkW" %in% x$targetAddress) {
+  else if (sum(wrap_contracts %in% x$targetAddress) > 0) {
     
     # WRAP mint
     if ("minter" %in% x$parameterEntry) {
