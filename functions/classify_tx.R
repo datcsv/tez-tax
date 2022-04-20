@@ -963,7 +963,30 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
+  }
+  
+  # WRAP tokens
+  else if ("KT1DLif2x9BtK6pUq9ZfFVVyW5wN2kau9rkW" %in% x$targetAddress) {
     
+    # WRAP mint
+    if ("minter" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "mint_tokens") %>%
+        mutate(., 
+          tokenReceiver = initiatorAddress,
+          case          = "WRAP mint"
+        )
+      parameter_value <- filter(x[1, ]$parameterValue[[1]], owner %in% wallets)
+      token_id <- str_c(x[1,]$targetAddress, "_", parameter_value[1, ]$token_id)
+      token_amount <- parameter_value[1, ]$amount
+      x %<>% 
+        mutate(., tokenID = token_id, tokenAmount = as.numeric(token_amount))
+    }
+    
+    # WRAP unidentified
+    else {
+      x <- y
+    }
   }
   
   # Unidentified
