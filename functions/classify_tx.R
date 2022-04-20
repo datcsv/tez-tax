@@ -980,7 +980,28 @@ for (i in 1:nrow(operations_hash)) {
       token_id <- str_c(x[1,]$targetAddress, "_", parameter_value[1, ]$token_id)
       token_amount <- parameter_value[1, ]$amount
       x %<>% 
-        mutate(., tokenID = token_id, tokenAmount = as.numeric(token_amount))
+        mutate(.,
+          tokenID = token_id, 
+          tokenAmount = as.numeric(token_amount)
+        )
+    }
+    
+    # WRAP mint
+    else if ("unwrap_erc20" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "burn_tokens") %>%
+        mutate(., 
+          tokenReceiver = initiatorAddress,
+          case          = "WRAP unwrap"
+        )
+      parameter_value <- filter(x[1, ]$parameterValue[[1]], owner %in% wallets)
+      token_id <- str_c(x[1,]$targetAddress, "_", parameter_value[1, ]$token_id)
+      token_amount <- parameter_value[1, ]$amount
+      x %<>% 
+        mutate(., 
+          tokenID = token_id, 
+          tokenAmount = as.numeric(token_amount)
+        )
     }
     
     # WRAP unidentified
