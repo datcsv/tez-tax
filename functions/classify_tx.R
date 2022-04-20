@@ -996,8 +996,8 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "burn_tokens") %>%
         mutate(., 
-          tokenReceiver = initiatorAddress,
-          case          = "WRAP unwrap"
+          tokenSender = initiatorAddress,
+          case        = "WRAP unwrap"
         )
       parameter_value <- filter(x[1, ]$parameterValue[[1]], owner %in% wallets)
       token_id <- str_c(x[1,]$targetAddress, "_", parameter_value[1, ]$token_id)
