@@ -146,17 +146,10 @@ for (i in 1:nrow(operations_hash)) {
       # Add token metadata, if possible
       if (sum(c("transfer", "mint") %in% x$parameterEntry[i]) > 0) {
         x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], c("token_id", "itokenid")))
-        x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_"))
+        x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_", "from"))
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
-        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount"))
+        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount", "value"))
       }
-      
-      # Non-FA2 tokens - assuming a token ID of 0
-      if (sum(nfa2 %in% x$targetAddress[i]) > 0) {
-        x$tokenID[i]       <- paste0(x$targetAddress[i], "_0")
-        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "value"))
-      }
-      
     }
   }
   x$xtzSent     <- max(x$xtzSent, na.rm=TRUE)
