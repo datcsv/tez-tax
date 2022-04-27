@@ -347,6 +347,7 @@ for (i in 1:nrow(operations_hash)) {
         token_received <- as.numeric(tx_operations$diffs[[1]][2,]$content$value$balance)
       }
       else {
+        
         id <- tx_operations$diffs[[1]][2, ]$bigmap
         key <- tx_operations$diffs[[1]][2, ]$content$key
         bigmap <- tzkt_bigmap_updates(id=id, key=key)
@@ -357,13 +358,13 @@ for (i in 1:nrow(operations_hash)) {
         bigmap %<>% 
           mutate(., balance = balance + frozen_balance) %>%
           group_by(., level) %>%
-          mutate(., balance = max(balance)) %>%
-          slice(., 1) %>%
+          filter(., row_number() >= (n() - 1)) %>%
           ungroup(.) %>%
           mutate(., delta = balance - lag(balance)) %>%
           filter(., level == x1$level[1])
           
         token_received <- bigmap$delta[1]
+        
       }
       
       x3 <- x %>%
