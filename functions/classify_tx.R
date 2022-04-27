@@ -324,24 +324,26 @@ for (i in 1:nrow(operations_hash)) {
       x1 <- x %>% 
         filter(., parameterEntry == "investLiquidity") %>%
         mutate(., 
-          xtzSent = xtzSent - (xtzFee / 2.0),
           xtzProceeds = quote * (xtzSent - (xtzFee / 2.0)),
+          xtzSent = xtzSent - (xtzFee / 2.0),
           case = "QuipuSwap invest liquidity"
         )
       
       x2 <- x %>%
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
-          xtzSent = xtzFee / 2.0,
           tokenProceeds = quote * (xtzSent - (xtzFee / 2.0)),
+          xtzSent = xtzFee / 2.0,
           case = "QuipuSwap invest liquidity"
         )
       
       x3 <- x %>%
         filter(., parameterEntry == "investLiquidity") %>%
         mutate(., 
-          xtzSent = 0,
           costBasis = 2.0 * quote * (xtzSent - (xtzFee / 2.0)),
+          xtzSent = 0,
+          tokenReceived = 0,
+          tokenID = "0",
           case = "QuipuSwap invest liquidity"
         )
       
