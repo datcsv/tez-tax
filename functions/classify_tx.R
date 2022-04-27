@@ -337,12 +337,41 @@ for (i in 1:nrow(operations_hash)) {
           case = "QuipuSwap invest liquidity"
         )
       
+      # Find LP token amount
+      tx_id <- x1$id[1]
+      tx_hash <- x1$hash[1]
+      tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
+      tx_operations %<>% filter(., id == tx_id)
+      
+      if (tx_operations$diffs[[1]][2,]$action == "add_key") {
+        token_received <- as.numeric(tx_operations$diffs[[1]][2,]$content$value$balance)
+      }
+      else {
+        id <- tx_operations$diffs[[1]][2, ]$bigmap
+        key <- tx_operations$diffs[[1]][2, ]$content$key
+        bigmap <- tzkt_bigmap_updates(id=id, key=key)
+        
+        bigmap$balance <- as.numeric(bigmap$value$balance)
+        bigmap$frozen_balance <- as.numeric(bigmap$value$frozen_balance)
+        
+        bigmap %<>% 
+          mutate(., balance = balance + frozen_balance) %>%
+          group_by(., level) %>%
+          mutate(., balance = max(balance)) %>%
+          slice(., 1) %>%
+          ungroup(.) %>%
+          mutate(., delta = balance - lag(balance)) %>%
+          filter(., level == x1$level[1])
+          
+        token_received <- bigmap$delta[1]
+      }
+      
       x3 <- x %>%
         filter(., parameterEntry == "investLiquidity") %>%
         mutate(., 
           costBasis = 2.0 * quote * (xtzSent - (xtzFee / 2.0)),
           xtzSent = 0,
-          tokenReceived = 0,
+          tokenReceived = token_received,
           tokenID = paste0(x2$tokenID[1], "_LP"),
           case = "QuipuSwap invest liquidity"
         )
