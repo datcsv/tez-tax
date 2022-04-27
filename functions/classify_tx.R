@@ -343,7 +343,7 @@ for (i in 1:nrow(operations_hash)) {
           costBasis = 2.0 * quote * (xtzSent - (xtzFee / 2.0)),
           xtzSent = 0,
           tokenReceived = 0,
-          tokenID = "0",
+          tokenID = paste0(x2$tokenID[1], "_LP"),
           case = "QuipuSwap invest liquidity"
         )
       
