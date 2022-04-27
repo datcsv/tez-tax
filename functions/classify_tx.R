@@ -371,7 +371,8 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., 
           costBasis = 2.0 * quote * (xtzSent - (xtzFee / 2.0)),
           xtzSent = 0,
-          tokenReceived = token_received,
+          tokenAmount = token_received,
+          tokenReceiver = x2$initiatorAddress[1],
           tokenID = paste0(x2$tokenID[1], "_LP"),
           case = "QuipuSwap invest liquidity"
         )
