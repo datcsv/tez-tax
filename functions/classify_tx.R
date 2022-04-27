@@ -148,7 +148,7 @@ for (i in 1:nrow(operations_hash)) {
         x$tokenID[i]       <- paste0(x$targetAddress[i], "_", list_check(x$parameterValue[i], c("token_id", "itokenid")))
         x$tokenSender[i]   <- list_check(x$parameterValue[i], c("address", "from_", "from"))
         x$tokenReceiver[i] <- list_check(x$parameterValue[i], c("to_", "to"))
-        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], "amount", "value"))
+        x$tokenAmount[i]   <- as.numeric(list_check(x$parameterValue[i], c("amount", "value")))
       }
     }
   }
