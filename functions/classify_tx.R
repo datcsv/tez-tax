@@ -382,6 +382,11 @@ for (i in 1:nrow(operations_hash)) {
       
     } 
     
+    # QuipuSwap vote
+    else if ("vote" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="vote", case="QuipuSwap vote") 
+    }
+    
     # Quipuswap unidentified
     else {
       x <- y
