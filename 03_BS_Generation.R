@@ -133,8 +133,9 @@ for (i in 1:nrow(is)) {
   if (is_i$xtzSent > 0) {
     
     # Initialize variables
-    xtzBalance  <- is_i$xtzSent
-    xtzCost     <- 0
+    xtzBalance <- is_i$xtzSent
+    xtzCost <- 0
+    
     if (is_i$xtzProceeds == 0) xtzProceeds <- is_i$quote * is_i$xtzSent
     else xtzProceeds <- is_i$xtzProceeds
     
@@ -208,11 +209,12 @@ for (i in 1:nrow(is)) {
   if (is_i$tokenSent > 0) {
     
     # Initialize variables
-    tokenBalance  <- is_i$tokenSent
-    tokenCost     <- 0
+    tokenBalance <- is_i$tokenSent
+    tokenCost <- 0
     
     if (is_i$tokenProceeds == 0) tokenProceeds <- is_i$xtzReceived * is_i$quote
     else tokenProceeds <- is_i$tokenProceeds
+    
     j <- 1
     
     # Subtract tokens from balance sheet, calculate tax figures
