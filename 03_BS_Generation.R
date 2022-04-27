@@ -135,7 +135,7 @@ for (i in 1:nrow(is)) {
     # Initialize variables
     xtzBalance  <- is_i$xtzSent
     xtzCost     <- 0
-    if (is.na(is_i$xtzProceeds)) xtzProceeds <- is_i$quote * is_i$xtzSent
+    if (is_i$xtzProceeds == 0) xtzProceeds <- is_i$quote * is_i$xtzSent
     else xtzProceeds <- is_i$xtzProceeds
     
     # Subtract Tezos from balance sheet, calculate tax figures
@@ -211,7 +211,7 @@ for (i in 1:nrow(is)) {
     tokenBalance  <- is_i$tokenSent
     tokenCost     <- 0
     
-    if (is.na(is_i$tokenProceeds)) tokenProceeds <- is_i$xtzReceived * is_i$quote
+    if (is_i$tokenProceeds == 0) tokenProceeds <- is_i$xtzReceived * is_i$quote
     else tokenProceeds <- is_i$tokenProceeds
     j <- 1
     
