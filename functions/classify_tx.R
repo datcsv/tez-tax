@@ -26,7 +26,8 @@ nfa2 <- c(
 hen_contracts <- c(
   "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
   "KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn", 
-  "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj"
+  "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj",
+  "KT1TybhR7XraG75JFYKSrh7KnxukMBT5dor6"
 )
 
 # QuipuSwap contracts
@@ -284,6 +285,11 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
+    # HEN claim hDAO
+    else if ("claim_hDAO" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="HEN claim hDAO")
+    }
+  
     # HEN registry
     else if ("registry" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="registry", case="HEN registry")
