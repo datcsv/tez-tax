@@ -314,6 +314,27 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="transfer", case="QuipuSwap trade") 
     }
     
+    # QuipuSwap invest liquidity
+    else if ("investLiquidity" %in% x$parameterEntry) {
+      
+      x1 <- x %>% 
+        filter(., parameterEntry == "investLiquidity") %>%
+        mutate(., 
+          xtzSent = xtzSent - (xtzFee / 2.0),
+          case = "QuipuSwap invest liquidity"
+        )
+      
+      x2 <- x %>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          xtzSent = xtzFee / 2.0,
+          case = "QuipuSwap invest liquidity"
+        )
+      
+      x <- bind_rows(x1, x2)
+      
+    } 
+    
     # Quipuswap unidentified
     else {
       x <- y
