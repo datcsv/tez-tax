@@ -205,11 +205,11 @@ for (i in 1:nrow(operations_hash)) {
   
   # Token transfer
   else if ((nrow(x) == 1) & ("transfer" %in% x$parameterEntry)) {
-    x %<>% mutate(., tokenSender=SenderAddress, case="Token transfer")
+    x %<>% mutate(., tokenSender = SenderAddress, case = "Token transfer")
     
     # Adjust wallet-to-wallet transfers
     if ((x$tokenSender %in% wallets) & (x$tokenReceiver %in% wallets)) {
-      x %<>% mutate(., tokenAmount=0, case="Wallet transfer")
+      x %<>% mutate(., tokenAmount = 0, case = "Wallet transfer")
     }
     
   }
@@ -226,7 +226,11 @@ for (i in 1:nrow(operations_hash)) {
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., tokenSender=NA, tokenReceiver=initiatorAddress, case="HEN mint")
+        mutate(., 
+          tokenSender = NA, 
+          tokenReceiver = initiatorAddress, 
+          case="HEN mint"
+        )
     }
     
     # HEN swap
@@ -252,9 +256,9 @@ for (i in 1:nrow(operations_hash)) {
         x %<>%
           filter(., parameterEntry == "transfer") %>%
           mutate(.,
-            tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-            tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-            case=ifelse(
+            tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+            tokenSender = ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+            case = ifelse(
               xtzCollect > xtzReceived,
               "HEN collect (royalties)",
               "HEN collect (trade)"
@@ -279,9 +283,9 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         quick_case(., case="HEN curate", type=2) %>%
         mutate(., 
-          tokenID="KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
-          tokenAmount=as.numeric(list_check(parameterValue, "hDAO_amount")),
-          tokenSender=initiatorAddress
+          tokenID = "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW_0",
+          tokenAmount = as.numeric(list_check(parameterValue, "hDAO_amount")),
+          tokenSender = initiatorAddress
         )
     }
     
@@ -321,6 +325,7 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "investLiquidity") %>%
         mutate(., 
           xtzSent = xtzSent - (xtzFee / 2.0),
+          xtzProceeds = quote * (xtzSent - (xtzFee / 2.0)),
           case = "QuipuSwap invest liquidity"
         )
       
@@ -328,10 +333,19 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
           xtzSent = xtzFee / 2.0,
+          tokenProceeds = quote * (xtzSent - (xtzFee / 2.0)),
           case = "QuipuSwap invest liquidity"
         )
       
-      x <- bind_rows(x1, x2)
+      x3 <- x %>%
+        filter(., parameterEntry == "investLiquidity") %>%
+        mutate(., 
+          xtzSent = 0,
+          costBasis = 2.0 * quote * (xtzSent - (xtzFee / 2.0)),
+          case = "QuipuSwap invest liquidity"
+        )
+      
+      x <- bind_rows(x1, x2, x3)
       
     } 
     
@@ -420,15 +434,15 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          tokenAmount   = 0, 
-          xtzSent       = xtzSent / 2,
-          xtzFee        = xtzFee / 2,
-          case          = "OBJKT retract bid"
+          tokenAmount = 0, 
+          xtzSent = xtzSent / 2,
+          xtzFee = xtzFee / 2,
+          case = "OBJKT retract bid"
         )
       
       # Check if bid recorded, zero out if so
-      tx_id         <- x$id[1]
-      tx_hash       <- x$hash[1]
+      tx_id <- x$id[1]
+      tx_hash <- x$hash[1]
       tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
       tx_operations %<>% filter(., type == "transaction")
       id  <- tx_operations$diffs[[1]]$bigmap
@@ -438,7 +452,7 @@ for (i in 1:nrow(operations_hash)) {
         is %<>% mutate(.,
           tokenAmount = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, tokenAmount), 
           xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, xtzSent),
-          case    = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
+          case = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
         )
       }
     }
@@ -448,14 +462,14 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=-1, wt=id) %>%
         mutate(., 
-          xtzReceived=ifelse(SenderAddress %in% wallets, 0, 0),
-          xtzSent=ifelse(SenderAddress %in% wallets, xtzSent - xtzAmount, 0),
-          case=ifelse(SenderAddress %in% wallets, "OBJKT bid", "OBJKT outbid")
+          xtzReceived = ifelse(SenderAddress %in% wallets, 0, 0),
+          xtzSent = ifelse(SenderAddress %in% wallets, xtzSent - xtzAmount, 0),
+          case = ifelse(SenderAddress %in% wallets, "OBJKT bid", "OBJKT outbid")
         )
       
       # Check if auction was won
-      tx_id         <- x$id[1]
-      tx_hash       <- x$hash[1]
+      tx_id <- x$id[1]
+      tx_hash <- x$hash[1]
       tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
       tx_operations %<>% filter(., id == tx_id)
       id  <- tx_operations$diffs[[1]]$bigmap
@@ -521,7 +535,7 @@ for (i in 1:nrow(operations_hash)) {
       tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
       tx_operations %<>% filter(., tx_operations$parameter$entrypoint == "swap")
       price <- as.numeric(tx_operations$diffs[[1]]$content$value$xtz_per_objkt) / 1000000
-      x %<>% mutate(., xtzSent=price)
+      x %<>% mutate(., xtzSent = price)
     }
     
     # OBJKT fulfill ask (trade)
@@ -533,13 +547,13 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-        tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-        tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-        case=ifelse(
-            xtzCollect > xtzReceived, 
-            "OBJKT fulfill ask (royalties)", 
-            "OBJKT fulfill ask (trade)"
-          )
+          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case = ifelse(
+              xtzCollect > xtzReceived, 
+              "OBJKT fulfill ask (royalties)", 
+              "OBJKT fulfill ask (trade)"
+            )
         )
     }
     
@@ -572,10 +586,10 @@ for (i in 1:nrow(operations_hash)) {
         x2 %<>% 
           filter(., parameterEntry == "transfer") %>% 
           mutate(., 
-            tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-            tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-            xtzSent=xtzFee / collectN,
-            case=ifelse(
+            tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+            tokenSender = ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+            xtzSent = xtzFee / collectN,
+            case = ifelse(
               xtzCollect > xtzReceived,
               "OBJKT fulfill bid (royalties)",
               "OBJKT fulfill bid (trade)"
@@ -630,9 +644,9 @@ for (i in 1:nrow(operations_hash)) {
       x %<>%
         filter(., parameterEntry == "mint") %>%
         mutate(., 
-          tokenSender=NA,
-          tokenReceiver=initiatorAddress, 
-          case="OBJKT mint"
+          tokenSender = NA,
+          tokenReceiver = initiatorAddress, 
+          case = "OBJKT mint"
         )
     }
     
@@ -654,7 +668,11 @@ for (i in 1:nrow(operations_hash)) {
     if ("mint" %in% x$parameterEntry) {
       x %<>% 
         filter(., parameterEntry == "mint") %>% 
-        mutate(., tokenSender=NA, tokenReceiver=initiatorAddress, case="akaSwap mint")
+        mutate(., 
+          tokenSender = NA, 
+          tokenReceiver = initiatorAddress, 
+          case = "akaSwap mint"
+        )
     }
     
     # akaSwap trade
@@ -666,12 +684,12 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         top_n(., n=1, wt=id) %>%
         mutate(., 
-          tokenAmount=ifelse(
+          tokenAmount = ifelse(
             xtzCollect <= xtzReceived, 
             as.numeric(list_check(parameterValue, "amount")), 0
           ),
-          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-          case=ifelse(xtzCollect <= xtzReceived, "akaSwap trade", "akaSwap royalties")
+          tokenSender = ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case = ifelse(xtzCollect <= xtzReceived, "akaSwap trade", "akaSwap royalties")
         )
     }
     
@@ -721,7 +739,7 @@ for (i in 1:nrow(operations_hash)) {
       target_address <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
         filter(., targetAddress == target_address) %>%
-        mutate(., case="akaSwap gachapon royalties")
+        mutate(., case = "akaSwap gachapon royalties")
     }
     
     # akaSwap unidentified
@@ -742,10 +760,10 @@ for (i in 1:nrow(operations_hash)) {
         !row_number() == 1
       ) %>% 
       mutate(., 
-        xtzSent=xtzSent / tz,
-        tokenSender=targetAddress,
-        tokenReceiver=list_check(parameterValue, "address"),
-        case="Tezzardz mint"
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
+        case = "Tezzardz mint"
       )
   }
   
@@ -761,10 +779,10 @@ for (i in 1:nrow(operations_hash)) {
         !row_number() == 1
       ) %>% 
       mutate(., 
-        xtzSent=xtzSent / tz,
-        tokenSender=targetAddress,
-        tokenReceiver=list_check(parameterValue, "address"),
-        case="Gogos mint"
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
+        case = "Gogos mint"
       )
   }
   
@@ -780,10 +798,10 @@ for (i in 1:nrow(operations_hash)) {
         !row_number() == 1
       ) %>% 
       mutate(., 
-        xtzSent=xtzSent / tz,
-        tokenSender=targetAddress,
-        tokenReceiver=list_check(parameterValue, "address"),
-        case="Neonz mint"
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
+        case = "Neonz mint"
       )
   }
   
@@ -799,10 +817,10 @@ for (i in 1:nrow(operations_hash)) {
         !row_number() == 1
       ) %>% 
       mutate(., 
-        xtzSent=xtzSent / tz,
-        tokenSender=targetAddress,
-        tokenReceiver=list_check(parameterValue, "address"),
-        case="Ziggurats mint"
+        xtzSent = xtzSent / tz,
+        tokenSender = targetAddress,
+        tokenReceiver = list_check(parameterValue, "address"),
+        case = "Ziggurats mint"
       )
   }
   
@@ -828,9 +846,9 @@ for (i in 1:nrow(operations_hash)) {
     if (rcs_mint) {
       x %<>% 
         mutate(., 
-          tokenID       = "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih_0",
+          tokenID = "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih_0",
           tokenReceiver = SenderAddress,
-          tokenAmount   = round((xtzSent - xtzFee) / 5.00, 0)
+          tokenAmount = round((xtzSent - xtzFee) / 5.00, 0)
         )
     }
     
@@ -871,15 +889,15 @@ for (i in 1:nrow(operations_hash)) {
       x %<>%
         filter(., parameterEntry == "mint", !row_number() == 1) %>%
         mutate(., 
-          case="fxhash mint", 
-          tokenAmount=1
+          case = "fxhash mint", 
+          tokenAmount = 1
         )
       
       if (x$tokenSender %in% wallets) {
         x %<>% mutate(., 
-          case="fxhash self-mint",
-          tokenReceiver=tokenSender,
-          tokenSender=NA
+          case = "fxhash self-mint",
+          tokenReceiver = tokenSender,
+          tokenSender = NA
         )
       }
       
@@ -905,11 +923,11 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
-          tokenAmount=ifelse(
+          tokenAmount = ifelse(
             xtzCollect <= xtzReceived, 
             as.numeric(list_check(parameterValue, "amount")), 0),
-          tokenSender=ifelse(xtzCollect <= xtzReceived, wallets[1], NA),
-          case=ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
+          tokenSender = ifelse(xtzCollect <= xtzReceived, wallets[1], NA),
+          case = ifelse(xtzCollect <= xtzReceived, "fxhash trade", "fxhash royalties")
         )
     }
     
@@ -952,9 +970,9 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         quick_case(., entry="transfer", case="Rarible trade") %>%
         mutate(.,
-          tokenAmount=ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
-          tokenSender=ifelse(xtzCollect <= xtzReceived, token_sender, NA),
-          case=ifelse(
+          tokenAmount = ifelse(xtzCollect > xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect <= xtzReceived, token_sender, NA),
+          case = ifelse(
             xtzCollect > xtzReceived,
             "Rarible collect (royalties)",
             "Rarible collect (trade)"
@@ -964,7 +982,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Rarible mint
     else if ("mint" %in% x$parameterEntry) {
-      x %<>% mutate(., case="Rarible mint")
+      x %<>% mutate(., case = "Rarible mint")
     }
     
     # Rarible update operators
@@ -992,7 +1010,7 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "mint") %>%
         mutate(., 
           tokenReceiver = SenderAddress,
-          tokenAmount   = 1,
+          tokenAmount = 1,
           case = "Goren mint"
         )
     }
@@ -1024,7 +1042,7 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "mint_tokens") %>%
         mutate(., 
           tokenReceiver = initiatorAddress,
-          case          = "WRAP mint"
+          case = "WRAP mint"
         )
       parameter_value <- filter(x[1, ]$parameterValue[[1]], owner %in% wallets)
       token_id <- str_c(x[1,]$targetAddress, "_", parameter_value[1, ]$token_id)
