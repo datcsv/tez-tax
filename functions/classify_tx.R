@@ -69,6 +69,11 @@ quipu_contracts <- c(
   "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w"
 )
 
+# Crunchy contracts
+crunchy_contracts <- c(
+  "KT1KnuE87q1EKjPozJ5sRAjQA24FPsP57CE3"
+)
+
 # Tezos Domains contracts
 td_contracts <- c(
   "KT1P8n2qzJjwMPbHJfi4o8xu6Pe3gaU3u2A3",
@@ -307,6 +312,28 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
+  }
+  
+  # Crunchy contracts
+  else if (sum(crunchy_contracts %in% x$targetAddress) > 0) {
+    
+    # Crunchy harvest
+    if ("harvest" %in% x$parameterEntry) {
+      
+      if ("transfer" %in% x$parameterEntry) {
+        x %<>% quick_case(., entry="transfer", case="Crunchy harvest")
+      }
+      else {
+        x %<>% quick_case(., case="Crunchy harvest (No reward)", type=2)
+      }
+      
+    }
+    
+    # Crunchy unidentified
+    else {
+      x <- y
+    }
+    
   }
   
   # Tezos Domains contracts
