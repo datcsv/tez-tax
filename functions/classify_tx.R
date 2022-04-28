@@ -382,6 +382,41 @@ for (i in 1:nrow(operations_hash)) {
       
     } 
     
+    # QuipuSwap divest liquidity
+    else if ("divestLiquidity" %in% x$parameterEntry) {
+      
+      x1 <- x %>%
+        filter(., is.na(parameterEntry)) %>%
+        mutate(., 
+          xtzBuy = TRUE,
+          case = "QuipuSwap divest liquidity"
+        )
+      
+      x2 <- x %>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          xtzSent = 0,
+          xtzReceived = 0,
+          costBasis = quote * x1$xtzReceived[1],
+          case = "QuipuSwap divest liquidity"
+        )
+      
+      x3 <- x %>%
+        filter(., parameterEntry == "divestLiquidity") %>%
+        mutate(., 
+          xtzSent = 0,
+          xtzReceived = 0,
+          tokenSender = SenderAddress,
+          tokenAmount = as.numeric(list_check(parameterValue, "shares")),
+          tokenID = paste0(x2$tokenID[1], "_LP"),
+          tokenProceeds = 2 * quote * x1$xtzReceived[1],
+          case = "QuipuSwap divest liquidity"
+        )
+      
+      x <- bind_rows(x1, x2, x3)
+      
+    }
+    
     # QuipuSwap vote
     else if ("vote" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="vote", case="QuipuSwap vote") 
