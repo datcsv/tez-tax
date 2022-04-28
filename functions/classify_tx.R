@@ -1275,7 +1275,7 @@ for (i in 1:nrow(operations_hash)) {
 
     # Kolibri make oven
     else if ("makeOven" %in% x$parameterEntry) {
-      quick_case(., entry="makeOven", case="Kolibri make oven")
+      x %<>% quick_case(., entry="makeOven", case="Kolibri make oven")
     }
         
     # Kolibri oven unidentified
