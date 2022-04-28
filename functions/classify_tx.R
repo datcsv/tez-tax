@@ -519,16 +519,18 @@ for (i in 1:nrow(operations_hash)) {
       tx_hash <- x$hash[1]
       tx_operations <- tzkt_operations_hash(tx_hash, quote=currency)
       tx_operations %<>% filter(., type == "transaction")
-      id  <- tx_operations$diffs[[1]]$bigmap
+      id <- tx_operations$diffs[[1]]$bigmap
       key <- tx_operations$diffs[[1]]$content$hash
       
       if ((!is.na(key)) & (key %in% is$bidKey)) {
         is %<>% mutate(.,
           tokenAmount = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, tokenAmount), 
           xtzSent = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, xtzSent),
-          case = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT bid retract", case)
+          xtzReceived = ifelse(bidKey == key & case != "OBJKT win auction (6210)", 0, xtzReceived),
+          case = ifelse(bidKey == key & case != "OBJKT win auction (6210)", "OBJKT retract bid", case)
         )
       }
+      
     }
     
     # OBJKT bid
