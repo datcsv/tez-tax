@@ -1176,6 +1176,58 @@ for (i in 1:nrow(operations_hash)) {
      
   }
   
+  # Kolibri oven
+  else if ("KT1DLaeYVgg4X21BFyFgJ8gjcR3AnPNM8ZCY" %in% x$targetAddress) {
+    
+    # Kolibri oven deposit
+    if ("deposit" %in% x$parameterEntry) {
+      x %<>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(., 
+          xtzSent = xtzFee,
+          xtzReceived = 0,
+          case = "Kolibri oven deposit"
+        )
+    }
+    
+    # Kolibri oven borrow
+    else if ("borrow" %in% x$parameterEntry) {
+      x %<>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(., 
+          #xtzReceived = as.numeric(),
+          xtzBuy = TRUE,
+          case = "Kolibri oven borrow"
+        )
+    }
+    
+    # Kolibri oven repay
+    else if ("repay" %in% x$parameterEntry) {
+      x %<>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(., 
+          case = "Kolibri oven repay"
+        )
+    }
+    
+    # Kolibri oven withdraw
+    else if ("withdraw" %in% x$parameterEntry) {
+      x %<>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(., 
+          xtzSent = xtzFee,
+          xtzReceived = 0,
+          case = "Kolibri oven withdraw"
+        )
+    }
+    
+    # Kolibri oven unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # Unidentified
   else {
     x <- y
