@@ -458,6 +458,21 @@ for (i in 1:nrow(operations_hash)) {
       
     }
     
+    # Crunchy withdrawal
+    else if ("withdrawal" %in% x$parameterEntry) {
+      
+      n_transfers <- nrow(filter(x, parameterEntry == "transfer"))
+      
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(.,
+          xtzSent = xtzFee / n_transfers,
+          tokenAmount = ifelse(TRUE, 0, tokenAmount),
+          case = "Crunchy withdrawal"
+        )
+      
+    }
+    
     # Crunchy unidentified
     else {
       x <- y
