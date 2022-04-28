@@ -1162,7 +1162,7 @@ for (i in 1:nrow(operations_hash)) {
       x %<>%
         filter(., parameterEntry == "unwrap") %>%
         mutate(.,
-          tokenSender = initiatorAddress,
+          tokenSender = SenderAddress,
           tokenID = "KT1Pyd1r9F4nMaHy8pPZxPSq6VCn9hVbVrf4_0",
           tokenSent = as.numeric(list_check(parameterValue, "nat")),
           case = "WTZ unwrap"
