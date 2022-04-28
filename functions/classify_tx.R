@@ -443,6 +443,21 @@ for (i in 1:nrow(operations_hash)) {
       
     }
     
+    # Crunchy deposit
+    else if ("deposit" %in% x$parameterEntry) {
+      
+      n_transfers <- nrow(filter(x, parameterEntry == "transfer"))
+      
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(.,
+          xtzSent = xtzFee / n_transfers,
+          tokenAmount = ifelse(tokenSender %in% wallets, 0, tokenAmount), 
+          case = "Crunchy deposit",
+        )
+      
+    }
+    
     # Crunchy unidentified
     else {
       x <- y
