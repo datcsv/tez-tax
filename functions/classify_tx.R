@@ -305,6 +305,71 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # Crunchy contracts
+  else if (sum(crunchy_contracts %in% x$targetAddress) > 0) {
+    
+    # Crunchy harvest
+    if ("harvest" %in% x$parameterEntry) {
+      
+      if ("transfer" %in% x$parameterEntry) {
+        x %<>% quick_case(., entry="transfer", case="Crunchy harvest")
+      }
+      else {
+        x %<>% quick_case(., case="Crunchy harvest (No reward)", type=2)
+      }
+      
+    }
+    
+    # Crunchy deposit
+    else if ("deposit" %in% x$parameterEntry) {
+      
+      n_transfers <- nrow(filter(x, parameterEntry == "transfer"))
+      
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(.,
+          xtzSent = xtzFee / n_transfers,
+          tokenAmount = ifelse(tokenSender %in% wallets, 0, tokenAmount), 
+          case = "Crunchy deposit",
+        )
+      
+    }
+    
+    # Crunchy withdrawal
+    else if ("withdrawal" %in% x$parameterEntry) {
+      
+      n_transfers <- nrow(filter(x, parameterEntry == "transfer"))
+      
+      x1 <- x %>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(.,
+          xtzSent = xtzFee / n_transfers,
+          tokenAmount = ifelse(row_number() == 1, 0, tokenAmount),
+          case = "Crunchy withdrawal"
+        )
+      
+      if (x$xtzReceived[1] > 0) {
+        x2 <- x %>%
+          filter(., is.na(parameterEntry)) %>%
+          mutate(., 
+            xtzSent = 0,
+            case = "Crunchy baking payment"
+          )
+        x <- bind_rows(x1, x2)
+      }
+      else {
+        x <- x1
+      }
+      
+    }
+    
+    # Crunchy unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # QuipuSwap contracts
   else if (sum(quipu_contracts %in% x$targetAddress) > 0) {
     
@@ -426,58 +491,6 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
-  }
-  
-  # Crunchy contracts
-  else if (sum(crunchy_contracts %in% x$targetAddress) > 0) {
-    
-    # Crunchy harvest
-    if ("harvest" %in% x$parameterEntry) {
-      
-      if ("transfer" %in% x$parameterEntry) {
-        x %<>% quick_case(., entry="transfer", case="Crunchy harvest")
-      }
-      else {
-        x %<>% quick_case(., case="Crunchy harvest (No reward)", type=2)
-      }
-      
-    }
-    
-    # Crunchy deposit
-    else if ("deposit" %in% x$parameterEntry) {
-      
-      n_transfers <- nrow(filter(x, parameterEntry == "transfer"))
-      
-      x %<>%
-        filter(., parameterEntry == "transfer") %>%
-        mutate(.,
-          xtzSent = xtzFee / n_transfers,
-          tokenAmount = ifelse(tokenSender %in% wallets, 0, tokenAmount), 
-          case = "Crunchy deposit",
-        )
-      
-    }
-    
-    # Crunchy withdrawal
-    else if ("withdrawal" %in% x$parameterEntry) {
-      
-      n_transfers <- nrow(filter(x, parameterEntry == "transfer"))
-      
-      x %<>%
-        filter(., parameterEntry == "transfer") %>%
-        mutate(.,
-          xtzSent = xtzFee / n_transfers,
-          tokenAmount = ifelse(TRUE, 0, tokenAmount),
-          case = "Crunchy withdrawal"
-        )
-      
-    }
-    
-    # Crunchy unidentified
-    else {
-      x <- y
-    }
-    
   }
   
   # Tezos Domains contracts
