@@ -131,13 +131,11 @@ for (i in 1:nrow(cb_is)) {
       between(timestamp, time_i - 300, time_i + 300),
       between(xtzReceived + xtzFee, xtz_i - 0.1, xtz_i + 0.1)
     )
-    if (nrow(is_i) == 1) {
-      id_i <- is_i$id[1]
-      is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
-      is[is$id == id_i, "xtzReceived"] <- 0
-      is[is$id == id_i, "case"] <- cb_is$case[i]
-      drop_rows <- c(drop_rows, i)
-    }
+    id_i <- is_i$id[1]
+    is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
+    is[is$id == id_i, "xtzReceived"] <- 0
+    is[is$id == id_i, "case"] <- cb_is$case[i]
+    drop_rows <- c(drop_rows, i)
   }
 
   else if (cb_is$case[i] == "Coinbase receive") {
@@ -147,13 +145,11 @@ for (i in 1:nrow(cb_is)) {
       between(timestamp, time_i - 300, time_i + 300),
       between(xtzSent - xtzFee, xtz_i - 0.1, xtz_i + 0.1)
     )
-    if (nrow(is_i) == 1) {
-      id_i <- is_i$id[1]
-      is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
-      is[is$id == id_i, "xtzReceived"] <- 0
-      is[is$id == id_i, "case"] <- cb_is$case[i]
-      drop_rows <- c(drop_rows, i)
-    }
+    id_i <- is_i$id[1]
+    is[is$id == id_i, "xtzSent"] <- is[is$id == id_i, "xtzFee"]
+    is[is$id == id_i, "xtzReceived"] <- 0
+    is[is$id == id_i, "case"] <- cb_is$case[i]
+    drop_rows <- c(drop_rows, i)
   }
 
 }
