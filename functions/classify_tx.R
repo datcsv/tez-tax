@@ -1154,6 +1154,28 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # WTZ swap
+  else if ("KT1Pyd1r9F4nMaHy8pPZxPSq6VCn9hVbVrf4" %in% x$targetAddress) {
+   
+    # WTZ unwrap
+    if ("unwrap" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "unwrap") %>%
+        mutate(.,
+          tokenSender = initiatorAddress,
+          tokenID = "KT1Pyd1r9F4nMaHy8pPZxPSq6VCn9hVbVrf4_0",
+          tokenSent = list_check(parameterValue, "nat"),
+          case = "WTZ unwrap"
+        )
+    }
+    
+    # WTZ unidentified
+    else {
+      x <- y
+    }
+     
+  }
+  
   # Unidentified
   else {
     x <- y
