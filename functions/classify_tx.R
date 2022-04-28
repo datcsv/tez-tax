@@ -1193,10 +1193,9 @@ for (i in 1:nrow(operations_hash)) {
     # Kolibri oven borrow
     else if ("borrow" %in% x$parameterEntry) {
       x %<>%
-        top_n(., n=-1, wt=id) %>%
+        filter(., case == "mint") %>%
         mutate(., 
-          #xtzReceived = as.numeric(),
-          xtzBuy = TRUE,
+          costBasis = tokenAmount / 1000000000000000000,
           case = "Kolibri oven borrow"
         )
     }
@@ -1206,6 +1205,10 @@ for (i in 1:nrow(operations_hash)) {
       x %<>%
         top_n(., n=-1, wt=id) %>%
         mutate(., 
+          tokenAmount = as.numeric(parameterValue),
+          tokenSender = SenderAddress,
+          tokenID = "KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV_NA",
+          tokenProceeds = tokenAmount / 1000000000000000000,
           case = "Kolibri oven repay"
         )
     }
