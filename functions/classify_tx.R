@@ -1266,7 +1266,12 @@ for (i in 1:nrow(operations_hash)) {
           case = "Kolibri oven withdraw"
         )
     }
-    
+
+    # Kolibri make oven
+    else if ("makeOven" %in% x$parameterEntry) {
+      quick_case(., entry="makeOven", case="Kolibri make oven")
+    }
+        
     # Kolibri oven unidentified
     else {
       x <- y
