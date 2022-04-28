@@ -510,6 +510,7 @@ for (i in 1:nrow(operations_hash)) {
           tokenAmount = 0, 
           xtzSent = xtzSent / 2,
           xtzFee = xtzFee / 2,
+          xtzReceived = 0,
           case = "OBJKT retract bid"
         )
       
