@@ -123,6 +123,12 @@ wrap_contracts <- c(
   "KT1MTnKjFSN2u4myPRBqnFuCYCPX8kTdUEnv"
 )
 
+kolibri_contracts <- c(
+  "KT1Mgy95DVzqVBNYhsW93cyHuB57Q94UFhrh",
+  "KT1DLaeYVgg4X21BFyFgJ8gjcR3AnPNM8ZCY"
+  
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -1220,7 +1226,7 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Kolibri oven
-  else if ("KT1DLaeYVgg4X21BFyFgJ8gjcR3AnPNM8ZCY" %in% x$targetAddress) {
+  else if (sum(kolibri_contracts %in% x$targetAddress) > 0) {
     
     # Kolibri oven deposit
     if ("deposit" %in% x$parameterEntry) {
