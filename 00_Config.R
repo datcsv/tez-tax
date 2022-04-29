@@ -29,6 +29,9 @@ source("functions/list_check.R")
 source("functions/quick_case.R")
 source("functions/tzkt_api.R")
 
+# Adjust numeric display
+options(scipen=999)
+
 # Create data folder, if applicable
 dir.create("data", showWarnings=FALSE)
 
