@@ -342,14 +342,16 @@ for (i in 1:nrow(is)) {
   }
   
   # Add tokens received to balance sheet
-  if (is_i$tokenReceived > 0) {
-    bs %<>%
-      add_row(.,
-        timestamp = is_i$timestamp,
-        asset     = is_i$tokenID,
-        quantity  = is_i$tokenReceived,
-        costBasis = is$costBasis[i] / is_i$tokenReceived
-      )
+  if (!is.na(is_i$tokenReceived)) {
+    if (is_i$tokenReceived > 0) {
+      bs %<>%
+        add_row(.,
+          timestamp = is_i$timestamp,
+          asset     = is_i$tokenID,
+          quantity  = is_i$tokenReceived,
+          costBasis = is$costBasis[i] / is_i$tokenReceived
+        )
+    }
   }
   
   if (is.na(is_i$tokenReceived)) {
