@@ -1333,7 +1333,9 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Add row(s) to income statement
-  is %<>% bind_rows(., x)  
+  if (nrow(x) > 0) {
+    is %<>% bind_rows(., x)  
+  }
 }
 
 # Adjust income statement data
