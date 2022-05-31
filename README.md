@@ -29,7 +29,6 @@ Users of 'tez-tax' should have a firm understanding of the R programming languag
 	+ Once the code has finished running, users should verify that all transactions have been classified correctly. 
 		+ Any misclassified or miscalculated rows or fields should be manually adjusted. 
 		+ In the event that any operations are unclassified, nrow(filter(is, is.na(case))) > 0, the unclassified rows should be manually adjusted.
-		+ Please note that sales of self-minted tokens (e.g., sales of an art piece by the artist it was created by), are currently classified by 'tez-tax' as capital gains income (i.e., Schedule D) rather than other income (i.e., Schedule 1). Please consult with a tax professional on how best to approach such transactions and ensure that they are classified correctly.
 
 *  Generate necessary gain or loss data via a dynamic income statement/balance sheet relationship by running '03_BS_Generation.R'. 
 	+ This step attempts to calculate gains or losses using the provided income statement and exchange data. 
