@@ -17,7 +17,7 @@ Users of 'tez-tax' should have a firm understanding of the R programming languag
 * Update the contents of configuration file, '00_Config.R', and run it. The configuration file should be run prior to each 'tez-tax' session.
 	+ Currently, 'tez-tax' only provides support for Coinbase as an exchange, alternative exchange data will need to be manually imported and added to the initial income statement, please refer to 'functions/cb_import.R' for example. 
 	+ To download Coinbase exchange data, navigate to [Coinbase.com/reports](https://www.coinbase.com/reports) and generate a transaction history CSV report. 
-	+ Currently 'tez-tax' does not support any exchanges other than Coinbase. Other exchange transactiosn will have to be added or modified manually.
+	+ Currently 'tez-tax' does not support any exchanges other than Coinbase. Other exchange transactions will have to be added or modified manually.
 
 * Download operations data via the [TzKT API](https://api.tzkt.io/) by running '01_Operations_Data.R'.
 	+ This step will likely take the longest as it downloads blockchain data for all wallets included in the configuration file.
