@@ -18,7 +18,7 @@
 
 # Get account operations: First pass
 limit_ops <- 1000
-date_span_all <- c("2021-01-01T00:00:00Z", date_span[2])
+date_span_all <- c("2000-01-01T00:00:00Z", date_span[2])
 for (i in 1:length(wallets)) {
   operations_i <- tzkt_operations(
     address=wallets[i], limit=limit_ops, span=date_span, quote=currency
