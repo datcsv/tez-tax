@@ -38,7 +38,15 @@ tzkt_operations <- function(
     sfx <- paste0(sfx, "&timestamp.ge=", span[1], "&timestamp.le=", span[2])
   }
   url <- paste0(base, sfx)
-  x <- fromJSON(url)
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
   return(x)
 }
 
