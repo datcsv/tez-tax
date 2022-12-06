@@ -55,7 +55,7 @@ for (i in 1:nrow(cb)) {
   if (cb_i$`Transaction Type` == "Buy") {
     x$xtzSent       <- 0
     x$xtzReceived   <- cb_i$`Quantity Transacted`
-    x$costBasis     <- cb_i$`Total (inclusive of fees)`
+    x$costBasis     <- cb_i$`Total (inclusive of fees and/or spread)`
     x$case          <- "Coinbase buy"
     x$xtzBuy        <- TRUE
   }
@@ -64,9 +64,9 @@ for (i in 1:nrow(cb)) {
   else if (cb_i$`Transaction Type` == "Sell") {
     x$xtzSent       <- cb_i$`Quantity Transacted`
     x$xtzReceived   <- 0
-    x$xtzProceeds   <- cb_i$`Total (inclusive of fees)`
+    x$xtzProceeds   <- cb_i$`Total (inclusive of fees and/or spread)`
     x$case          <- "Coinbase sell"
-    x$quote         <- cb_i$`Total (inclusive of fees)` / cb_i$`Quantity Transacted`
+    x$quote         <- cb_i$`Total (inclusive of fees and/or spread)` / cb_i$`Quantity Transacted`
   }
   
   # Coinbase send
@@ -91,7 +91,7 @@ for (i in 1:nrow(cb)) {
       x$xtzReceived   <- as.numeric(
         str_replace(strsplit(cb_i$Notes, " ")[[1]][5], ",", "")
       )
-      x$costBasis     <- cb_i$`Total (inclusive of fees)`
+      x$costBasis     <- cb_i$`Total (inclusive of fees and/or spread)`
       x$case          <- "Coinbase convert (buy)"
       x$xtzBuy        <- TRUE
       x$quote         <- NA
@@ -102,7 +102,7 @@ for (i in 1:nrow(cb)) {
       x$costBasis     <- NA
       x$case          <- "Coinbase convert (sell)"
       x$xtzBuy        <- FALSE
-      x$quote         <- cb_i$`Total (inclusive of fees)` / cb_i$`Quantity Transacted`
+      x$quote         <- cb_i$`Total (inclusive of fees and/or spread)` / cb_i$`Quantity Transacted`
     }
   }
   
