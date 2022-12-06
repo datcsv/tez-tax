@@ -18,6 +18,7 @@
 
 # Get account operations: First pass
 limit_ops <- 1000
+date_span_all <- c("2021-01-01T00:00:00Z", date_span[2])
 for (i in 1:length(wallets)) {
   operations_i <- tzkt_operations(
     address=wallets[i], limit=limit_ops, span=date_span, quote=currency
@@ -27,7 +28,7 @@ for (i in 1:length(wallets)) {
     level <- min(operations_i$level + 1)
     operations_i %<>% bind_rows(.,
       tzkt_operations(
-        address=wallets[i], level=level, limit=limit_ops, span=date_span, 
+        address=wallets[i], level=level, limit=limit_ops, span=date_span_all, 
         quote=currency
       )
     )
@@ -69,7 +70,7 @@ if (objkt_v1) {
   contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
   for (i in 1:length(contracts)) {
     operations_i <- tzkt_operations(
-      address=contracts[i], limit=limit_ops, span=date_span, quote=currency
+      address=contracts[i], limit=limit_ops, span=date_span_all, quote=currency
     )
     while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
       level <- min(operations_i$level + 1)
