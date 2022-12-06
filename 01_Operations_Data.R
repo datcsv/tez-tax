@@ -21,7 +21,7 @@ limit_ops <- 1000
 date_span_all <- c("2000-01-01T00:00:00Z", date_span[2])
 for (i in 1:length(wallets)) {
   operations_i <- tzkt_operations(
-    address=wallets[i], limit=limit_ops, span=date_span, quote=currency
+    address=wallets[i], limit=limit_ops, span=date_span_all, quote=currency
   )
   while ((nrow(operations_i) > 0) & (nrow(operations_i) %% limit_ops) == 0) {
     # Plus one to level to ensure overlap between pulls
