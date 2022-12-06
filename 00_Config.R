@@ -53,7 +53,7 @@ cb_path <- NA
 # Include early OBJKT auction data (TRUE/FALSE)
 objkt_v1 <- TRUE
 
-# Assume RCS tokens with no transaction history were minted at 5tz
+# Assume Randomly Common Skele tokens with no tx history were minted at 5tz
 rcs_mint <- TRUE
 
 # Assume NFT tokens are collectibles (TRUE/FALSE)
