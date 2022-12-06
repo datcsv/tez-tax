@@ -22,7 +22,7 @@ library("jsonlite")
 library("lubridate")
 library("magrittr")
 library("readr")
-library("staplr")
+library("staplr") # Staplr requires R 4.1.2 or lower
 
 # Load functions
 source("functions/list_check.R")
