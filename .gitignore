@@ -3,3 +3,4 @@
 *.csv
 data/*
 .Rproj.user
+00_Config - Actual.R
