@@ -1142,9 +1142,10 @@ for (i in 1:nrow(operations_hash)) {
     else if ("burn" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="burn", case="Rarible burn")
       x %<>% mutate(.,
-        tokenSent = 1,
-        tokenSender = x$initiatorAddress,
-        tokenID = str_c(x$targetAddress, x$parameterValue[[1]]$itokenid, sep="_")
+        tokenAmount = 1,
+        tokenSender = SenderAddress,
+        tokenReceiver = "",
+        tokenID = str_c(targetAddress, parameterValue[[1]]$itokenid, sep="_")
       )
     }
     
