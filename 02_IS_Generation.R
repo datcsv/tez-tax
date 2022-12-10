@@ -36,11 +36,13 @@ j <- 0
 for (i in 1:nrow(operations)) {
   if (i > 1) {
     if (
-      ((sum(operations$parameterEntry[i] %in% c("collect", "harvest")) > 0) |
-      (operations$hash[i] == op_hash)) & 
+      (
+        (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask")) > 0) |
+        (operations$hash[i] == op_hash)
+      ) & 
       (operations$hash[i] != operations$hash[i-1])
     ) {
-      if (sum(operations$parameterEntry[i] %in% c("collect", "harvest")) > 0) {
+      if (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask")) > 0) {
         op_hash <- operations$hash[i]
         j <- j + 1
       }
