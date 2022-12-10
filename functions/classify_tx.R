@@ -1140,7 +1140,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Rarible cancel
     else if ("burn" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="burn", case="Rarible burn")
+      x %<>% quick_case(., entry="burn", case="Token transfer")
       x %<>% mutate(.,
         tokenAmount = 1,
         tokenSender = SenderAddress,
