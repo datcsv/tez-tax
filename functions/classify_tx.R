@@ -132,6 +132,10 @@ kolibri_contracts <- c(
   
 )
 
+versum_contracts <- c(
+  "KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -1107,6 +1111,33 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
+  }
+  
+  # Versum contracts
+  else if (sum(versum_contracts %in% x$targetAddress) > 0) {
+    
+    # Versum make offer
+    if ("make_offer" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        case = "Versum make offer"
+      )
+    }
+    
+    else if ("cancel_offer" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        case = "Versum cancel offer"
+      )
+    }
+    
+    # Versum unidentified
+    else {
+      x <- y
+    }
+    
   }
   
   # Rarible contracts
