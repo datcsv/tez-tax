@@ -67,7 +67,9 @@ quipu_contracts <- c(
   "KT1A91CcMx1izXcbBwyH3z8Do3vnEdKpbde2",
   "KT1BgezWwHBxA9NrczwK9x3zfgFnUkc7JJ4b",
   "KT1Evsp2yA19Whm24khvFPcwimK6UaAJu8Zo",
-  "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w"
+  "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w",
+  "KT19g5hey69CiXRbhRzJEwvuJ95RgVLzS3TP",
+  "KT1RKdp1rL3c3wxy6XWE8ZdUXdihrGjb4eGB"
 )
 
 # Crunchy contracts
@@ -92,8 +94,9 @@ objkt_contracts <- c(
   "KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU",
   "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih",
   "KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r",
-  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM"
-  #"KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc"
+  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM",
+  "KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc",
+  "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC"
 )
 
 # akaSwap contracts
