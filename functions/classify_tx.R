@@ -136,6 +136,10 @@ versum_contracts <- c(
   "KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5"
 )
 
+minterpop_contracts <- c(
+  "KT1DgUawhCMBixK8Nt24uvMxFdjYRRbjiNGi"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -1134,6 +1138,21 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # Versum unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Minterpop contracts
+  else if (sum(minterpop_contracts %in% x$targetAddress) > 0) {
+    
+    # Minterpop buy
+    if ("buy" %in% x$parameterEntry) {
+      x <- y
+    }
+    
+    # Minterpop unidentified
     else {
       x <- y
     }
