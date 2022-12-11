@@ -1012,6 +1012,19 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # DKRBT homebase
+  else if ("KT1DNHADdFxHM6mRKTgyJmchW5ELxcoW1aSh" %in% x$targetAddress) {
+    
+    if ("freeze" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="DKRBT freeze", type=2)
+    }
+    
+    # DKRBT unidentified
+    else {
+      x <- y
+    }
+  }
+  
   # fxhash contracts
   else if (sum(fx_contracts %in% x$targetAddress) > 0) {
     
