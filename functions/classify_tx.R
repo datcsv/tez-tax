@@ -133,7 +133,8 @@ kolibri_contracts <- c(
 )
 
 versum_contracts <- c(
-  "KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5"
+  "KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5",
+  "KT1KRvNVubq64ttPbQarxec5XdS6ZQU4DVD2"
 )
 
 minterpop_contracts <- c(
@@ -1129,12 +1130,28 @@ for (i in 1:nrow(operations_hash)) {
       )
     }
     
+    # Versum cancel offer
     else if ("cancel_offer" %in% x$parameterEntry) {
       x %<>% mutate(., 
         xtzSent = xtzFee,
         xtzReceived = 0,
         case = "Versum cancel offer"
       )
+    }
+    
+    # Versum collect (buy)
+    else if ("collect_swap" %in% x$parameterEntry & (sum(wallets %in% x$initiatorAddress) > 0)) {
+      x %<>% quick_case(., entry="transfer", case="Versum collect (buy)")
+    }
+    
+    # Versum claim verification
+    else if ("claim_verification" %iN% x$parameterEntry) {
+      x %<>% quick_case(., entry="claim_verification", case="Versum claim verification")
+    }
+    
+    # Versum claim Materia
+    else if ("claim_materia" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="tranfer", case="Versum claim Materia")
     }
     
     # Versum unidentified
