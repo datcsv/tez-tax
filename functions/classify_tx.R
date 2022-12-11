@@ -1145,7 +1145,7 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # Versum claim verification
-    else if ("claim_verification" %iN% x$parameterEntry) {
+    else if ("claim_verification" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="claim_verification", case="Versum claim verification")
     }
     
