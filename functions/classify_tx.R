@@ -134,7 +134,8 @@ kolibri_contracts <- c(
 
 versum_contracts <- c(
   "KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5",
-  "KT1KRvNVubq64ttPbQarxec5XdS6ZQU4DVD2"
+  "KT1KRvNVubq64ttPbQarxec5XdS6ZQU4DVD2",
+  "KT1NUrzs7tiT4VbNPqeTxgAFa4SXeV1f3xe9"
 )
 
 minterpop_contracts <- c(
@@ -1024,8 +1025,19 @@ for (i in 1:nrow(operations_hash)) {
   # DKRBT homebase
   else if ("KT1DNHADdFxHM6mRKTgyJmchW5ELxcoW1aSh" %in% x$targetAddress) {
     
+    # DKRBT freeze (staking)
     if ("freeze" %in% x$parameterEntry) {
       x %<>% quick_case(., case="DKRBT freeze", type=2)
+    }
+    
+    # DKRBT unfreeze (unstake) - Does not account for value of tokens received.
+    # Instead, any received will take on an assumed cost basis of zero when
+    # sold. 
+    else if ("unfreeze" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="DKRBT unfreeze", type=2)
+      x %<>% mutate(.,
+        tokenAmount = 0
+      )
     }
     
     # DKRBT unidentified
@@ -1151,7 +1163,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Versum claim Materia
     else if ("claim_materia" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="tranfer", case="Versum claim Materia")
+      x %<>% quick_case(., entry="transfer", case="Versum claim Materia")
     }
     
     # Versum unidentified
@@ -1166,7 +1178,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # Minterpop buy
     if ("buy" %in% x$parameterEntry) {
-      x <- y
+      x %<>% quick_case(., entry="transfer", case="Minterpop buy")
     }
     
     # Minterpop unidentified
