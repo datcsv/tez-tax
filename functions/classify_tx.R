@@ -95,7 +95,11 @@ objkt_contracts <- c(
   "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih",
   "KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r",
   "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM",
-  "KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc",
+  "KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc"
+)
+
+# OBJKT v2 contracts
+objkt_v2_contracts <- c(
   "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC"
 )
 
