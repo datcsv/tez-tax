@@ -1024,22 +1024,25 @@ for (i in 1:nrow(operations_hash)) {
   
   # DKRBT homebase
   else if ("KT1DNHADdFxHM6mRKTgyJmchW5ELxcoW1aSh" %in% x$targetAddress) {
-    
+
     # DKRBT freeze (staking)
     if ("freeze" %in% x$parameterEntry) {
       x %<>% quick_case(., case="DKRBT freeze", type=2)
+      x %<>% mutate(., tokenAmount = 0)
     }
-    
-    # DKRBT unfreeze (unstake) - Does not account for value of tokens received.
-    # Instead, any received will take on an assumed cost basis of zero when
-    # sold. 
+
+    # DKRBT unfreeze (unstake)
+    ############################################################################
+    # NOTE: Unfreeze classification does not account for DKRBT earned through
+    # staking. That is, output will not properly classify earned tokens as
+    # income, but instead will assume that the tokens were acquired at a cost
+    # basis of 0 when the tokens are sold.
+    ############################################################################
     else if ("unfreeze" %in% x$parameterEntry) {
       x %<>% quick_case(., case="DKRBT unfreeze", type=2)
-      x %<>% mutate(.,
-        tokenAmount = 0
-      )
+      x %<>% mutate(., tokenAmount = 0)
     }
-    
+
     # DKRBT unidentified
     else {
       x <- y
