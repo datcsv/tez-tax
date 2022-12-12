@@ -1159,6 +1159,32 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="transfer", case="Versum collect (buy)")
     }
     
+    # Versum collect (sell)
+    else if (
+      ("collect_swap" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      xtzCollect <- sort(x$xtzAmount, decreasing=TRUE)[4]
+      n_collect <- sum(x$parameterEntry == "collect_swap", na.rm=TRUE)
+      if (n_collect == 1) {
+        token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+        x %<>%
+          filter(., parameterEntry == "transfer") %>%
+          mutate(.,
+            tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+            tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+            case = ifelse(
+            xtzCollect != xtzReceived,
+            "Versum collect (sales/royalties)",
+            "Versum collect (trade)"
+            )
+          )
+      }
+      else {
+        x <- y
+      }
+    }
+    
     # Versum claim verification
     else if ("claim_verification" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="claim_verification", case="Versum claim verification")
@@ -1167,6 +1193,11 @@ for (i in 1:nrow(operations_hash)) {
     # Versum claim Materia
     else if ("claim_materia" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="transfer", case="Versum claim Materia")
+    }
+    
+    # Versum swap
+    else if ("create_swap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="create_swap", case="Versum swap")
     }
     
     # Versum unidentified
