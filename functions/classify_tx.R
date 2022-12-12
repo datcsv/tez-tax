@@ -802,6 +802,79 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # OBJKT v2 contracts
+  else if (sum(objkt_v2_contracts %in% x$targetAddress) > 0) {
+    
+    # OBJKT v2 ask
+    if ("ask" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="ask", case="OBJKT v2 Ask")
+    }
+    
+    # OBJKT v2 retract ask
+    else if ("retract_ask" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="retract_ask", case="OBJKT v2 Retract Ask")
+    }
+    
+    #OBJKT v2 fulfill offer (trade/sale)
+    else if (
+      ("fulfill_offer" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+          case = ifelse(
+            xtzCollect != xtzReceived, 
+            "OBJKT v2 fulfill offer (sales/royalties)", 
+            "OBJKT v2 fulfill offer (trade)"
+          )
+        )
+    }
+    
+    # OBJKT v2 fulfill offer (collect)
+    else if (
+      ("fulfill_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT fulfill offer (collect)")
+    }
+    
+    # OBJKT v2 fulfill ask (collect)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT fulfill ask (collect)")
+    }
+    
+    #OBJKT v2 fulfill ask (trade/sale)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+               tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+               tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+               case = ifelse(
+                 xtzCollect != xtzReceived, 
+                 "OBJKT v2 fulfill ask (sales/royalties)", 
+                 "OBJKT v2 fulfill ask (trade)"
+               )
+        )
+    }
+    
+    # OBJKT v2 unidentified
+    else {
+      x <- y
+    }
+  }
+  
   # akaSwap contracts
   else if (sum(aka_contracts %in% x$targetAddress) > 0) {
     
@@ -896,6 +969,14 @@ for (i in 1:nrow(operations_hash)) {
     else {
       x <- y
     }
+  }
+  
+  # Mooncakes mint
+  else if (
+    ("KT1WvV2rPBQUFUqtCWmnnj8JX2gkmDtMBzQi" %in% x$targetAddress) &
+    ("mint" %in% x$parameterEntry)
+  ) {
+    x %<>% quick_case(., entry="mint", case="mooncakes mint")
   }
   
   # Tezzardz mint
