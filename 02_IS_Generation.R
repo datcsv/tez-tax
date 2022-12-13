@@ -19,6 +19,9 @@
 # Load operations data
 load(file="data/operations.RData")
 
+# FOR TESTING ONLY
+operations %<>% filter(., year(as_datetime(timestamp)) > 2021) 
+
 # Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
 operations$initiatorAddress <- operations$initiator$address
@@ -37,12 +40,12 @@ for (i in 1:nrow(operations)) {
   if (i > 1) {
     if (
       (
-        (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask")) > 0) |
+        (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")) > 0) |
         (operations$hash[i] == op_hash)
       ) & 
       (operations$hash[i] != operations$hash[i-1])
     ) {
-      if (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask")) > 0) {
+      if (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")) > 0) {
         op_hash <- operations$hash[i]
         j <- j + 1
       }
@@ -124,3 +127,7 @@ if (!is.na(cb_path)) source("functions/cb_import.R")
 # Save income statement data
 save(is, file="data/is.RData")
 save(is, file="data/is_original.RData")
+
+# FOR TESTING ONLY
+is %>% filter(., is.na(case)) %>% View(.)
+

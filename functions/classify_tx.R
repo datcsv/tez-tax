@@ -27,7 +27,8 @@ hen_contracts <- c(
   "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
   "KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn", 
   "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj",
-  "KT1TybhR7XraG75JFYKSrh7KnxukMBT5dor6"
+  "KT1TybhR7XraG75JFYKSrh7KnxukMBT5dor6",
+  "KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w" # Teia
 )
 
 # QuipuSwap contracts
@@ -100,7 +101,8 @@ objkt_contracts <- c(
 
 # OBJKT v2 contracts
 objkt_v2_contracts <- c(
-  "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC"
+  "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC",
+  "KT18p94vjkkHYY3nPmernmgVR7HdZFzE7NAk"
 )
 
 # akaSwap contracts
@@ -117,6 +119,12 @@ fx_contracts <- c(
   "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr",
   "KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9",
   "KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" 
+)
+
+#fxhash v2 contracts
+fx_v2_contracts <- c(
+  "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv",
+  "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
 )
 
 # Rarible contracts
@@ -815,6 +823,12 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="retract_ask", case="OBJKT v2 Retract Ask")
     }
     
+    # OBJKT v2 retract offer
+    else if ("retract_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="retract_offer", case="OBJKT v2 Retract Ask")
+      x %<>% mutate(., xtzSent = xtzFee)
+    }
+    
     #OBJKT v2 fulfill offer (trade/sale)
     else if (
       ("fulfill_offer" %in% x$parameterEntry) &
@@ -842,14 +856,6 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="transfer", case="OBJKT fulfill offer (collect)")
     }
     
-    # OBJKT v2 fulfill ask (collect)
-    else if (
-      ("fulfill_ask" %in% x$parameterEntry) & 
-      (sum(wallets %in% x$initiatorAddress) > 0)
-    ) {
-      x %<>% quick_case(., entry="transfer", case="OBJKT fulfill ask (collect)")
-    }
-    
     #OBJKT v2 fulfill ask (trade/sale)
     else if (
       ("fulfill_ask" %in% x$parameterEntry) &
@@ -867,6 +873,23 @@ for (i in 1:nrow(operations_hash)) {
                  "OBJKT v2 fulfill ask (trade)"
                )
         )
+    }
+    
+    # OBJKT v2 fulfill ask (collect)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT v2 fulfill ask (collect)")
+    }
+    
+    # OBJKT v2 bid
+    else if ("bid" %in% x$parameterEntry) {
+      x %<>% mutate(.,
+        xtzSent = xtzFee,
+        tokenAmount = 0,
+        case = "OBJKT v2 bid"
+      )
     }
     
     # OBJKT v2 unidentified
@@ -1218,6 +1241,78 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # fxhash v2 contracts
+  else if (sum(fx_v2_contracts %in% x$targetAddress) > 0) {
+    
+    # fxhash v2 mint
+    if ("mint" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "mint", !row_number() == 1) %>%
+        mutate(., 
+               case = "fxhash v2 mint", 
+               tokenAmount = 1
+        )
+      
+      if (x$tokenSender %in% wallets) {
+        x %<>% mutate(., 
+          case = "fxhash v2 self-mint",
+          tokenReceiver = tokenSender,
+          tokenSender = NA
+        )
+      }
+      
+    }
+    
+    # fxhash v2 listing
+    else if ("listing" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="listing", case="fxhash v2 listing")
+    }
+    
+    # fxhash v2 listing cancel
+    else if ("listing_cancel" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="listing_cancel", case="fxhash v2 listing cancel")
+    }
+    
+    # fxhash v2 trade
+    else if (
+      ("listing_accept" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+               tokenAmount = ifelse(
+                 xtzCollect != xtzReceived, 
+                 0,
+                 as.numeric(list_check(parameterValue, "amount"))
+               ),
+               tokenSender = ifelse(
+                 xtzCollect != xtzReceived, 
+                 NA,
+                 wallets[1]
+               ),
+               case = ifelse(
+                 xtzCollect != xtzReceived, 
+                 "fxhash v2 collect (sales/royalties)",
+                 "fxhash v2 collect (trade)"
+               )
+        )
+    }
+    
+    # fxhash v2 collect
+    else if (
+      ("listing_accept" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="fxhash v2 collect")
+    }
+    
+    # fxhash v2 unidentified
+    else {
+      x <- y
+    }
+  }
+  
   # Versum contracts
   else if (sum(versum_contracts %in% x$targetAddress) > 0) {
     
@@ -1526,6 +1621,11 @@ for (i in 1:nrow(operations_hash)) {
       x <- y
     }
     
+  }
+  
+  # tzprofiles default call
+  else if ("default" %in% x$parameterEntry & nrow(x) == 1) {
+    x %<>% quick_case(., entry="default", case="tzprofiles update")
   }
   
   # Unidentified
