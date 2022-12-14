@@ -102,7 +102,8 @@ objkt_contracts <- c(
 # OBJKT v2 contracts
 objkt_v2_contracts <- c(
   "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC",
-  "KT18p94vjkkHYY3nPmernmgVR7HdZFzE7NAk"
+  "KT18p94vjkkHYY3nPmernmgVR7HdZFzE7NAk",
+  "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz"
 )
 
 # akaSwap contracts
@@ -556,6 +557,11 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="renew", case="TD renew")
     }
     
+    # TD remove offer
+    else if ("remove_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="remove_offer", case="TD remove offer")
+    }
+    
     # TD unidentified
     else {
       x<- y
@@ -889,6 +895,25 @@ for (i in 1:nrow(operations_hash)) {
         xtzSent = xtzFee,
         tokenAmount = 0,
         case = "OBJKT v2 bid"
+      )
+    }
+    
+    # OBJKT v2 offer
+    else if ("offer" %in% x$parameterEntry) {
+      x %<>% mutate(.,
+        xtzSent = xtzFee,
+        tokenAmount = 0,
+        case = "OBJKT v2 offer"
+      )
+    }
+    
+    # OBJKT v2 wXTZ swap
+    else if ("unwrap" %in% x$parameterEntery) {
+      x %<>% mutate(.,
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        tokenAmount = 0,
+        case = "OBJKT v2 unwrap"
       )
     }
     

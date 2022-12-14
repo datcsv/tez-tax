@@ -37,23 +37,21 @@ operations$quote            <- operations$quote[[1]]
 op_hash <- "0"
 j <- 0
 for (i in 1:nrow(operations)) {
-  if (i > 1) {
-    if (
-      (
-        (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")) > 0) |
-        (operations$hash[i] == op_hash)
-      ) & 
-      (operations$hash[i] != operations$hash[i-1])
-    ) {
-      if (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")) > 0) {
-        op_hash <- operations$hash[i]
-        j <- j + 1
-      }
-      else {
-        op_hash <- operations$hash[i]
-      }
-      operations$hash[i] <- paste0(op_hash, "_", j)
+  if (
+    (
+      (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")) > 1) |
+      (operations$hash[i] == op_hash)
+    ) & 
+    (i == 0 || (operations$hash[i] != operations$hash[i-1]))
+  ) {
+    if (sum(operations$parameterEntry[i] %in% c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")) > 1) {
+      op_hash <- operations$hash[i]
+      j <- j + 1
     }
+    else {
+      op_hash <- operations$hash[i]
+    }
+    operations$hash[i] <- paste0(op_hash, "_", j)
   }
 }
 
