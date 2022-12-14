@@ -70,7 +70,8 @@ quipu_contracts <- c(
   "KT1Evsp2yA19Whm24khvFPcwimK6UaAJu8Zo",
   "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w",
   "KT19g5hey69CiXRbhRzJEwvuJ95RgVLzS3TP",
-  "KT1RKdp1rL3c3wxy6XWE8ZdUXdihrGjb4eGB"
+  "KT1RKdp1rL3c3wxy6XWE8ZdUXdihrGjb4eGB",
+  "KT1VXBX6NwapYf9Sq6LsQVr4SdsDq3ta1nss"
 )
 
 # Crunchy contracts
@@ -153,6 +154,14 @@ versum_contracts <- c(
 
 minterpop_contracts <- c(
   "KT1DgUawhCMBixK8Nt24uvMxFdjYRRbjiNGi"
+)
+
+eightbidou_contracts <- c(
+  "KT1BvWGFENd4CXW5F3u4n31xKfJhmBGipoqF"
+)
+
+endless_ways_contracts <- c(
+  "KT1VdCrmZsQfuYgbQsezAHT1pXvs6zKF8xHB"
 )
 
 # Create null income statement
@@ -1014,6 +1023,40 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # akaSwap unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # 8bidou contracts
+  else if (sum(eightbidou_contracts %in% x$targetAddress) > 0) {
+    
+    # 8bidou buy
+    if (
+      ("buy" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="8bidou buy")
+    }
+    
+    # 8bidou unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # Endless Ways contracts
+  else if (sum(endless_ways_contracts %in% x$targetAddress) > 0) {
+    
+    # 8bidou buy
+    if (
+      ("mint_and_purchase" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="mint_and_purchase", case="Endless ways mint")
+    }
+    
+    # 8bidou unidentified
     else {
       x <- y
     }

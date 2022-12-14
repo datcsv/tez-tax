@@ -33,11 +33,12 @@ operations$parameterEntry   <- operations$parameter$entrypoint
 operations$parameterValue   <- operations$parameter$value
 operations$quote            <- operations$quote[[1]]
 
-# Adjust batch transactions
 op_hash <- "0"
 j <- 0
 batch_list <- c("collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask")
 for (i in 1:nrow(operations)) {
+  
+  # Adjust batch transactions
   if (i == 1) {
     if (sum(operations$parameterEntry[i] %in% batch_list) > 0) {
       op_hash <- operations$hash[i]
@@ -59,6 +60,7 @@ for (i in 1:nrow(operations)) {
     }
     operations$hash[i] <- paste0(op_hash, "_", j)
   }
+   
 }
 
 # Clean operations data
