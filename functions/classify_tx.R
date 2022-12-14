@@ -908,7 +908,7 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # OBJKT v2 wXTZ swap
-    else if ("unwrap" %in% x$parameterEntery) {
+    else if ("unwrap" %in% x$parameterEntry) {
       x %<>% mutate(.,
         xtzSent = xtzFee,
         xtzReceived = 0,
