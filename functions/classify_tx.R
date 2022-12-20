@@ -71,7 +71,9 @@ quipu_contracts <- c(
   "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w",
   "KT19g5hey69CiXRbhRzJEwvuJ95RgVLzS3TP",
   "KT1RKdp1rL3c3wxy6XWE8ZdUXdihrGjb4eGB",
-  "KT1VXBX6NwapYf9Sq6LsQVr4SdsDq3ta1nss"
+  "KT1VXBX6NwapYf9Sq6LsQVr4SdsDq3ta1nss",
+  "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ",
+  "KT1FptuULGK69mZRsBz62CSFdRs52etEb6Ah"
 )
 
 # Crunchy contracts
@@ -112,7 +114,8 @@ aka_contracts <- c(
   "KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN",
   "KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz",
   "KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1",
-  "KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU"
+  "KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU",
+  "KT1Dn3sambs7KZGW88hH2obZeSzfmCmGvpFo"
 )
 
 # fxhash contracts
@@ -246,13 +249,15 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Token transfer
-  else if ((nrow(x) == 1) & ("transfer" %in% x$parameterEntry)) {
+  else if (nrow(x) == sum(x$parameterEntry == "transfer", na.rm=TRUE)) {
     x %<>% mutate(., tokenSender = SenderAddress, case = "Token transfer")
     
     # Adjust wallet-to-wallet transfers
-    if ((x$tokenSender %in% wallets) & (x$tokenReceiver %in% wallets)) {
-      x %<>% mutate(., tokenAmount = 0, case = "Wallet transfer")
-    }
+    for (i in 1:nrow(x))
+      if ((x$tokenSender[i] %in% wallets) & (x$tokenReceiver[i] %in% wallets)) {
+        x$tokenAmount[i] = 0
+        x$case[i] = "Wallet transfer"
+      }
     
   }
   
@@ -828,53 +833,21 @@ for (i in 1:nrow(operations_hash)) {
   # OBJKT v2 contracts
   else if (sum(objkt_v2_contracts %in% x$targetAddress) > 0) {
     
-    # OBJKT v2 ask
+    # OBJK v2 ask
     if ("ask" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="ask", case="OBJKT v2 Ask")
+      x %<>% quick_case(., entry="ask", case="OBJKT v2 ask")
     }
     
     # OBJKT v2 retract ask
     else if ("retract_ask" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="retract_ask", case="OBJKT v2 Retract Ask")
+      x %<>% quick_case(., entry="retract_ask", case="OBJKT v2 retract ask")
     }
     
-    # OBJKT v2 retract offer
-    else if ("retract_offer" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="retract_offer", case="OBJKT v2 Retract Ask")
-      x %<>% mutate(., xtzSent = xtzFee)
-    }
-    
-    #OBJKT v2 fulfill offer (trade/sale)
-    else if (
-      ("fulfill_offer" %in% x$parameterEntry) &
-      (sum(wallets %in% x$initiatorAddress) > 0)
-    ) {
-      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
-      x %<>% 
-        filter(., parameterEntry == "transfer") %>% 
-        mutate(., 
-          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
-          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
-          case = ifelse(
-            xtzCollect != xtzReceived, 
-            "OBJKT v2 fulfill offer (sales/royalties)", 
-            "OBJKT v2 fulfill offer (trade)"
-          )
-        )
-    }
-    
-    # OBJKT v2 fulfill offer (collect)
+
+    # OBJKT v2 fulfill offer (trade)
     else if (
       ("fulfill_offer" %in% x$parameterEntry) & 
-      (sum(wallets %in% x$initiatorAddress) == 0)
-    ) {
-      x %<>% quick_case(., entry="transfer", case="OBJKT fulfill offer (collect)")
-    }
-    
-    #OBJKT v2 fulfill ask (trade/sale)
-    else if (
-      ("fulfill_ask" %in% x$parameterEntry) &
-      (sum(wallets %in% x$initiatorAddress) == 0)
+      (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
       token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
       x %<>% 
@@ -884,9 +857,36 @@ for (i in 1:nrow(operations_hash)) {
                tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
                case = ifelse(
                  xtzCollect != xtzReceived, 
-                 "OBJKT v2 fulfill ask (sales/royalties)", 
-                 "OBJKT v2 fulfill ask (trade)"
+                 "OBJKT v2 fulfill offer (sales/royalties)", 
+                 "OBJKT v2 fulfill offer (trade)"
                )
+        )
+    }
+    
+    # OBJKT v2 fulfill offer (collect)
+    else if (
+      ("fulfill_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT v2 fulfill offer (collect)")
+    }
+    
+    # OBJKT v2 fulfill ask (trade)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+          case = ifelse(
+          xtzCollect != xtzReceived, 
+            "OBJKT v2 fulfill ask (sales/royalties)", 
+            "OBJKT v2 fulfill ask (trade)"
+          )
         )
     }
     
@@ -898,32 +898,11 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="transfer", case="OBJKT v2 fulfill ask (collect)")
     }
     
-    # OBJKT v2 bid
-    else if ("bid" %in% x$parameterEntry) {
-      x %<>% mutate(.,
-        xtzSent = xtzFee,
-        tokenAmount = 0,
-        case = "OBJKT v2 bid"
-      )
-    }
-    
-    # OBJKT v2 offer
-    else if ("offer" %in% x$parameterEntry) {
-      x %<>% mutate(.,
-        xtzSent = xtzFee,
-        tokenAmount = 0,
-        case = "OBJKT v2 offer"
-      )
-    }
-    
-    # OBJKT v2 wXTZ swap
-    else if ("unwrap" %in% x$parameterEntry) {
-      x %<>% mutate(.,
-        xtzSent = xtzFee,
-        xtzReceived = 0,
-        tokenAmount = 0,
-        case = "OBJKT v2 unwrap"
-      )
+    # OBJKT retract offer
+    else if ("retract_offer" %in% x$parameterEntry) {
+      x %<>% 
+        quick_case(., entry="retract_offer", case="OBJKT v2 retract offer") %>%
+        mutate(., xtzSent = xtzFee, xtzReceived = 0)
     }
     
     # OBJKT v2 unidentified
@@ -1392,6 +1371,16 @@ for (i in 1:nrow(operations_hash)) {
         case = "Versum make offer"
       )
     }
+    
+    # Versum make offer
+    else if ("bid" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        case = "Versum bid"
+      )
+    }
+    
     
     # Versum cancel offer
     else if ("cancel_offer" %in% x$parameterEntry) {
