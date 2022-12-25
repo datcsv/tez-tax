@@ -19,9 +19,6 @@
 # Load operations data
 load(file="data/operations.RData")
 
-# FOR TESTING ONLY
-operations %<>% filter(., year(as_datetime(timestamp)) > 2021) 
-
 # Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
 operations$initiatorAddress <- operations$initiator$address
@@ -135,7 +132,3 @@ if (!is.na(cb_path)) source("functions/cb_import.R")
 # Save income statement data
 save(is, file="data/is.RData")
 save(is, file="data/is_original.RData")
-
-# FOR TESTING ONLY
-is %>% filter(., is.na(case)) %>% View(.)
-
