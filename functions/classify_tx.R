@@ -277,6 +277,24 @@ for (i in 1:nrow(operations_hash)) {
   else if (nrow(x) == sum(x$parameterEntry == "transfer", na.rm=TRUE)) {
     x %<>% mutate(., tokenSender = SenderAddress, case = "Token transfer")
     
+    # Adjust fxhash v2 batch transfers
+    x_temp <- x
+    for (i in 1:nrow(x)) {
+      if (x$targetAddress[i] == "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi") {
+        x_i <- x[i,]
+        tx_i = x_i$parameterValue[[1]]$txs[[1]]
+        for (j in 1:nrow(tx_i)) {
+          x_j <- x_i
+          tx_j <- tx_i[j,]
+          x_j$tokenID = str_c(x_j$targetAddress, "_", tx_j$token_id)
+          x_j$tokenAmount = as.numeric(tx_j$amount)
+          x_temp <- bind_rows(x_temp, x_j)
+        }
+      }
+    }
+    x <- x_temp
+    x %<>% mutate(., xtzFee = xtzFee / nrow(.), xtzSent = xtzFee)
+    
     # Adjust wallet-to-wallet transfers
     for (i in 1:nrow(x))
       if ((x$tokenSender[i] %in% wallets) & (x$tokenReceiver[i] %in% wallets)) {
