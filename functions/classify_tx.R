@@ -155,7 +155,7 @@ nftbutton_contracts <- c(
   "KT1Ax9VNx2fqnknLXDAgXt3b3amkBQTR62Tj", 
   "KT1RtfsNjwQoNATiM53ZD621disELccxpyjE",
   "KT1Ax9VNx2fqnknLXDAgXt3b3amkBQTR62Tj"
-) 
+)
 
 wrap_contracts <- c(
   "KT1DLif2x9BtK6pUq9ZfFVVyW5wN2kau9rkW",
@@ -1659,6 +1659,59 @@ for (i in 1:nrow(operations_hash)) {
     }
     
     # Minterpop unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Emergent Properties contracts
+  else if (sum("KT19vw7kh7dzTRxFUZNWu39773baauzNWtzj" %in% x$targetAddress) > 0) {
+    
+    # Emergent Properties trade
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      n_collect <- sum(x$parameterEntry == "collect", na.rm=TRUE)
+      if (n_collect == 1) {
+        token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+        x %<>%
+          filter(., parameterEntry == "transfer") %>%
+          mutate(.,
+            tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+            tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+            case = ifelse(
+              xtzCollect != xtzReceived,
+              "Emergent Properties collect (sales/royalties)",
+              "Emergent Properties collect (trade)"
+            )
+          )
+      }
+      else {
+        x <- y
+      }
+    }
+    
+    # Emergent Properties collect
+    else if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="Emergent Properties collect")
+    }
+    
+    # Emergent Properties list
+    else if ("list_token" %in% x$parameterEntry) {
+      x %<>% quick_case(., type=2, case="Emergent Properties list")
+    }
+    
+    # Emergent Properties unlist
+    else if ("unlist_token" %in% x$parameterEntry) {
+      x %<>% quick_case(., type=2, case="Emergent Properties unlist")
+    }
+    
+    # Emergent Properties undefined
     else {
       x <- y
     }
