@@ -16,7 +16,9 @@
 #                                                                              #
 ################################################################################
 
-# Please note that all trades are assumed to be 'short-term' for the time being. 
+################################################################################
+# Please note that all trades are assumed to be 'short-term' for the time being.
+################################################################################
 
 # Load income statement, balance sheet, and tax data
 load(file="data/is_updated.RData")

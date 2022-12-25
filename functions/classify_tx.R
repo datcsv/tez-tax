@@ -125,6 +125,12 @@ typed_contracts <- c(
   "KT1VoZeuBMJF6vxtLqEFMoc4no5VDG789D7z"
 )
 
+# 8scribo contracts
+scribo_contracts <- c(
+  "KT19vw7kh7dzTRxFUZNWu39773baauzNWtzj"
+)
+
+# C-VERSO contracts
 cverso_contracts <- c(
   "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX"
 )
@@ -1053,6 +1059,51 @@ for (i in 1:nrow(operations_hash)) {
     }
     
   }
+  
+  # 8scribo contracts
+  else if (sum(scribo_contracts %in% x$targetAddress) > 0) {
+    
+    # 8scribo trade
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        top_n(., n=1, wt=id) %>%
+        mutate(., 
+          tokenAmount = ifelse(
+            xtzCollect != xtzReceived, 
+            0, 
+            as.numeric(list_check(parameterValue, "amount"))
+          ),
+          tokenSender = ifelse(
+            xtzCollect != xtzReceived, 
+            NA, 
+            token_sender
+          ),
+          case = ifelse(
+            xtzCollect != xtzReceived, 
+            "8scribo collect (sales/royalties)", 
+            "8scribo collect (trade)"
+          )
+        )
+    }
+    
+    # 8scribo collect
+    else if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., case="8scribo collect", type=2)
+    }
+    
+    # 8scribo unidentified
+    else {
+      x <- y
+    }
+    
+  }
     
   # akaSwap contracts
   else if (sum(aka_contracts %in% x$targetAddress) > 0) {
@@ -1666,18 +1717,21 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Emergent Properties contracts
-  else if (sum("KT19vw7kh7dzTRxFUZNWu39773baauzNWtzj" %in% x$targetAddress) > 0) {
+  else if (sum(c("KT1AML4jv2jMLKESGTApRZVoga5V5cSAMD2E") %in% x$targetAddress) > 0) {
     
     # Emergent Properties trade
     if (
-      ("collect" %in% x$parameterEntry) & 
+      ("create_sale" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      n_collect <- sum(x$parameterEntry == "collect", na.rm=TRUE)
+      n_collect <- sum(x$parameterEntry == "create_sale", na.rm=TRUE)
       if (n_collect == 1) {
         token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
         x %<>%
-          filter(., parameterEntry == "transfer") %>%
+          filter(., 
+            parameterEntry == "create_sale", 
+            SenderAddress == "KT1AML4jv2jMLKESGTApRZVoga5V5cSAMD2E"
+          ) %>%
           mutate(.,
             tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
             tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
@@ -1685,7 +1739,8 @@ for (i in 1:nrow(operations_hash)) {
               xtzCollect != xtzReceived,
               "Emergent Properties collect (sales/royalties)",
               "Emergent Properties collect (trade)"
-            )
+            ),
+            tokenID = str_c(targetAddress, "_", parameterValue[[1]]$token_id) 
           )
       }
       else {
@@ -1695,10 +1750,17 @@ for (i in 1:nrow(operations_hash)) {
     
     # Emergent Properties collect
     else if (
-      ("collect" %in% x$parameterEntry) & 
+      ("create_sale" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      x %<>% quick_case(., entry="transfer", case="Emergent Properties collect")
+      x %<>% 
+        quick_case(., entry="create_sale", case="Emergent Properties collect") %>%
+        filter(., SenderAddress == "KT1AML4jv2jMLKESGTApRZVoga5V5cSAMD2E") %>%
+        mutate(., 
+          tokenAmount = 1,
+          tokenReceiver = initiatorAddress,
+          tokenID = str_c(targetAddress, "_", parameterValue[[1]]$token_id) 
+        )
     }
     
     # Emergent Properties list
