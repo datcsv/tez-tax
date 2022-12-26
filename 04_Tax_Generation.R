@@ -44,6 +44,12 @@ dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
 # Remove zero proceed sales 
 # tax_8949 %<>% filter(., round(Proceeds, 2) > 0.00)
 
+# Add short-term/long-term data
+tax_8949 %<>% 
+  mutate(., 
+    Short_Term = replace_na(as.numeric(Date_Sold - Date_Acquired) <= 200, TRUE)
+  )
+
 # Format tax form 8949 data for export
 tax_8949_intuit <- tax_8949 %>%
   select(.,
@@ -106,18 +112,41 @@ if (xtzIncome > 100) {
 }
 
 # Generate tax form 1040 schedule D
+ShortTermProceeds   = tax_8949 %>% filter(., Short_Term) %>% select(., Proceeds) %>% sum(.)
+ShortTermCosts      = tax_8949 %>% filter(., Short_Term) %>% select(., Cost_Basis) %>% sum(.)
+ShortTermAdjustment = tax_8949 %>% filter(., Short_Term) %>% select(., Adjustment) %>% sum(., na.rm=TRUE)
+ShortTermGainLoss   = tax_8949 %>% filter(., Short_Term) %>% select(., Gain_Loss) %>% sum(.)
+
+LongTermProceeds   = tax_8949 %>% filter(., !Short_Term) %>% select(., Proceeds) %>% sum(.)
+LongTermCosts      = tax_8949 %>% filter(., !Short_Term) %>% select(., Cost_Basis) %>% sum(.)
+LongTermAdjustment = tax_8949 %>% filter(., !Short_Term) %>% select(., Adjustment) %>% sum(., na.rm=TRUE)
+LongTermGainLoss   = tax_8949 %>% filter(., !Short_Term) %>% select(., Gain_Loss) %>% sum(.)
+
 f1040sd_fields <- get_fields(input_filepath=f1040sd)
 f1040sd_fields[[1]][[3]]  <- legal_name
 f1040sd_fields[[2]][[3]]  <- ssn
 f1040sd_fields[[4]][[3]]  <- "2"
-f1040sd_fields[[17]][[3]] <- sprintf("%.2f", sum(tax_8949$Proceeds))
-f1040sd_fields[[18]][[3]] <- sprintf("%.2f", sum(tax_8949$Cost_Basis))
-if (sum(!is.na(tax_8949$Adjustment)) > 0) {
-  f1040sd_fields[[19]][[3]] <- sprintf("%.2f", sum(tax_8949$Adjustments), na.rm=TRUE) 
+
+# Short-term gain/loss
+f1040sd_fields[[17]][[3]] <- sprintf("%.2f", ShortTermProceeds)
+f1040sd_fields[[18]][[3]] <- sprintf("%.2f", ShortTermCosts)
+if (ShortTermAdjustment > 0) {
+  f1040sd_fields[[19]][[3]] <- sprintf("%.2f", ShortTermAdjustment) 
 }
-f1040sd_fields[[20]][[3]] <- sprintf("%.2f", sum(tax_8949$Gain_Loss))
-f1040sd_fields[[24]][[3]] <- sprintf("%.2f", sum(tax_8949$Gain_Loss))
-f1040sd_fields[[46]][[3]] <- sprintf("%.2f", sum(tax_8949$Gain_Loss))
+f1040sd_fields[[20]][[3]] <- sprintf("%.2f", ShortTermGainLoss)
+f1040sd_fields[[24]][[3]] <- sprintf("%.2f", ShortTermGainLoss)
+
+# Long-term gain/loss
+f1040sd_fields[[37]][[3]] <- sprintf("%.2f", LongTermProceeds)
+f1040sd_fields[[38]][[3]] <- sprintf("%.2f", LongTermCosts)
+if (ShortTermAdjustment > 0) {
+  f1040sd_fields[[39]][[3]] <- sprintf("%.2f", LongTermAdjustment) 
+}
+f1040sd_fields[[40]][[3]] <- sprintf("%.2f", LongTermGainLoss)
+f1040sd_fields[[45]][[3]] <- sprintf("%.2f", LongTermGainLoss)
+
+# Combined figures
+f1040sd_fields[[46]][[3]] <- sprintf("%.2f", ShortTermGainLoss + LongTermGainLoss)
 f1040sd_fields[[48]][[3]] <- "2"
 f1040sd_fields[[55]][[3]] <- "2"
 
