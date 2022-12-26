@@ -293,7 +293,11 @@ for (i in 1:nrow(operations_hash)) {
       }
     }
     x <- x_temp
-    x %<>% mutate(., xtzFee = xtzFee / nrow(.), xtzSent = xtzFee)
+    x %<>% mutate(., 
+      xtzFee = xtzFee / nrow(.), 
+      xtzSent = xtzFee,
+      tokenAmount = ifelse(is.na(tokenAmount), 0, tokenAmount)
+    )
     
     # Adjust wallet-to-wallet transfers
     for (i in 1:nrow(x))
