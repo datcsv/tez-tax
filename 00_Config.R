@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2022 datcsv                                                        #
+# Copyright 2023 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -22,7 +22,7 @@ library("jsonlite")
 library("lubridate")
 library("magrittr")
 library("readr")
-library("staplr")
+library("staplr") # Staplr requires R 4.1.2 or lower
 
 # Load functions
 source("functions/list_check.R")
@@ -45,7 +45,7 @@ wallets <- c(
 currency <- "usd"
 
 # Define date span [min, max]
-date_span <- c("2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z")
+date_span <- c("2022-01-01T00:00:00Z", "2023-12-31T23:59:59Z")
 
 # Path to Coinbase transaction data, if applicable (Otherwise set to NA)
 cb_path <- NA
@@ -53,7 +53,7 @@ cb_path <- NA
 # Include early OBJKT auction data (TRUE/FALSE)
 objkt_v1 <- TRUE
 
-# Assume RCS tokens with no transaction history were minted at 5tz
+# Assume Randomly Common Skele tokens with no tx history were minted at 5tz
 rcs_mint <- TRUE
 
 # Assume NFT tokens are collectibles (TRUE/FALSE)

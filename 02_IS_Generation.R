@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2022 datcsv                                                        #
+# Copyright 2023 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -30,26 +30,36 @@ operations$parameterEntry   <- operations$parameter$entrypoint
 operations$parameterValue   <- operations$parameter$value
 operations$quote            <- operations$quote[[1]]
 
-# Adjust batch transactions
 op_hash <- "0"
 j <- 0
+batch_list <- c(
+  "collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask", "ask"
+)
 for (i in 1:nrow(operations)) {
-  if (i > 1) {
-    if (
-      ((sum(operations$parameterEntry[i] %in% c("collect", "harvest")) > 0) |
-      (operations$hash[i] == op_hash)) & 
-      (operations$hash[i] != operations$hash[i-1])
-    ) {
-      if (sum(operations$parameterEntry[i] %in% c("collect", "harvest")) > 0) {
-        op_hash <- operations$hash[i]
-        j <- j + 1
-      }
-      else {
-        op_hash <- operations$hash[i]
-      }
-      operations$hash[i] <- paste0(op_hash, "_", j)
+  
+  # Adjust batch transactions
+  if (i == 1) {
+    if (sum(operations$parameterEntry[i] %in% batch_list) > 0) {
+      op_hash <- operations$hash[i]
     }
   }
+  else if (
+    (
+      (sum(operations$parameterEntry[i] %in% batch_list) > 0) |
+      (operations$hash[i] == op_hash)
+    ) & 
+    (operations$hash[i] != operations$hash[i-1])
+  ) {
+    if (sum(operations$parameterEntry[i] %in% batch_list) > 0) {
+      op_hash <- operations$hash[i]
+      j <- j + 1
+    }
+    else {
+      op_hash <- operations$hash[i]
+    }
+    operations$hash[i] <- paste0(op_hash, "_", j)
+  }
+
 }
 
 # Clean operations data
@@ -79,10 +89,10 @@ operations %<>%
     xtzSent        = ifelse(SenderAddress %in% wallets, xtzAmount + xtzFee, 0),
     xtzReceived    = ifelse(targetAddress %in% wallets, xtzAmount, 0),
     parameterValue = ifelse(parameterValue == "NULL", NA, parameterValue),
-    tokenID        = NA,
+    tokenID        = "",
     tokenAmount    = 0,
-    tokenSender    = NA,
-    tokenReceiver  = NA,
+    tokenSender    = "",
+    tokenReceiver  = "",
     tokenSent      = 0,
     tokenReceived  = 0,
     walletTx       = TRUE,

@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2022 datcsv                                                        #
+# Copyright 2023 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -27,7 +27,8 @@ hen_contracts <- c(
   "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
   "KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn", 
   "KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj",
-  "KT1TybhR7XraG75JFYKSrh7KnxukMBT5dor6"
+  "KT1TybhR7XraG75JFYKSrh7KnxukMBT5dor6",
+  "KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w" # Teia
 )
 
 # QuipuSwap contracts
@@ -67,7 +68,14 @@ quipu_contracts <- c(
   "KT1A91CcMx1izXcbBwyH3z8Do3vnEdKpbde2",
   "KT1BgezWwHBxA9NrczwK9x3zfgFnUkc7JJ4b",
   "KT1Evsp2yA19Whm24khvFPcwimK6UaAJu8Zo",
-  "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w"
+  "KT1DuYujxrmgepwSDHtADthhKBje9BosUs1w",
+  "KT19g5hey69CiXRbhRzJEwvuJ95RgVLzS3TP",
+  "KT1RKdp1rL3c3wxy6XWE8ZdUXdihrGjb4eGB",
+  "KT1VXBX6NwapYf9Sq6LsQVr4SdsDq3ta1nss",
+  "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ",
+  "KT1FptuULGK69mZRsBz62CSFdRs52etEb6Ah",
+  "KT1V4jaZpCwhfitTnUucY1EHiRfz3bjqznAU",
+  "KT1V4jaZpCwhfitTnUucY1EHiRfz3bjqznAU"
 )
 
 # Crunchy contracts
@@ -90,10 +98,16 @@ objkt_contracts <- c(
   "KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z",
   "KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq",
   "KT1XjcRq5MLAzMKQ3UHsrue2SeU2NbxUrzmU",
-  "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih",
   "KT1QJ71jypKGgyTNtXjkCAYJZNhCKWiHuT2r",
-  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM"
-  #"KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc"
+  "KT1Aq4wWmVanpQhq4TTfjZXB5AjFpx15iQMM",
+  "KT1Wvk8fon9SgNEPQKewoSL2ziGGuCQebqZc"
+)
+
+# OBJKT v2 contracts
+objkt_v2_contracts <- c(
+  "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC",
+  "KT18p94vjkkHYY3nPmernmgVR7HdZFzE7NAk",
+  "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz"
 )
 
 # akaSwap contracts
@@ -101,7 +115,24 @@ aka_contracts <- c(
   "KT1HGL8vx7DP4xETVikL4LUYvFxSV19DxdFN",
   "KT1NL8H5GTAWrVNbQUxxDzagRAURsdeV3Asz",
   "KT1ULea6kxqiYe1A7CZVfMuGmTx7NmDGAph1",
-  "KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU"
+  "KT19QcybJCf8zKCEECRhtMUYTptTwgY9jMKU",
+  "KT1Dn3sambs7KZGW88hH2obZeSzfmCmGvpFo",
+  "KT1J2C7BsYNnSjQsGoyrSXShhYGkrDDLVGDd"
+)
+
+# typed contracts
+typed_contracts <- c(
+  "KT1VoZeuBMJF6vxtLqEFMoc4no5VDG789D7z"
+)
+
+# 8scribo contracts
+scribo_contracts <- c(
+  "KT19vw7kh7dzTRxFUZNWu39773baauzNWtzj"
+)
+
+# C-VERSO contracts
+cverso_contracts <- c(
+  "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX"
 )
 
 # fxhash contracts
@@ -112,10 +143,24 @@ fx_contracts <- c(
   "KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww" 
 )
 
+#fxhash v2 contracts
+fx_v2_contracts <- c(
+  "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv",
+  "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+  "KT1M1NyU9X4usEimt2f3kDaijZnDMNBu42Ja" #fxtext
+)
+
 # Rarible contracts
 rari_contracts <- c(
   "KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC",
   "KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS"
+)
+
+# NFTbutton contracs
+nftbutton_contracts <- c(
+  "KT1Ax9VNx2fqnknLXDAgXt3b3amkBQTR62Tj", 
+  "KT1RtfsNjwQoNATiM53ZD621disELccxpyjE",
+  "KT1Ax9VNx2fqnknLXDAgXt3b3amkBQTR62Tj"
 )
 
 wrap_contracts <- c(
@@ -127,6 +172,24 @@ kolibri_contracts <- c(
   "KT1Mgy95DVzqVBNYhsW93cyHuB57Q94UFhrh",
   "KT1DLaeYVgg4X21BFyFgJ8gjcR3AnPNM8ZCY"
   
+)
+
+versum_contracts <- c(
+  "KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5",
+  "KT1KRvNVubq64ttPbQarxec5XdS6ZQU4DVD2",
+  "KT1NUrzs7tiT4VbNPqeTxgAFa4SXeV1f3xe9"
+)
+
+minterpop_contracts <- c(
+  "KT1DgUawhCMBixK8Nt24uvMxFdjYRRbjiNGi"
+)
+
+eightbidou_contracts <- c(
+  "KT1BvWGFENd4CXW5F3u4n31xKfJhmBGipoqF"
+)
+
+endless_ways_contracts <- c(
+  "KT1VdCrmZsQfuYgbQsezAHT1pXvs6zKF8xHB"
 )
 
 # Create null income statement
@@ -211,13 +274,37 @@ for (i in 1:nrow(operations_hash)) {
   }
   
   # Token transfer
-  else if ((nrow(x) == 1) & ("transfer" %in% x$parameterEntry)) {
+  else if (nrow(x) == sum(x$parameterEntry == "transfer", na.rm=TRUE)) {
     x %<>% mutate(., tokenSender = SenderAddress, case = "Token transfer")
     
-    # Adjust wallet-to-wallet transfers
-    if ((x$tokenSender %in% wallets) & (x$tokenReceiver %in% wallets)) {
-      x %<>% mutate(., tokenAmount = 0, case = "Wallet transfer")
+    # Adjust fxhash v2 batch transfers
+    x_temp <- x
+    for (i in 1:nrow(x)) {
+      if (x$targetAddress[i] == "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi") {
+        x_i <- x[i,]
+        tx_i = x_i$parameterValue[[1]]$txs[[1]]
+        for (j in 1:nrow(tx_i)) {
+          x_j <- x_i
+          tx_j <- tx_i[j,]
+          x_j$tokenID = str_c(x_j$targetAddress, "_", tx_j$token_id)
+          x_j$tokenAmount = as.numeric(tx_j$amount)
+          x_temp <- bind_rows(x_temp, x_j)
+        }
+      }
     }
+    x <- x_temp
+    x %<>% mutate(., 
+      xtzFee = xtzFee / nrow(.), 
+      xtzSent = xtzFee,
+      tokenAmount = ifelse(is.na(tokenAmount), 0, tokenAmount)
+    )
+    
+    # Adjust wallet-to-wallet transfers
+    for (i in 1:nrow(x))
+      if ((x$tokenSender[i] %in% wallets) & (x$tokenReceiver[i] %in% wallets)) {
+        x$tokenAmount[i] = 0
+        x$case[i] = "Wallet transfer"
+      }
     
   }
   
@@ -498,6 +585,41 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  #0xSelfie contract
+  else if (sum("KT1LMrt6NKe86GUeCxHXjXkf5UD4e5uUTSkP" %in% x$targetAddress) > 0) {
+    
+    # 0xSelfie mint
+    if ("mint" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="0xSelfie mint", type=2)
+    }
+    
+    # 0xSelfie access
+    else if ("request_access" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="0xSelfie access", type=2)
+    }
+    
+    # 0xSelfie unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Marina hero mint
+  else if (sum("KT1Q2jUJnrvrrhi4gBpZVLm37nyCqaFNtK7X" %in% x$targetAddress) > 0) {
+
+    # Marina pay
+    if ("default" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="default", case="Marina payment")
+    }
+    
+    # Marina unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # Tezos Domains contracts
   else if (sum(td_contracts %in% x$targetAddress) > 0) {
     
@@ -529,6 +651,16 @@ for (i in 1:nrow(operations_hash)) {
     # TD renew
     else if ("renew" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="renew", case="TD renew")
+    }
+    
+    # TD remove offer
+    else if ("remove_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="remove_offer", case="TD remove offer")
+    }
+    
+    # TD update operators
+    else if ("update_operators" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="update_operators", case="TD update operators")
     }
     
     # TD unidentified
@@ -785,6 +917,216 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # OBJKT v2 contracts
+  else if (sum(objkt_v2_contracts %in% x$targetAddress) > 0) {
+    
+    # OBJK v2 ask
+    if ("ask" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="ask", case="OBJKT v2 ask")
+    }
+    
+    # OBJKT v2 retract ask
+    else if ("retract_ask" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="retract_ask", case="OBJKT v2 retract ask")
+    }
+    
+    # OBJKT v2 offer
+    else if ("offer" %in% x$parameterEntry) {
+      x %<>% mutate(.,
+        xtzSent = xtzFee,
+        case = "OBJKT v2 offer"
+      )
+    }
+    
+    # OBJKT v2 bid
+    else if ("bid" %in% x$parameterEntry) {
+      x %<>%
+        filter(., 
+          parameterEntry == "transfer", 
+          tokenReceiver == "KT18p94vjkkHYY3nPmernmgVR7HdZFzE7NAk"
+        ) %>%
+        mutate(., case = "OBJKT v2 bid")
+    }
+
+    # OBJKT v2 unwrap
+    else if ("unwrap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="unwrap", case="OBJKT v2 unwrap")
+    }
+    
+    # OBJKT v2 fulfill offer (trade)
+    else if (
+      ("fulfill_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+               tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+               tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+               case = ifelse(
+                 xtzCollect != xtzReceived, 
+                 "OBJKT v2 fulfill offer (sales/royalties)", 
+                 "OBJKT v2 fulfill offer (trade)"
+               )
+        )
+    }
+    
+    # OBJKT v2 fulfill offer (collect)
+    else if (
+      ("fulfill_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT v2 fulfill offer (collect)")
+    }
+    
+    # OBJKT v2 fulfill ask (trade)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+          case = ifelse(
+          xtzCollect != xtzReceived, 
+            "OBJKT v2 fulfill ask (sales/royalties)", 
+            "OBJKT v2 fulfill ask (trade)"
+          )
+        )
+    }
+    
+    # OBJKT v2 fulfill ask (collect)
+    else if (
+      ("fulfill_ask" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="OBJKT v2 fulfill ask (collect)")
+    }
+    
+    # OBJKT retract offer
+    else if ("retract_offer" %in% x$parameterEntry) {
+      x %<>% 
+        quick_case(., entry="retract_offer", case="OBJKT v2 retract offer") %>%
+        mutate(., xtzSent = xtzFee, xtzReceived = 0)
+    }
+    
+    # OBJKT v2 unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # C-Verso contracts
+  else if (sum(cverso_contracts %in% x$targetAddress) >0) {
+    
+    # C-Verso mint
+    if ("mint_token" %in% x$parameterEntry) {
+      x %<>% 
+        quick_case(., entry="mint", case="C-Verso mint") %>%
+        mutate(., tokenAmount = 1)
+    }
+    
+    # C-Verso unidentified
+    else {
+      x <- y
+    }
+    
+  }
+
+  # typed contracts
+  else if (sum(typed_contracts %in% x$targetAddress) > 0) {
+    
+    # typed trade
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        top_n(., n=1, wt=id) %>%
+        mutate(., 
+          tokenAmount = ifelse(
+            xtzCollect != xtzReceived, 
+            0, 
+            as.numeric(list_check(parameterValue, "amount"))
+          ),
+            tokenSender = ifelse(
+            xtzCollect != xtzReceived, 
+            NA, 
+            token_sender
+          ),
+          case = ifelse(
+            xtzCollect != xtzReceived, 
+            "typed collect (sales/royalties)", 
+            "typed collect (trade)"
+          )
+        )
+    }
+    
+    # typed collect
+    else if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., case="typed collect", type=2)
+    }
+    
+    # typed unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # 8scribo contracts
+  else if (sum(scribo_contracts %in% x$targetAddress) > 0) {
+    
+    # 8scribo trade
+    if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        top_n(., n=1, wt=id) %>%
+        mutate(., 
+          tokenAmount = ifelse(
+            xtzCollect != xtzReceived, 
+            0, 
+            as.numeric(list_check(parameterValue, "amount"))
+          ),
+          tokenSender = ifelse(
+            xtzCollect != xtzReceived, 
+            NA, 
+            token_sender
+          ),
+          case = ifelse(
+            xtzCollect != xtzReceived, 
+            "8scribo collect (sales/royalties)", 
+            "8scribo collect (trade)"
+          )
+        )
+    }
+    
+    # 8scribo collect
+    else if (
+      ("collect" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., case="8scribo collect", type=2)
+    }
+    
+    # 8scribo unidentified
+    else {
+      x <- y
+    }
+    
+  }
+    
   # akaSwap contracts
   else if (sum(aka_contracts %in% x$targetAddress) > 0) {
     
@@ -875,10 +1217,68 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "akaSwap gachapon royalties")
     }
     
+    # akaSwap offer
+    else if ("make_offer" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        case = "akaSwap offer"              
+      )
+    }
+    
+    # akaSwap cancel offer
+    else if ("cancel_offer" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzReceived = 0,
+        case = "akaSwap cancel offer"              
+      )
+    }
+    
     # akaSwap unidentified
     else {
       x <- y
     }
+  }
+  
+  # 8bidou contracts
+  else if (sum(eightbidou_contracts %in% x$targetAddress) > 0) {
+    
+    # 8bidou buy
+    if (
+      ("buy" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="8bidou buy")
+    }
+    
+    # 8bidou unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # Endless Ways contracts
+  else if (sum(endless_ways_contracts %in% x$targetAddress) > 0) {
+    
+    # 8bidou buy
+    if (
+      ("mint_and_purchase" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="mint_and_purchase", case="Endless ways mint")
+    }
+    
+    # 8bidou unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # Mooncakes mint
+  else if (
+    ("KT1WvV2rPBQUFUqtCWmnnj8JX2gkmDtMBzQi" %in% x$targetAddress) &
+    ("mint" %in% x$parameterEntry)
+  ) {
+    x %<>% quick_case(., entry="mint", case="mooncakes mint")
   }
   
   # Tezzardz mint
@@ -1009,6 +1409,33 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # DKRBT homebase
+  else if ("KT1DNHADdFxHM6mRKTgyJmchW5ELxcoW1aSh" %in% x$targetAddress) {
+
+    # DKRBT freeze (staking)
+    if ("freeze" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="DKRBT freeze", type=2)
+      x %<>% mutate(., tokenAmount = 0)
+    }
+
+    # DKRBT unfreeze (unstake)
+    ############################################################################
+    # NOTE: Unfreeze classification does not account for DKRBT earned through
+    # staking. That is, output will not properly classify earned tokens as
+    # income, but instead will assume that the tokens were acquired at a cost
+    # basis of 0 when the tokens are sold.
+    ############################################################################
+    else if ("unfreeze" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="DKRBT unfreeze", type=2)
+      x %<>% mutate(., tokenAmount = 0)
+    }
+
+    # DKRBT unidentified
+    else {
+      x <- y
+    }
+  }
+  
   # fxhash contracts
   else if (sum(fx_contracts %in% x$targetAddress) > 0) {
     
@@ -1093,6 +1520,377 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # fxhash v2 contracts
+  else if (sum(fx_v2_contracts %in% x$targetAddress) > 0) {
+    
+    # fxhash v2 mint
+    if ("mint" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "mint", !row_number() == 1) %>%
+        mutate(., 
+               case = "fxhash v2 mint", 
+               tokenAmount = 1
+        )
+      
+      if (x$tokenSender %in% wallets) {
+        x %<>% mutate(., 
+          case = "fxhash v2 self-mint",
+          tokenReceiver = tokenSender,
+          tokenSender = NA
+        )
+      }
+      
+    }
+    
+    # fxhash v2 listing
+    else if ("listing" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="listing", case="fxhash v2 listing")
+    }
+    
+    # fxhash v2 listing cancel
+    else if ("listing_cancel" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="listing_cancel", case="fxhash v2 listing cancel")
+    }
+    
+    # fxhash v2 trade
+    else if (
+      ("listing_accept" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+               tokenAmount = ifelse(
+                 xtzCollect != xtzReceived, 
+                 0,
+                 as.numeric(list_check(parameterValue, "amount"))
+               ),
+               tokenSender = ifelse(
+                 xtzCollect != xtzReceived, 
+                 NA,
+                 wallets[1]
+               ),
+               case = ifelse(
+                 xtzCollect != xtzReceived, 
+                 "fxhash v2 collect (sales/royalties)",
+                 "fxhash v2 collect (trade)"
+               )
+        )
+    }
+    
+    # fxhash v2 collect
+    else if (
+      ("listing_accept" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="fxhash v2 collect")
+    }
+    
+    # fxhash v2 accept offer
+    else if (
+      ("offer_accept" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          tokenAmount = ifelse(
+            xtzCollect != xtzReceived, 
+            0,
+            as.numeric(list_check(parameterValue, "amount"))
+          ),
+          tokenSender = ifelse(
+            xtzCollect != xtzReceived, 
+            NA,
+            wallets[1]
+          ),
+            case = ifelse(
+            xtzCollect != xtzReceived, 
+            "fxhash v2 accept offer (sales/royalties)",
+            "fxhash v2 accept offer (trade)"
+          )
+        )
+    }
+    
+    # fxhash v2 offer
+    else if ("offer" %in% x$parameterEntry) {
+      x %<>% mutate(.,
+        xtzSent = xtzFee,
+        case="fxhash v2 offer"
+      )
+    }
+    
+    # fxhash v2 cancel offer
+    else if ("offer_cancel" %in% x$parameterEntry) {
+      x %<>% mutate(.,
+        xtzReceived = 0,
+        case="fxhash v2 cancel offer"
+      )
+    }
+    
+    # fxhash v2 unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # Versum contracts
+  else if (sum(versum_contracts %in% x$targetAddress) > 0) {
+    
+    # Versum make offer
+    if ("make_offer" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        case = "Versum make offer"
+      )
+    }
+    
+    # Versum make offer
+    else if ("bid" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        case = "Versum bid"
+      )
+    }
+    
+    
+    # Versum cancel offer
+    else if ("cancel_offer" %in% x$parameterEntry) {
+      x %<>% mutate(., 
+        xtzSent = xtzFee,
+        xtzReceived = 0,
+        case = "Versum cancel offer"
+      )
+    }
+    
+    # Versum collect (buy)
+    else if ("collect_swap" %in% x$parameterEntry & (sum(wallets %in% x$initiatorAddress) > 0)) {
+      x %<>% quick_case(., entry="transfer", case="Versum collect (buy)")
+    }
+    
+    # Versum collect (sell)
+    else if (
+      ("collect_swap" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      xtzCollect <- sort(x$xtzAmount, decreasing=TRUE)[4]
+      n_collect <- sum(x$parameterEntry == "collect_swap", na.rm=TRUE)
+      if (n_collect == 1) {
+        token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+        x %<>%
+          filter(., parameterEntry == "transfer") %>%
+          mutate(.,
+            tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+            tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+            case = ifelse(
+            xtzCollect != xtzReceived,
+            "Versum collect (sales/royalties)",
+            "Versum collect (trade)"
+            )
+          )
+      }
+      else {
+        x <- y
+      }
+    }
+    
+    # Versum claim verification
+    else if ("claim_verification" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="claim_verification", case="Versum claim verification")
+    }
+    
+    # Versum claim Materia
+    else if ("claim_materia" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="Versum claim Materia")
+    }
+    
+    # Versum swap
+    else if ("create_swap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="create_swap", case="Versum swap")
+    }
+    
+    # Versum swap
+    else if ("cancel_swap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="cancel_swap", case="Versum cancel swap")
+    }
+    
+    # Versum unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Minterpop contracts
+  else if (sum(minterpop_contracts %in% x$targetAddress) > 0) {
+    
+    # Minterpop buy
+    if ("buy" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="Minterpop buy")
+    }
+    
+    # Minterpop unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Emergent Properties contracts
+  else if (sum(c("KT1AML4jv2jMLKESGTApRZVoga5V5cSAMD2E") %in% x$targetAddress) > 0) {
+    
+    # Emergent Properties trade
+    if (
+      ("create_sale" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      n_collect <- sum(x$parameterEntry == "create_sale", na.rm=TRUE)
+      if (n_collect == 1) {
+        token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+        x %<>%
+          filter(., 
+            parameterEntry == "create_sale", 
+            SenderAddress == "KT1AML4jv2jMLKESGTApRZVoga5V5cSAMD2E"
+          ) %>%
+          mutate(.,
+            tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+            tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+            case = ifelse(
+              xtzCollect != xtzReceived,
+              "Emergent Properties collect (sales/royalties)",
+              "Emergent Properties collect (trade)"
+            ),
+            tokenID = str_c(targetAddress, "_", parameterValue[[1]]$token_id) 
+          )
+      }
+      else {
+        x <- y
+      }
+    }
+    
+    # Emergent Properties collect
+    else if (
+      ("create_sale" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% 
+        quick_case(., entry="create_sale", case="Emergent Properties collect") %>%
+        filter(., SenderAddress == "KT1AML4jv2jMLKESGTApRZVoga5V5cSAMD2E") %>%
+        mutate(., 
+          tokenAmount = 1,
+          tokenReceiver = initiatorAddress,
+          tokenID = str_c(targetAddress, "_", parameterValue[[1]]$token_id) 
+        )
+    }
+    
+    # Emergent Properties list
+    else if ("list_token" %in% x$parameterEntry) {
+      x %<>% quick_case(., type=2, case="Emergent Properties list")
+    }
+    
+    # Emergent Properties unlist
+    else if ("unlist_token" %in% x$parameterEntry) {
+      x %<>% quick_case(., type=2, case="Emergent Properties unlist")
+    }
+    
+    # Emergent Properties undefined
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # NFTbutton contracts
+  else if (sum(nftbutton_contracts %in% x$targetAddress) > 0) {
+    
+    # NFTbutton bid
+    if ("bid" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="NFTbutton bid")
+    }
+    
+    # NFTbutton mint
+    else if ("mint" %in% x$parameterEntry) {
+      x %<>% mutate(., case = "NFTbutton mint")
+    }
+    
+    # NFTbutton resolve
+    else if ("resolve" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="NFTbutton resolve")
+    }
+    
+    # NFTbutton unidentified
+    else {
+      x <- y
+    } 
+    
+  }
+  
+  # NFTbutton old contract
+  else if (sum("KT1Tde5fNg9AZqyW8zjPxfAXhAveSasnp2Dq" %in% x$targetAddress) > 0) {
+    
+    # NFTbutton old collect
+    if ("collect" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="transfer", case="NFTbutton old collect")
+    }
+    
+    # NFTbutton old unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Tezos Mandala contracts
+  else if (sum("KT1DKBvxiwDR7qazNuuxCxY2AaXnoytmDE7H" %in% x$targetAddress) > 0) {
+    
+    # Tezos Mandala mint
+    if ("mint" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="mint", case="Tezos Mandala Mint")
+    }
+    
+    # Tezos Mandala wrap
+    else if ("wrap" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "mint") %>%
+        mutate(.,
+          case = "Tezos Mandala Wrap"       
+        )
+    }
+    
+    # Tezos Mandala unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
+  # Editart mint ccontract
+  else if (sum("KT1D7Ufx21sz9yDyP4Rs1WBCur9XhaZ9JwNE" %in% x$targetAddress) > 0) {
+    if ("mint" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="mint", case="Editart mint")
+    }
+    else {
+      x <- y
+    }
+  }
+  
+  # Knights of Tezonia contracts
+  else if (sum("KT1VuqyJmkcSk2m5L9gEgAs69t6CCDDxLtiz" %in% x$targetAddress) > 0) {
+    
+    # Tezonia collect
+    if ("collect" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="mint", case="Knights of Tezonia mint")
+    }
+    
+    # Tezonia unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # Rarible contracts
   else if (sum(rari_contracts %in% x$targetAddress) > 0) {
     
@@ -1136,6 +1934,17 @@ for (i in 1:nrow(operations_hash)) {
     # Rarible cancel
     else if ("cancel" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="cancel", case="Rarible cancel")
+    }
+    
+    # Rarible cancel
+    else if ("burn" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="burn", case="Token transfer")
+      x %<>% mutate(.,
+        tokenAmount = 1,
+        tokenSender = SenderAddress,
+        tokenReceiver = "",
+        tokenID = str_c(targetAddress, parameterValue[[1]]$itokenid, sep="_")
+      )
     }
     
     # Rarible unidentified
@@ -1243,6 +2052,26 @@ for (i in 1:nrow(operations_hash)) {
      
   }
   
+  # Gogos contract
+  else if (sum("KT1Xf44LpwrA7oBcB3VwWTtUBP1eNRaNnWeh" %in% x$targetAddress) > 0) {
+    
+    # Gogos consume
+    if ("consume" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="Gogos consume", type=2)
+    }
+    
+    # Gogos return
+    else if ("return_item" %in% x$parameterEntry) {
+      x %<>% quick_case(., case="Gogos return", type=2)
+    }
+    
+    # Gogos unidentified
+    else {
+      x <- y
+    }
+    
+  }
+  
   # Kolibri oven
   else if (sum(kolibri_contracts %in% x$targetAddress) > 0) {
     
@@ -1301,6 +2130,25 @@ for (i in 1:nrow(operations_hash)) {
       x <- y
     }
     
+  }
+  
+  # Glitch Forge contracts
+  else if (sum("KT1NJXj24i8GDz6ZAb8XdP8RgkE2mo5s9nEG" %in% x$targetAddress) > 0) {
+    
+    # Glitch Forge purchase
+    if ("purchase" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="purchase", case="Glitch Forge purchase")
+    }
+    
+    # Glitch Forge unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # tzprofiles default call
+  else if ("default" %in% x$parameterEntry & nrow(x) == 1) {
+    x %<>% quick_case(., entry="default", case="tzprofiles update")
   }
   
   # Unidentified
