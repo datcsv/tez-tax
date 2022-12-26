@@ -44,9 +44,12 @@ dir.create(pdf_f1040s1_dir, showWarnings=FALSE)
 # Remove zero proceed sales 
 # tax_8949 %<>% filter(., round(Proceeds, 2) > 0.00)
 
-# Add short-term/long-term data
+# Filter tax year, add short-term/long-term data
 tax_8949 %<>% 
+  filter(., Date_Sold >= date_span[1], Date_Sold <= date_span[2]) %>%
   mutate(., Short_Term = replace_na(as.numeric(Date_Sold - Date_Acquired) <= 365, TRUE))
+
+xtzIncome_data %<>% filter(., timestamp >= date_span[1], timestamp <= date_span[2])
 
 # Format tax form 8949 data for export
 tax_8949_intuit <- tax_8949 %>%
