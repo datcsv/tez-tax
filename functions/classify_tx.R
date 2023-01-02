@@ -950,7 +950,12 @@ for (i in 1:nrow(operations_hash)) {
 
     # OBJKT v2 unwrap
     else if ("unwrap" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="unwrap", case="OBJKT v2 unwrap")
+      x %<>% quick_case(., entry="unwrap", case="OBJKT v2 unwrap") %>%
+        mutate(., 
+          tokenAmount = as.numeric(parameterValue[[1]]), 
+          tokenID = "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz_0",
+          tokenSender = SenderAddress
+        )
     }
     
     # OBJKT v2 fulfill offer (trade)
@@ -962,10 +967,10 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-               tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
-               tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+               tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
+               tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
                case = ifelse(
-                 xtzCollect != xtzReceived, 
+                 xtzCollect_bid != xtzReceived, 
                  "OBJKT v2 fulfill offer (sales/royalties)", 
                  "OBJKT v2 fulfill offer (trade)"
                )
@@ -1547,11 +1552,6 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="listing", case="fxhash v2 listing")
     }
     
-    # fxhash v2 listing cancel
-    else if ("listing_cancel" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="listing_cancel", case="fxhash v2 listing cancel")
-    }
-    
     # fxhash v2 trade
     else if (
       ("listing_accept" %in% x$parameterEntry) & 
@@ -1561,17 +1561,17 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
                tokenAmount = ifelse(
-                 xtzCollect != xtzReceived, 
+                 xtzCollect_bid != xtzReceived, 
                  0,
                  as.numeric(list_check(parameterValue, "amount"))
                ),
                tokenSender = ifelse(
-                 xtzCollect != xtzReceived, 
+                 xtzCollect_bid != xtzReceived, 
                  NA,
                  wallets[1]
                ),
                case = ifelse(
-                 xtzCollect != xtzReceived, 
+                 xtzCollect_bid != xtzReceived, 
                  "fxhash v2 collect (sales/royalties)",
                  "fxhash v2 collect (trade)"
                )
@@ -1595,20 +1595,20 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
           tokenAmount = ifelse(
-            xtzCollect != xtzReceived, 
+            xtzCollect_bid != xtzReceived, 
             0,
             as.numeric(list_check(parameterValue, "amount"))
           ),
           tokenSender = ifelse(
-            xtzCollect != xtzReceived, 
+            xtzCollect_bid != xtzReceived, 
             NA,
             wallets[1]
           ),
             case = ifelse(
-            xtzCollect != xtzReceived, 
-            "fxhash v2 accept offer (sales/royalties)",
-            "fxhash v2 accept offer (trade)"
-          )
+              xtzCollect_bid != xtzReceived, 
+              "fxhash v2 accept offer (sales/royalties)",
+              "fxhash v2 accept offer (trade)"
+            )
         )
     }
     
@@ -1626,6 +1626,11 @@ for (i in 1:nrow(operations_hash)) {
         xtzReceived = 0,
         case="fxhash v2 cancel offer"
       )
+    }
+    
+    # fxhash v2 listing cancel
+    else if ("listing_cancel" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="listing_cancel", case="fxhash v2 listing cancel")
     }
     
     # fxhash v2 unidentified

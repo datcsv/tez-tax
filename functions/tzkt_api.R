@@ -56,7 +56,15 @@ tzkt_operations_hash <- function(
 ) {
   sfx <- paste0("v1/operations/", hash, "?quote=", quote)
   url <- paste0(base, sfx)
-  x <- fromJSON(url)
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
   return(x)
 }
 
@@ -64,7 +72,15 @@ tzkt_operations_hash <- function(
 tzkt_bigmap <- function(id, key, base="https://api.tzkt.io/") {
   sfx <- paste0("v1/bigmaps/", id, "/keys/", key)
   url <- paste0(base, sfx)
-  x <- fromJSON(url)
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
   return(x)
 }
 
@@ -72,7 +88,15 @@ tzkt_bigmap <- function(id, key, base="https://api.tzkt.io/") {
 tzkt_bigmap_updates <- function(id, key, base="https://api.tzkt.io/") {
   sfx <- paste0("v1/bigmaps/", id, "/keys/", key, "/updates")
   url <- paste0(base, sfx)
-  x <- fromJSON(url)
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
   return(x)
 }
 
@@ -80,7 +104,15 @@ tzkt_bigmap_updates <- function(id, key, base="https://api.tzkt.io/") {
 tzkt_quote <- function(level, quote="usd", base="https://api.tzkt.io/") {
   sfx <- paste0("v1/quotes?level=", level)
   url <- paste0(base, sfx)
-  x <- fromJSON(url)
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
   return(x)
 }
 
@@ -88,7 +120,16 @@ tzkt_quote <- function(level, quote="usd", base="https://api.tzkt.io/") {
 tzkt_balance <- function(address, level, base="https://api.tzkt.io/") {
   sfx <- paste0("v1/accounts/", address, "/balance_history/", level)
   url <- paste0(base, sfx)
-  x <- fromJSON(url) / 1000000
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
+  x <- x / 1000000
   return(x)
 }
 
@@ -96,7 +137,15 @@ tzkt_balance <- function(address, level, base="https://api.tzkt.io/") {
 tzkt_block <- function(level, base="https://api.tzkt.io/") {
   sfx <- paste0("v1/blocks/", level)
   url <- paste0(base, sfx)
-  x <- fromJSON(url)
+  x <- tryCatch(
+    fromJSON(url),
+    error=function(e) {
+      message(e)
+      message("Retrying in 10 seconds...")
+      Sys.sleep(10)
+      return(fromJSON(url))
+    }
+  )
   return(x)
 }
 

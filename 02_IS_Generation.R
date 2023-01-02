@@ -33,7 +33,7 @@ operations$quote            <- operations$quote[[1]]
 op_hash <- "0"
 j <- 0
 batch_list <- c(
-  "collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask", "ask"
+  "collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask", "ask", "retract_bid", "fulfill_bid"
 )
 for (i in 1:nrow(operations)) {
   
