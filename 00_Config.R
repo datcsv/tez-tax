@@ -54,7 +54,7 @@ cb_path <- NA
 objkt_v1 <- TRUE
 
 # Assume Randomly Common Skele tokens with no tx history were minted at 5tz
-rcs_mint <- TRUE
+rcs_mint <- FALSE
 
 # Assume NFT tokens are collectibles (TRUE/FALSE)
 collectible <- FALSE
