@@ -633,6 +633,22 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="buy", case="TD buy")
     }
     
+    # TD sell
+    else if (
+      ("execute_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="TD sell (market)")
+    }
+    
+    # TD buy
+    else if (
+      ("execute_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="TD buy (market)")
+    }
+    
     # TD update record
     else if ("update_record" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="update_record", case="TD update record")
