@@ -227,9 +227,9 @@ for (i in 1:nrow(operations_hash)) {
       }
     }
   }
-  x$xtzSent     <- max(x$xtzSent, na.rm=TRUE)
-  x$xtzReceived <- sum(x$xtzReceived)
-  xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
+  x$xtzSent      <- max(x$xtzSent, na.rm=TRUE)
+  x$xtzReceived  <- sum(x$xtzReceived)
+  xtzCollect     <- sort(x$xtzAmount, decreasing=TRUE)[2]
   xtzCollect_bid <- sort(x$xtzAmount, decreasing=TRUE)[1]
   
   ##############################################################################
@@ -975,6 +975,15 @@ for (i in 1:nrow(operations_hash)) {
                  "OBJKT v2 fulfill offer (trade)"
                )
         )
+      
+      if (sum("OBJKT v2 fulfill offer (sales/royalties)" %in% x$case) > 0) {
+        print(x$xtzReceived)
+        print(x$xtzFee)
+        print( round(x$xtzReceived + x$xtzFee, 2))
+        print(xtzCollect)
+        print(xtzCollect_bid)
+      }
+      
     }
     
     # OBJKT v2 fulfill offer (collect)
@@ -1557,25 +1566,26 @@ for (i in 1:nrow(operations_hash)) {
       ("listing_accept" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      x %<>% 
+      x %<>%
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
                tokenAmount = ifelse(
-                 xtzCollect_bid != xtzReceived, 
+                 xtzCollect != xtzReceived, 
                  0,
                  as.numeric(list_check(parameterValue, "amount"))
                ),
                tokenSender = ifelse(
-                 xtzCollect_bid != xtzReceived, 
+                 xtzCollect != xtzReceived, 
                  NA,
                  wallets[1]
                ),
                case = ifelse(
-                 xtzCollect_bid != xtzReceived, 
+                 xtzCollect != xtzReceived, 
                  "fxhash v2 collect (sales/royalties)",
                  "fxhash v2 collect (trade)"
                )
         )
+
     }
     
     # fxhash v2 collect
