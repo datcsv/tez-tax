@@ -227,9 +227,9 @@ for (i in 1:nrow(operations_hash)) {
       }
     }
   }
-  x$xtzSent     <- max(x$xtzSent, na.rm=TRUE)
-  x$xtzReceived <- sum(x$xtzReceived)
-  xtzCollect    <- sort(x$xtzAmount, decreasing=TRUE)[2]
+  x$xtzSent      <- max(x$xtzSent, na.rm=TRUE)
+  x$xtzReceived  <- sum(x$xtzReceived)
+  xtzCollect     <- sort(x$xtzAmount, decreasing=TRUE)[2]
   xtzCollect_bid <- sort(x$xtzAmount, decreasing=TRUE)[1]
   
   ##############################################################################
@@ -633,6 +633,22 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="buy", case="TD buy")
     }
     
+    # TD sell
+    else if (
+      ("execute_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="TD sell (market)")
+    }
+    
+    # TD buy
+    else if (
+      ("execute_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      x %<>% quick_case(., entry="transfer", case="TD buy (market)")
+    }
+    
     # TD update record
     else if ("update_record" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="update_record", case="TD update record")
@@ -826,37 +842,19 @@ for (i in 1:nrow(operations_hash)) {
       ("fulfill_bid" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      
-      # Adjust for batch trades
-      x <- x[-c(1, nrow(x)), ]
-      collectN <- sum(x$parameterEntry == "fulfill_bid", na.rm=TRUE)
-      entries <- (nrow(x) / collectN)
-      
-      for (i in 1:collectN) {
-        x2 <- x[(1 + (i - 1) * entries):(i * entries), ]
-        token_sender <- x2$targetAddress[which(x2$targetAddress %in% wallets)][1]
-        
-        x2 %<>% mutate(., xtzReceived = ifelse(targetAddress %in% wallets, xtzAmount, 0))
-        x2$xtzReceived <- sum(x2$xtzReceived)
-        
-        x2 %<>% 
-          filter(., parameterEntry == "transfer") %>% 
-          mutate(., 
-            tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
-            tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
-            xtzSent = xtzFee / collectN,
-            case = ifelse(
-              xtzCollect_bid != xtzReceived,
-              "OBJKT fulfill bid (sales/royalties)",
-              "OBJKT fulfill bid (trade)"
-            )
+      token_sender <- x$initiatorAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>% 
+        mutate(., 
+          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
+          xtzSent = xtzFee,
+          case = ifelse(
+            xtzCollect != xtzReceived, 
+            "OBJKT fulfill bid (sales/royalties)", 
+            "OBJKT fulfill bid (trade)"
           )
-        
-        if (i == 1) x3 <- x2
-        else x3 %<>% bind_rows(., x2)
-      }
-      x <- x3
-      
+        )
     }
     
     # OBJKT fulfill bid (collect)
@@ -975,6 +973,15 @@ for (i in 1:nrow(operations_hash)) {
                  "OBJKT v2 fulfill offer (trade)"
                )
         )
+      
+      if (sum("OBJKT v2 fulfill offer (sales/royalties)" %in% x$case) > 0) {
+        print(x$xtzReceived)
+        print(x$xtzFee)
+        print( round(x$xtzReceived + x$xtzFee, 2))
+        print(xtzCollect)
+        print(xtzCollect_bid)
+      }
+      
     }
     
     # OBJKT v2 fulfill offer (collect)
@@ -1557,25 +1564,26 @@ for (i in 1:nrow(operations_hash)) {
       ("listing_accept" %in% x$parameterEntry) & 
       (sum(wallets %in% x$initiatorAddress) == 0)
     ) {
-      x %<>% 
+      x %<>%
         filter(., parameterEntry == "transfer") %>%
         mutate(., 
                tokenAmount = ifelse(
-                 xtzCollect_bid != xtzReceived, 
+                 xtzCollect != xtzReceived, 
                  0,
                  as.numeric(list_check(parameterValue, "amount"))
                ),
                tokenSender = ifelse(
-                 xtzCollect_bid != xtzReceived, 
+                 xtzCollect != xtzReceived, 
                  NA,
                  wallets[1]
                ),
                case = ifelse(
-                 xtzCollect_bid != xtzReceived, 
+                 xtzCollect != xtzReceived, 
                  "fxhash v2 collect (sales/royalties)",
                  "fxhash v2 collect (trade)"
                )
         )
+
     }
     
     # fxhash v2 collect
