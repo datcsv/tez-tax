@@ -34,7 +34,7 @@ op_hash <- "0"
 j <- 0
 batch_list <- c(
   "collect", "harvest", "fulfill_ask", "retract_offer", "retract_ask", "ask", 
-  "retract_bid", "fulfill_bid", "fulfill_offer"
+  "retract_bid", "fulfill_bid", "fulfill_offer", "listing_accept"
 )
 for (i in 1:nrow(operations)) {
 
