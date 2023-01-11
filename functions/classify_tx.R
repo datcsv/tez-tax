@@ -830,8 +830,8 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
-          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
           xtzSent = xtzFee,
           case = ifelse(
             xtzCollect != xtzReceived, 
