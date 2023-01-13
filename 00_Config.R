@@ -53,7 +53,8 @@ cb_path <- NA
 # Include early OBJKT auction data (TRUE/FALSE)
 objkt_v1 <- TRUE
 
-# Assume Randomly Common Skele tokens with no tx history were minted at 5tz (Experimental, likely to fail)
+# Assume Randomly Common Skele tokens with no tx history were minted at 5tz 
+# (Experimental, recommended to leave disabled to avoid issues)
 rcs_mint <- FALSE
 
 # Assume NFT tokens are collectibles (TRUE/FALSE)
