@@ -17,7 +17,9 @@
 ################################################################################
 
 ################################################################################
-# Please note that all trades are assumed to be 'short-term' for the time being.
+# Please note that all trades of tokens with missing acquisition dates are
+# assumed to be short-term trades.Tokens are typically missing an acquisition 
+# date when they were received as the result of an airdrop or direct transfer. 
 ################################################################################
 
 # Load income statement, balance sheet, and tax data
@@ -208,17 +210,17 @@ for (i in seq(1, nrow(tax_8949_short), by=14)) {
 
 # Generate tax form 8949, long-term transactions
 for (i in seq(1, nrow(tax_8949_long), by=14)) {
-  
+
   # Iterator for file name
   if (i == 1) k <- 1
   else k <- k + 1
-  
+
   # Update form identification fields
   f8949_fields <- get_fields(input_filepath=f8949)
   f8949_fields[[122 + 1]][[3]] <- legal_name
   f8949_fields[[122 + 2]][[3]] <- ssn
   f8949_fields[[122 + 5]][[3]] <- "3"
-  
+
   # Update capital gain/loss entry fields
   for (j in 1:min(14, nrow(tax_8949_long) + 1 - i)) {
     f8949_fields[[122 + 6  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 1]]
@@ -232,13 +234,13 @@ for (i in seq(1, nrow(tax_8949_long), by=14)) {
     }
     f8949_fields[[122 + 13 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 8]])
   }
-  
+
   # Update capital gain/loss total fields
   f8949_fields[[122 + 118]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 4], na.rm=TRUE))
   f8949_fields[[122 + 119]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 5], na.rm=TRUE))
   f8949_fields[[122 + 121]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 7], na.rm=TRUE))
   f8949_fields[[122 + 122]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 8], na.rm=TRUE))
-  
+
   # Generate PDF file
   set_fields(
     input_filepath=f8949,
@@ -246,7 +248,7 @@ for (i in seq(1, nrow(tax_8949_long), by=14)) {
     fields=f8949_fields,
     overwrite=TRUE
   )
-  
+
 }
 
 # Merge PDF files (Note: staple_pdf will fail with a large number of files)
