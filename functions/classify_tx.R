@@ -192,6 +192,10 @@ endless_ways_contracts <- c(
   "KT1VdCrmZsQfuYgbQsezAHT1pXvs6zKF8xHB"
 )
 
+cverso_contracts <- c(
+  "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -2162,6 +2166,20 @@ for (i in 1:nrow(operations_hash)) {
   # tzprofiles default call
   else if ("default" %in% x$parameterEntry & nrow(x) == 1) {
     x %<>% quick_case(., entry="default", case="tzprofiles update")
+  }
+  
+  # C-verso Contracts
+  else if(sum(cverso_contracts %in% x$targetAddress) > 0) {
+    
+    # C-verso mint
+    if ("mint_token" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="mint")
+    }
+    
+    # C-verso unidentified
+    else {
+      x <- y
+    }
   }
   
   # Unidentified
