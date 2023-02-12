@@ -1041,6 +1041,10 @@ for (i in 1:nrow(operations_hash)) {
     
     # C-Verso mint
     if ("mint_token" %in% x$parameterEntry) {
+      x_hash <- tzkt_operations_hash(x$hash[1])
+      token_id <- as.numeric(x_hash[2,]$storage$last_token_id) - 1
+      token_id <- paste0(x_hash[2,]$target$address, "_", token_id)
+      x$tokenID <- token_id
       x %<>% 
         quick_case(., entry="mint", case="C-Verso mint") %>%
         mutate(., tokenAmount = 1)
