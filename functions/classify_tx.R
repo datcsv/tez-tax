@@ -1660,14 +1660,38 @@ for (i in 1:nrow(operations_hash)) {
     
     # Versum make offer
     if ("make_offer" %in% x$parameterEntry) {
-      x %<>% mutate(., 
-        xtzSent = xtzFee,
-        xtzReceived = 0,
-        case = "Versum make offer"
-      )
+      x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
+      token_id <- str_c(x_hash[1,]$parameter$value$token$address, "_", x_hash[1,]$parameter$value$token$nat)
+      token_amount <- as.numeric(x_hash[1,]$parameter$value$token_amount)
+      
+      bm_id <- x_hash[1,]$diffs[[1]]$bigmap
+      bm_key <- x_hash[1,]$diffs[[1]]$content$key
+      bm_updates <- tzkt_bigmap_udpates(bm_id, bm_key)
+      
+      bm_last_action <- bm_updates[nrow(bm_updates),]$action
+      bm_last_actiOn_date <- as_datetime(bm_updates[nrow(bm_updates),]$timestamp)
+      
+      # If the key has beem removed within the time window...
+      offer_removed <- bm_last_action == "remove_key" & bm_last_actiOn_date <= date_span[2]
+      if (offer_removed & FALSE) {
+        # Determine who updates the key
+        x %<>% mutate(., 
+          tokenID = token_id,
+          tokenAmount = token_amount,
+          tokenReceiver = SenderAddress,
+          case = "Versum offer purchase"
+        )
+      }
+      else {
+        x %<>% mutate(., 
+          xtzSent = xtzFee,
+          xtzReceived = 0,
+          case = "Versum make offer"
+        )
+      }
     }
     
-    # Versum make offer
+    # Versum bid
     else if ("bid" %in% x$parameterEntry) {
       x %<>% mutate(., 
         xtzSent = xtzFee,
