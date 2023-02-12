@@ -19,11 +19,6 @@
 # Load operations data
 load(file="data/operations.RData")
 
-# Testing parameters
-h <- c("ootxBFBukeriTwkDx16iciaLxkXwTJsg4ckAoES8YsfF8B9K7iK")
-operations %<>% filter(., hash %in% h)
-
-
 # Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
 operations$initiatorAddress <- operations$initiator$address
