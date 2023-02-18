@@ -1666,15 +1666,25 @@ for (i in 1:nrow(operations_hash)) {
       
       bm_id <- x_hash[1,]$diffs[[1]]$bigmap
       bm_key <- x_hash[1,]$diffs[[1]]$content$key
-      bm_updates <- tzkt_bigmap_udpates(bm_id, bm_key)
+      bm_updates <- tzkt_bigmap_updates(bm_id, bm_key)
       
-      bm_last_action <- bm_updates[nrow(bm_updates),]$action
-      bm_last_actiOn_date <- as_datetime(bm_updates[nrow(bm_updates),]$timestamp)
+      bm_last_update <- bm_updates[nrow(bm_updates),]
+      bm_last_action <- bm_last_update$action
+      bm_last_level  <- bm_last_update$level
+      
+      ##########################################################################
+      # Check for key removal at last update level
+      # Ideally, we should validate the key removal operation, but the 
+      # probabilty of removing another key, when a bid is accepted, should
+      # be sufficiently low
+      ##########################################################################
+      key_removed <- operations %>%
+        filter(., level == bm_last_level, "cancel_offer" %in% x$parameterEntry) %>%
+        nrow(.) > 0
       
       # If the key has beem removed within the time window...
       offer_removed <- bm_last_action == "remove_key" & bm_last_actiOn_date <= date_span[2]
-      if (offer_removed & FALSE) {
-        # Determine who updates the key
+      if (offer_removed & !key_removed) {
         x %<>% mutate(., 
           tokenID = token_id,
           tokenAmount = token_amount,
@@ -1683,7 +1693,7 @@ for (i in 1:nrow(operations_hash)) {
         )
       }
       else {
-        x %<>% mutate(., 
+        x %<>% mutate(.,
           xtzSent = xtzFee,
           xtzReceived = 0,
           case = "Versum make offer"
