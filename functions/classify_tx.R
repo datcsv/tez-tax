@@ -780,7 +780,6 @@ for (i in 1:nrow(operations_hash)) {
         
         if (
           (state == 2) &
-          (as.Date(time) >= as.Date(date_span[1])) &
           (as.Date(time) <= as.Date(date_span[2])) &
           (buyer %in% wallets) &
           (price == x$xtzAmount[[1]])
@@ -799,6 +798,7 @@ for (i in 1:nrow(operations_hash)) {
           x %<>% bind_rows(., x2)
         }
       }
+      
     }
     
     # OBJKT win auction (old contract)
