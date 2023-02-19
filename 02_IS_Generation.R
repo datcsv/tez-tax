@@ -19,11 +19,6 @@
 # Load operations data
 load(file="data/operations.RData")
 
-# Testing parameters
-h <- c("oovibiy1pbxXZxkoDbHE6XF9z5rfGUTDuP9cwv2kQ5FFRr5oeP2")
-operations %<>% filter(., hash %in% h)
-#operations %<>% filter(., year(timestamp) > 2021, month(timestamp) < 2)
-
 # Split nested features in operations data
 operations$initiatorAlias   <- operations$initiator$alias
 operations$initiatorAddress <- operations$initiator$address
@@ -136,7 +131,7 @@ is %<>%
 
 # Add exchange data:
 save(is, file="data/is_exchange.RData")
-#if (!is.na(cb_path)) source("functions/cb_import.R")
+if (!is.na(cb_path)) source("functions/cb_import.R")
 
 # Save income statement data
 save(is, file="data/is.RData")
