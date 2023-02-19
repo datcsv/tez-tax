@@ -1670,6 +1670,7 @@ for (i in 1:nrow(operations_hash)) {
       
       bm_last_update <- bm_updates[nrow(bm_updates),]
       bm_last_action <- bm_last_update$action
+      bm_last_action_date <- as_datetime(bm_last_update$timestamp)
       bm_last_level  <- bm_last_update$level
       
       ##########################################################################
@@ -1679,11 +1680,11 @@ for (i in 1:nrow(operations_hash)) {
       # be sufficiently low
       ##########################################################################
       key_removed <- operations %>%
-        filter(., level == bm_last_level, "cancel_offer" %in% x$parameterEntry) %>%
+        filter(., level == bm_last_level, sum(c("cancel_offer", "make_offer") %in% x$parameterEntry) > 0) %>%
         nrow(.) > 0
       
       # If the key has beem removed within the time window...
-      offer_removed <- bm_last_action == "remove_key" & bm_last_actiOn_date <= date_span[2]
+      offer_removed <- bm_last_action == "remove_key" & bm_last_action_date <= date_span[2]
       if (offer_removed & !key_removed) {
         x %<>% mutate(., 
           tokenID = token_id,
