@@ -192,6 +192,10 @@ endless_ways_contracts <- c(
   "KT1VdCrmZsQfuYgbQsezAHT1pXvs6zKF8xHB"
 )
 
+cverso_contracts <- c(
+  "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -776,7 +780,6 @@ for (i in 1:nrow(operations_hash)) {
         
         if (
           (state == 2) &
-          (as.Date(time) >= as.Date(date_span[1])) &
           (as.Date(time) <= as.Date(date_span[2])) &
           (buyer %in% wallets) &
           (price == x$xtzAmount[[1]])
@@ -1037,6 +1040,10 @@ for (i in 1:nrow(operations_hash)) {
     
     # C-Verso mint
     if ("mint_token" %in% x$parameterEntry) {
+      x_hash <- tzkt_operations_hash(x$hash[1])
+      token_id <- as.numeric(x_hash[2,]$storage$last_token_id) - 1
+      token_id <- paste0(x_hash[2,]$target$address, "_", token_id)
+      x$tokenID <- token_id
       x %<>% 
         quick_case(., entry="mint", case="C-Verso mint") %>%
         mutate(., tokenAmount = 1)
@@ -1472,10 +1479,10 @@ for (i in 1:nrow(operations_hash)) {
           tokenSender = NA
         )
       }
-      
+
     }
     
-    # fxhash offer
+    # fxhash offer (list)
     else if ("offer" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="offer", case="fxhash offer")
       x <- x[1, ]
@@ -1652,14 +1659,49 @@ for (i in 1:nrow(operations_hash)) {
     
     # Versum make offer
     if ("make_offer" %in% x$parameterEntry) {
-      x %<>% mutate(., 
-        xtzSent = xtzFee,
-        xtzReceived = 0,
-        case = "Versum make offer"
-      )
+      x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
+      token_id <- str_c(x_hash[1,]$parameter$value$token$address, "_", x_hash[1,]$parameter$value$token$nat)
+      token_amount <- as.numeric(x_hash[1,]$parameter$value$token_amount)
+      
+      bm_id <- x_hash[1,]$diffs[[1]]$bigmap
+      bm_key <- x_hash[1,]$diffs[[1]]$content$key
+      bm_updates <- tzkt_bigmap_updates(bm_id, bm_key)
+      
+      bm_last_update <- bm_updates[nrow(bm_updates),]
+      bm_last_action <- bm_last_update$action
+      bm_last_action_date <- as_datetime(bm_last_update$timestamp)
+      bm_last_level  <- bm_last_update$level
+      
+      ##########################################################################
+      # Check for key removal at last update level
+      # Ideally, we should validate the key removal operation, but the 
+      # probabilty of removing another key, when a bid is accepted, should
+      # be sufficiently low
+      ##########################################################################
+      key_removed <- operations %>%
+        filter(., level == bm_last_level, sum(c("cancel_offer", "make_offer") %in% x$parameterEntry) > 0) %>%
+        nrow(.) > 0
+      
+      # If the key has beem removed within the time window...
+      offer_removed <- bm_last_action == "remove_key" & bm_last_action_date <= date_span[2]
+      if (offer_removed & !key_removed) {
+        x %<>% mutate(., 
+          tokenID = token_id,
+          tokenAmount = token_amount,
+          tokenReceiver = SenderAddress,
+          case = "Versum offer purchase"
+        )
+      }
+      else {
+        x %<>% mutate(.,
+          xtzSent = xtzFee,
+          xtzReceived = 0,
+          case = "Versum make offer"
+        )
+      }
     }
     
-    # Versum make offer
+    # Versum bid
     else if ("bid" %in% x$parameterEntry) {
       x %<>% mutate(., 
         xtzSent = xtzFee,
@@ -2162,6 +2204,20 @@ for (i in 1:nrow(operations_hash)) {
   # tzprofiles default call
   else if ("default" %in% x$parameterEntry & nrow(x) == 1) {
     x %<>% quick_case(., entry="default", case="tzprofiles update")
+  }
+  
+  # C-verso Contracts
+  else if(sum(cverso_contracts %in% x$targetAddress) > 0) {
+    
+    # C-verso mint
+    if ("mint_token" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="mint")
+    }
+    
+    # C-verso unidentified
+    else {
+      x <- y
+    }
   }
   
   # Unidentified
