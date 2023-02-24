@@ -23,11 +23,7 @@ load(file="data/is_exchange.RData")
 cb <- read_csv(file=cb_path, skip=7, show_col_types=FALSE)
 cb %<>% 
   mutate(., Asset2 = substr(Notes, nchar(Notes)-2, nchar(Notes))) %>%
-  filter(., 
-    Asset == "XTZ" | Asset2 == "XTZ",
-    Timestamp >= date_span[1], 
-    Timestamp <= date_span[2]
-  )
+  filter(., Asset == "XTZ" | Asset2 == "XTZ")
 
 # Generate empty income statement row
 cb_is <- is[0, ]

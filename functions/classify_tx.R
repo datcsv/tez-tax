@@ -1479,10 +1479,10 @@ for (i in 1:nrow(operations_hash)) {
           tokenSender = NA
         )
       }
-      
+
     }
     
-    # fxhash offer
+    # fxhash offer (list)
     else if ("offer" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="offer", case="fxhash offer")
       x <- x[1, ]
