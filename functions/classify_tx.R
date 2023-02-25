@@ -1608,6 +1608,7 @@ for (i in 1:nrow(operations_hash)) {
     ) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>%
+        top_n(., 1) %>% 
         mutate(., 
           tokenAmount = ifelse(
             xtzCollect_bid != xtzReceived, 
