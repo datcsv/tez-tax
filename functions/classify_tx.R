@@ -933,10 +933,46 @@ for (i in 1:nrow(operations_hash)) {
     
     # OBJKT v2 offer
     else if ("offer" %in% x$parameterEntry) {
-      x %<>% mutate(.,
-        xtzSent = xtzFee,
-        case = "OBJKT v2 offer"
-      )
+      x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
+      token_id <- str_c(x_hash[1,]$parameter$value$token$address, "_", x_hash[1,]$parameter$value$token$token_id)
+      token_amount <- as.numeric(x_hash[1,]$parameter$value$amount)
+      
+      bm_id <- x_hash[1,]$diffs[[1]]$bigmap
+      bm_key <- x_hash[1,]$diffs[[1]]$content$key
+      bm_updates <- tzkt_bigmap_updates(bm_id, bm_key)
+      
+      bm_last_update <- bm_updates[nrow(bm_updates),]
+      bm_last_action <- bm_last_update$action
+      bm_last_action_date <- as_datetime(bm_last_update$timestamp)
+      bm_last_level  <- bm_last_update$level
+      
+      ##########################################################################
+      # Check for key removal at last update level
+      # Ideally, we should validate the key removal operation, but the 
+      # probabilty of removing another key, when a bid is accepted, should
+      # be sufficiently low
+      ##########################################################################
+      key_removed <- operations %>%
+        filter(., level == bm_last_level, sum(c("retract_offer", "offer") %in% x$parameterEntry) > 0) %>%
+        nrow(.) > 0
+      
+      # If the key has beem removed within the time window...
+      offer_removed <- bm_last_action == "remove_key" & bm_last_action_date <= date_span[2]
+      if (offer_removed & !key_removed) {
+        x %<>% mutate(., 
+          tokenID = token_id,
+          tokenAmount = 1,
+          tokenReceiver = SenderAddress,
+          case = "OBJKT v2 offer purchase"
+        )
+      }
+      else {
+        x %<>% mutate(.,
+          xtzSent = xtzFee,
+          xtzReceived = 0,
+          case = "OBJKT v2 offer"
+        )
+      }
     }
     
     # OBJKT v2 bid
