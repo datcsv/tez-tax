@@ -1305,6 +1305,30 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="transfer", case="8bidou buy")
     }
     
+    # 8bidou sell
+    else if (
+      ("buy" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) == 0)
+    ) {
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(.,
+          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+          case = ifelse(
+            xtzCollect != xtzReceived,
+            "8bidou collect (sales/royalties)",
+            "8bidou collect (trade)"
+          )
+        )
+    }
+    
+    # 8bidou swap
+    else if ("swap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="swap", case="8bidou swap")
+    }
+    
     # 8bidou unidentified
     else {
       x <- y
