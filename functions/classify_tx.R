@@ -1012,15 +1012,6 @@ for (i in 1:nrow(operations_hash)) {
                  "OBJKT v2 fulfill offer (trade)"
                )
         )
-      
-      if (sum("OBJKT v2 fulfill offer (sales/royalties)" %in% x$case) > 0) {
-        print(x$xtzReceived)
-        print(x$xtzFee)
-        print( round(x$xtzReceived + x$xtzFee, 2))
-        print(xtzCollect)
-        print(xtzCollect_bid)
-      }
-      
     }
     
     # OBJKT v2 fulfill offer (collect)
