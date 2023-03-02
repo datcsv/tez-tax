@@ -196,6 +196,10 @@ cverso_contracts <- c(
   "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX"
 )
 
+vending_contracts <- c(
+  "KT1UzjDKju7P372WTLvCiEGoVRCskfoQ4V8A"
+)
+
 # Create null income statement
 is <- operations[0, ]
 
@@ -1309,8 +1313,8 @@ for (i in 1:nrow(operations_hash)) {
           tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
           case = ifelse(
             xtzCollect != xtzReceived,
-            "8bidou collect (sales/royalties)",
-            "8bidou collect (trade)"
+            "8bidou buy (sales/royalties)",
+            "8bidou buy (trade)"
           )
         )
     }
@@ -1320,7 +1324,34 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="swap", case="8bidou swap")
     }
     
+    # 8bidou cancel swap
+    else if ("cancelswap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="cancelswap", case="8bidou cancel swap")
+    }
+    
     # 8bidou unidentified
+    else {
+      x <- y
+    }
+  }
+  
+  # Tezos Vending Machine contracts
+  else if (sum(vending_contracts %in% x$targetAddress) > 0) {
+    
+    # Vending machine collect
+    token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+    if ("collect_from_machine" %in% x$parameterEntry) {
+      x %<>% 
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          tokenAmount = 1,
+          tokenSender = token_sender,
+          xtzSent = xtzSent / nrow(.),
+          case = "Tezos Vending machine collect"       
+        )
+    }
+    
+    # Vending machine unidentified
     else {
       x <- y
     }
