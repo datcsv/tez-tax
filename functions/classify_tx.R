@@ -185,7 +185,8 @@ minterpop_contracts <- c(
 )
 
 eightbidou_contracts <- c(
-  "KT1BvWGFENd4CXW5F3u4n31xKfJhmBGipoqF"
+  "KT1BvWGFENd4CXW5F3u4n31xKfJhmBGipoqF",
+  "KT1AHBvSo828QwscsjDjeUuep7MgApi8hXqA"
 )
 
 endless_ways_contracts <- c(
