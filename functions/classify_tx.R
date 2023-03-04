@@ -132,7 +132,13 @@ scribo_contracts <- c(
 
 # C-VERSO contracts
 cverso_contracts <- c(
-  "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX"
+  "KT1BJaN9oY2SuUzwACxSegGJynkrRbQCEEfX",
+  "KT1FVqzFUCD8LZAEeoNG3YsW1hkNnHNHMsKt"
+)
+
+# emprops contracts
+emprops_contracts <- c(
+  "KT1P5k64GTB8PPPyB1eb2wCuVyUSdPEB5gZN"
 )
 
 # fxhash contracts
@@ -958,7 +964,7 @@ for (i in 1:nrow(operations_hash)) {
       # be sufficiently low
       ##########################################################################
       key_removed <- operations %>%
-        filter(., level == bm_last_level, sum(c("retract_offer", "offer") %in% x$parameterEntry) > 0) %>%
+        filter(., level == bm_last_level, parameterEntry == "retract_offer" | parameterEntry == "offer") %>%
         nrow(.) > 0
       
       # If the key has beem removed within the time window...
@@ -1290,6 +1296,31 @@ for (i in 1:nrow(operations_hash)) {
     }
   }
   
+  # emprops contracts
+  else if (sum(emprops_contracts %in% x$targetAddress) > 0) {
+    
+    # emprops mint
+    if ("mint_token" %in% x$parameterEntry) {
+      x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
+      x_hash %<>% filter(., parameter$entrypoint == "mint")
+      token_id <- str_c(x_hash[1,]$target$address, "_", x_hash[1,]$diffs[[1]]$content$key[1])
+      token_receiver <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>%
+        filter(., parameterEntry == "mint") %>%
+        mutate(.,
+          tokenID = token_id,
+          tokenReceived = 1,
+          tokenReceiver = token_receiver,
+          case = "emprops mint"
+        )
+    }
+    
+    # emprops unidentified
+    else {
+      x <- y
+    }
+  }
+  
   # 8bidou contracts
   else if (sum(eightbidou_contracts %in% x$targetAddress) > 0) {
     
@@ -1361,7 +1392,7 @@ for (i in 1:nrow(operations_hash)) {
   # Endless Ways contracts
   else if (sum(endless_ways_contracts %in% x$targetAddress) > 0) {
     
-    # 8bidou buy
+    # Endless Ways buy
     if (
       ("mint_and_purchase" %in% x$parameterEntry) &
       (sum(wallets %in% x$initiatorAddress) > 0)
@@ -1369,7 +1400,7 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% quick_case(., entry="mint_and_purchase", case="Endless ways mint")
     }
     
-    # 8bidou unidentified
+    # Endless Ways unidentified
     else {
       x <- y
     }
@@ -1646,7 +1677,8 @@ for (i in 1:nrow(operations_hash)) {
     
     # fxhash v2 listing
     else if ("listing" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="listing", case="fxhash v2 listing")
+      x %<>% quick_case(., entry="listing", case="fxhash v2 listing") %>%
+        filter(., row_number() == 1)
     }
     
     # fxhash v2 trade
@@ -1763,7 +1795,7 @@ for (i in 1:nrow(operations_hash)) {
       # be sufficiently low
       ##########################################################################
       key_removed <- operations %>%
-        filter(., level == bm_last_level, sum(c("cancel_offer", "make_offer") %in% x$parameterEntry) > 0) %>%
+        filter(., level == bm_last_level, parameterEntry == "retract_offer" | parameterEntry == "offer") %>%
         nrow(.) > 0
       
       # If the key has beem removed within the time window...
@@ -1783,6 +1815,26 @@ for (i in 1:nrow(operations_hash)) {
           case = "Versum make offer"
         )
       }
+    }
+    
+    # Versum accept offer (sell)
+    else if (
+      ("accept_offer" %in% x$parameterEntry) & 
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      xtzCollect <- sort(x$xtzAmount, decreasing=TRUE)[3]
+      token_sender <- x$targetAddress[which(x$targetAddress %in% wallets)][1]
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(.,
+          tokenAmount = ifelse(xtzCollect != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect != xtzReceived, NA, token_sender),
+          case = ifelse(
+            xtzCollect != xtzReceived,
+            "Versum accept offer (sales/royalties)",
+            "Versum accept offer (trade)"
+          )
+        )
     }
     
     # Versum bid
@@ -2295,7 +2347,7 @@ for (i in 1:nrow(operations_hash)) {
     
     # C-verso mint
     if ("mint_token" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="mint")
+      x %<>% quick_case(., entry="mint", case="C-Verso mint")
     }
     
     # C-verso unidentified
