@@ -1852,6 +1852,7 @@ for (i in 1:nrow(operations_hash)) {
     else if ("cancel_offer" %in% x$parameterEntry) {
       x %<>% mutate(., 
         xtzSent = xtzFee,
+        xtzReceived = 0,
         case = "Versum cancel offer"
       )
     }
