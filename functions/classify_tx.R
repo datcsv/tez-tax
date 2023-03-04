@@ -973,6 +973,7 @@ for (i in 1:nrow(operations_hash)) {
         x %<>% mutate(., 
           tokenID = token_id,
           tokenAmount = 1,
+          xtzSent = xtzFee + token_amount / 1000000,
           tokenReceiver = SenderAddress,
           case = "OBJKT v2 offer purchase"
         )
