@@ -1796,7 +1796,7 @@ for (i in 1:nrow(operations_hash)) {
       # be sufficiently low
       ##########################################################################
       key_removed <- operations %>%
-        filter(., level == bm_last_level, parameterEntry == "retract_offer" | parameterEntry == "offer") %>%
+        filter(., level == bm_last_level, parameterEntry == "make_offer" | parameterEntry == "cancel_offer") %>%
         nrow(.) > 0
       
       # If the key has beem removed within the time window...
@@ -1852,7 +1852,6 @@ for (i in 1:nrow(operations_hash)) {
     else if ("cancel_offer" %in% x$parameterEntry) {
       x %<>% mutate(., 
         xtzSent = xtzFee,
-        xtzReceived = 0,
         case = "Versum cancel offer"
       )
     }
