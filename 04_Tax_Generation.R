@@ -28,10 +28,8 @@ load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
 load(file="data/xtzIncome_data.RData")
 
-# Define template file paths
-f8949   <- "forms/f8949.pdf"
-f1040sd <- "forms/f1040sd.pdf"
-f1040s1 <- "forms/f1040s1.pdf"
+# Export personal income data
+write_csv(xtzIncome_data, "data/xtzIncome.csv")
 
 # Create pdf directories
 tax_8949_dir <- "data/8949"
@@ -52,7 +50,6 @@ tax_8949 %<>%
   mutate(., Short_Term = replace_na(as.numeric(Date_Sold - Date_Acquired) <= 365, TRUE))
 
 xtzIncome_data %<>% filter(., timestamp >= date_span[1], timestamp <= date_span[2])
-write_csv(xtzIncome_data, "data/xtzIncome.csv")
 
 # Format tax form 8949 data for export
 tax_8949_intuit <- tax_8949 %>%
@@ -91,6 +88,25 @@ for (i in 1:ceiling(nrow(tax_8949) / 3999)) {
     filter(., row_number() %in% (1 + (i - 1) * 3999):(i * 3999)) %>%
     write_csv(., file=paste0(tax_8949_dir, "/tax_8949_", str_pad(i, 2, pad="0"), ".csv"))
 }
+
+# Split 8949 into short/long-term datasets
+tax_8949_short <- tax_8949 %>% filter(., Short_Term)
+tax_8949_long <- tax_8949 %>% filter(., !Short_Term)
+
+# Generate PDF files
+if (year(date_span[2]) <= 2021) {
+  # Define form paths
+  f8949   <- "forms/2021/f8949.pdf"
+  f1040sd <- "forms/2021/f1040sd.pdf"
+  f1040s1 <- "forms/2021/f1040s1.pdf"
+} else {
+  
+  # Define form paths
+  f8949   <- "forms/2022/f8949.pdf"
+  f1040sd <- "forms/2022/f1040sd.pdf"
+  f1040s1 <- "forms/2022/f1040s1.pdf"
+}
+
 
 # Generate tax form 1040 schedule 1
 xtzIncome <- sum(xtzIncome_data$quote * (xtzIncome_data$xtzReceived - xtzIncome_data$xtzSent))
@@ -162,94 +178,93 @@ set_fields(
   overwrite=TRUE
 )
 
-# Split 8949 into short/long-term datasets
-tax_8949_short <- tax_8949 %>% filter(., Short_Term)
-tax_8949_long <- tax_8949 %>% filter(., !Short_Term)
-
 # Generate tax form 8949, short-term transactions
-for (i in seq(1, nrow(tax_8949_short), by=14)) {
-
-  # Iterator for file name
-  if (i == 1) k <- 1
-  else k <- k + 1
-
-  # Update form identification fields
-  f8949_fields <- get_fields(input_filepath=f8949)
-  f8949_fields[[1]][[3]] <- legal_name
-  f8949_fields[[2]][[3]] <- ssn
-  f8949_fields[[5]][[3]] <- "3"
-
-  # Update capital gain/loss entry fields
-  for (j in 1:min(14, nrow(tax_8949_short) + 1 - i)) {
-    f8949_fields[[6  + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 1]]
-    f8949_fields[[7  + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 2]]
-    f8949_fields[[8  + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 3]]
-    f8949_fields[[9  + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 4]])
-    f8949_fields[[10 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 5]])
-    f8949_fields[[11 + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 6]]
-    if (!is.na(tax_8949_short[[i + j - 1, 7]])) {
-      f8949_fields[[12 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 7]])
+if (nrow(tax_8949_short) > 0) {
+  for (i in seq(1, nrow(tax_8949_short), by=14)) {
+    
+    # Iterator for file name
+    if (i == 1) k <- 1
+    else k <- k + 1
+    
+    # Update form identification fields
+    f8949_fields <- get_fields(input_filepath=f8949)
+    f8949_fields[[1]][[3]] <- legal_name
+    f8949_fields[[2]][[3]] <- ssn
+    f8949_fields[[5]][[3]] <- "3"
+    
+    # Update capital gain/loss entry fields
+    for (j in 1:min(14, nrow(tax_8949_short) + 1 - i)) {
+      f8949_fields[[6  + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 1]]
+      f8949_fields[[7  + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 2]]
+      f8949_fields[[8  + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 3]]
+      f8949_fields[[9  + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 4]])
+      f8949_fields[[10 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 5]])
+      f8949_fields[[11 + (j - 1) * 8]][[3]] <- tax_8949_short[[i + j - 1, 6]]
+      if (!is.na(tax_8949_short[[i + j - 1, 7]])) {
+        f8949_fields[[12 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 7]])
+      }
+      f8949_fields[[13 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 8]])
     }
-    f8949_fields[[13 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_short[[i + j - 1, 8]])
+    
+    # Update capital gain/loss total fields
+    f8949_fields[[118]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 4], na.rm=TRUE))
+    f8949_fields[[119]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 5], na.rm=TRUE))
+    f8949_fields[[121]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 7], na.rm=TRUE))
+    f8949_fields[[122]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 8], na.rm=TRUE))
+    
+    # Generate PDF file
+    set_fields(
+      input_filepath=f8949,
+      output_filepath=paste0(tax_8949_dir, "/f8949_short_", str_pad(k, 4, pad="0"), ".pdf"),
+      fields=f8949_fields,
+      overwrite=TRUE
+    )
   }
-
-  # Update capital gain/loss total fields
-  f8949_fields[[118]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 4], na.rm=TRUE))
-  f8949_fields[[119]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 5], na.rm=TRUE))
-  f8949_fields[[121]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 7], na.rm=TRUE))
-  f8949_fields[[122]][[3]] <- sprintf("%.2f", sum(tax_8949_short[i:(i + 13), 8], na.rm=TRUE))
-
-  # Generate PDF file
-  set_fields(
-    input_filepath=f8949,
-    output_filepath=paste0(tax_8949_dir, "/f8949_short_", str_pad(k, 4, pad="0"), ".pdf"),
-    fields=f8949_fields,
-    overwrite=TRUE
-  )
-
 }
 
+
 # Generate tax form 8949, long-term transactions
-for (i in seq(1, nrow(tax_8949_long), by=14)) {
-
-  # Iterator for file name
-  if (i == 1) k <- 1
-  else k <- k + 1
-
-  # Update form identification fields
-  f8949_fields <- get_fields(input_filepath=f8949)
-  f8949_fields[[122 + 1]][[3]] <- legal_name
-  f8949_fields[[122 + 2]][[3]] <- ssn
-  f8949_fields[[122 + 5]][[3]] <- "3"
-
-  # Update capital gain/loss entry fields
-  for (j in 1:min(14, nrow(tax_8949_long) + 1 - i)) {
-    f8949_fields[[122 + 6  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 1]]
-    f8949_fields[[122 + 7  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 2]]
-    f8949_fields[[122 + 8  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 3]]
-    f8949_fields[[122 + 9  + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 4]])
-    f8949_fields[[122 + 10 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 5]])
-    f8949_fields[[122 + 11 + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 6]]
-    if (!is.na(tax_8949_long[[i + j - 1, 7]])) {
-      f8949_fields[[122 + 12 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 7]])
+if (nrow(tax_8949_long) > 0) {
+  for (i in seq(1, nrow(tax_8949_long), by=14)) {
+    
+    # Iterator for file name
+    if (i == 1) k <- 1
+    else k <- k + 1
+    
+    # Update form identification fields
+    f8949_fields <- get_fields(input_filepath=f8949)
+    f8949_fields[[122 + 1]][[3]] <- legal_name
+    f8949_fields[[122 + 2]][[3]] <- ssn
+    f8949_fields[[122 + 5]][[3]] <- "3"
+    
+    # Update capital gain/loss entry fields
+    for (j in 1:min(14, nrow(tax_8949_long) + 1 - i)) {
+      f8949_fields[[122 + 6  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 1]]
+      f8949_fields[[122 + 7  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 2]]
+      f8949_fields[[122 + 8  + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 3]]
+      f8949_fields[[122 + 9  + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 4]])
+      f8949_fields[[122 + 10 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 5]])
+      f8949_fields[[122 + 11 + (j - 1) * 8]][[3]] <- tax_8949_long[[i + j - 1, 6]]
+      if (!is.na(tax_8949_long[[i + j - 1, 7]])) {
+        f8949_fields[[122 + 12 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 7]])
+      }
+      f8949_fields[[122 + 13 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 8]])
     }
-    f8949_fields[[122 + 13 + (j - 1) * 8]][[3]] <- sprintf("%.2f", tax_8949_long[[i + j - 1, 8]])
+    
+    # Update capital gain/loss total fields
+    f8949_fields[[122 + 118]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 4], na.rm=TRUE))
+    f8949_fields[[122 + 119]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 5], na.rm=TRUE))
+    f8949_fields[[122 + 121]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 7], na.rm=TRUE))
+    f8949_fields[[122 + 122]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 8], na.rm=TRUE))
+    
+    # Generate PDF file
+    set_fields(
+      input_filepath=f8949,
+      output_filepath=paste0(tax_8949_dir, "/f8949_long_", str_pad(k, 4, pad="0"), ".pdf"),
+      fields=f8949_fields,
+      overwrite=TRUE
+    )
   }
-
-  # Update capital gain/loss total fields
-  f8949_fields[[122 + 118]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 4], na.rm=TRUE))
-  f8949_fields[[122 + 119]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 5], na.rm=TRUE))
-  f8949_fields[[122 + 121]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 7], na.rm=TRUE))
-  f8949_fields[[122 + 122]][[3]] <- sprintf("%.2f", sum(tax_8949_long[i:(i + 13), 8], na.rm=TRUE))
-
-  # Generate PDF file
-  set_fields(
-    input_filepath=f8949,
-    output_filepath=paste0(tax_8949_dir, "/f8949_long_", str_pad(k, 4, pad="0"), ".pdf"),
-    fields=f8949_fields,
-    overwrite=TRUE
-  )
-
 }
 
 # Merge PDF files (Note: staple_pdf will fail with a large number of files)
