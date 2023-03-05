@@ -65,6 +65,10 @@ tzkt_operations_hash <- function(
       return(fromJSON(url))
     }
   )
+  # Adjust reveals
+  if (("reveal" %in% x$type) & (nrow(x) > 1)) {
+    x %<>% filter(., type != "reveal")
+  }
   return(x)
 }
 

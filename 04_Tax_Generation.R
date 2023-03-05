@@ -52,6 +52,7 @@ tax_8949 %<>%
   mutate(., Short_Term = replace_na(as.numeric(Date_Sold - Date_Acquired) <= 365, TRUE))
 
 xtzIncome_data %<>% filter(., timestamp >= date_span[1], timestamp <= date_span[2])
+write_csv(xtzIncome_data, "data/xtzIncome.csv")
 
 # Format tax form 8949 data for export
 tax_8949_intuit <- tax_8949 %>%
