@@ -99,14 +99,14 @@ if (year(date_span[2]) <= 2021) {
   f8949   <- "forms/2021/f8949.pdf"
   f1040sd <- "forms/2021/f1040sd.pdf"
   f1040s1 <- "forms/2021/f1040s1.pdf"
+  s1_offset <- 0
 } else {
-  
   # Define form paths
   f8949   <- "forms/2022/f8949.pdf"
   f1040sd <- "forms/2022/f1040sd.pdf"
   f1040s1 <- "forms/2022/f1040s1.pdf"
+  s1_offset <- 5
 }
-
 
 # Generate tax form 1040 schedule 1
 xtzIncome <- sum(xtzIncome_data$quote * (xtzIncome_data$xtzReceived - xtzIncome_data$xtzSent))
@@ -116,11 +116,11 @@ if (xtzIncome > 100) {
   f1040s1_fields <- get_fields(input_filepath=f1040s1)
   f1040s1_fields[[1]][[3]]  <- legal_name
   f1040s1_fields[[2]][[3]]  <- ssn
-  f1040s1_fields[[27]][[3]] <- "Miscellaneous crypto income"
-  f1040s1_fields[[28]][[3]] <- ""
-  f1040s1_fields[[29]][[3]] <- sprintf("%.2f", xtzIncome)
-  f1040s1_fields[[30]][[3]] <- sprintf("%.2f", xtzIncome)
-  f1040s1_fields[[31]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[27+s1_offset]][[3]] <- "Miscellaneous crypto income"
+  f1040s1_fields[[28+s1_offset]][[3]] <- ""
+  f1040s1_fields[[29+s1_offset]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[30+s1_offset]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[31+s1_offset]][[3]] <- sprintf("%.2f", xtzIncome)
   
   # Generate PDF file
   set_fields(
