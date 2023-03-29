@@ -319,7 +319,8 @@ for (i in 1:nrow(operations_hash)) {
       xtzFee = xtzFee / nrow(.), 
       xtzSent = xtzFee,
       tokenAmount = ifelse(is.na(tokenAmount), 0, tokenAmount)
-    )
+    ) %>%
+    distinct(.)
     
     # Adjust wallet-to-wallet transfers
     for (i in 1:nrow(x))
