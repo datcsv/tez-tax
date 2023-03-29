@@ -75,7 +75,11 @@ quipu_contracts <- c(
   "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ",
   "KT1FptuULGK69mZRsBz62CSFdRs52etEb6Ah",
   "KT1V4jaZpCwhfitTnUucY1EHiRfz3bjqznAU",
-  "KT1V4jaZpCwhfitTnUucY1EHiRfz3bjqznAU"
+  "KT1V4jaZpCwhfitTnUucY1EHiRfz3bjqznAU",
+  "KT1Ti3nJT85vNn81Dy5VyNzgufkAorUoZ96q",
+  "KT1WxgZ1ZSfMgmsSDDcUn8Xn577HwnQ7e1Lb",
+  "KT1J3wTYb4xk5BsSBkg6ML55bX1xq7desS34",
+  "KT1W3VGRUjvS869r4ror8kdaxqJAZUbPyjMT"
 )
 
 # Crunchy contracts
@@ -192,7 +196,8 @@ minterpop_contracts <- c(
 
 eightbidou_contracts <- c(
   "KT1BvWGFENd4CXW5F3u4n31xKfJhmBGipoqF",
-  "KT1AHBvSo828QwscsjDjeUuep7MgApi8hXqA"
+  "KT1AHBvSo828QwscsjDjeUuep7MgApi8hXqA",
+  "KT1QtnHR8p2hBjUhPRy9BCWgy7s7L578PA7N"
 )
 
 endless_ways_contracts <- c(
@@ -298,12 +303,14 @@ for (i in 1:nrow(operations_hash)) {
       if (x$targetAddress[i] == "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi") {
         x_i <- x[i,]
         tx_i = x_i$parameterValue[[1]]$txs[[1]]
-        for (j in 1:nrow(tx_i)) {
-          x_j <- x_i
-          tx_j <- tx_i[j,]
-          x_j$tokenID = str_c(x_j$targetAddress, "_", tx_j$token_id)
-          x_j$tokenAmount = as.numeric(tx_j$amount)
-          x_temp <- bind_rows(x_temp, x_j)
+        if (length(tx_i) > 0) {
+          for (j in 1:nrow(tx_i)) {
+            x_j <- x_i
+            tx_j <- tx_i[j,]
+            x_j$tokenID = str_c(x_j$targetAddress, "_", tx_j$token_id)
+            x_j$tokenAmount = as.numeric(tx_j$amount)
+            x_temp <- bind_rows(x_temp, x_j)
+          }
         }
       }
     }
@@ -592,6 +599,45 @@ for (i in 1:nrow(operations_hash)) {
     # QuipuSwap vote
     else if ("vote" %in% x$parameterEntry) {
       x %<>% quick_case(., entry="vote", case="QuipuSwap vote") 
+    }
+    
+    # QuipuSwap wWETH wrap
+    else if ("mint_erc20" %in% x$parameterEntry) {
+      z <- x %>% filter(., parameterEntry == "mint_tokens")
+      wethAmount <- as.numeric(z$parameterValue[[1]]$amount[1])
+      ethQuote <- tzkt_quote(level=z$level)
+      cb <- wethAmount / 1000000000000000000 * ethQuote[1,currency] / ethQuote$eth
+      x %<>% 
+        filter(., parameterEntry == "mint_tokens") %>%
+        mutate(., 
+          case = "Wrap WETH",
+          tokenReceiver = wallets[1],
+          tokenAmount = wethAmount,
+          costBasis = cb,
+          tokenID = "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ/20"
+        )
+    }
+    
+    # QuipuSwap deposit
+    else if ("deposit" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          case = "QuipuSwap deposit",
+          tokenAmount = 0,
+          tokenID = NA
+        )
+    }
+    
+    # QuipuSwap withdraw
+    else if ("withdraw" %in% x$parameterEntry) {
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        mutate(., 
+          case = "QuipuSwap withdraw",
+          tokenAmount = 0,
+          tokenID = NA
+        )
     }
     
     # Quipuswap unidentified
@@ -997,15 +1043,6 @@ for (i in 1:nrow(operations_hash)) {
         mutate(., case = "OBJKT v2 bid")
     }
 
-    # OBJKT v2 unwrap
-    else if ("unwrap" %in% x$parameterEntry) {
-      x %<>% quick_case(., entry="unwrap", case="OBJKT v2 unwrap") %>%
-        mutate(., 
-          tokenAmount = as.numeric(parameterValue[[1]]), 
-          tokenID = "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz_0",
-          tokenSender = SenderAddress
-        )
-    }
     
     # OBJKT v2 fulfill offer (trade)
     else if (
@@ -1066,6 +1103,33 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         quick_case(., entry="retract_offer", case="OBJKT v2 retract offer") %>%
         mutate(., xtzSent = xtzFee, xtzReceived = 0)
+    }
+    
+    # OBJKT v2 unwrap
+    else if ("unwrap" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="unwrap", case="OBJKT v2 unwrap") %>%
+        mutate(.,
+          # tokenAmount = as.numeric(parameterValue),
+          # tokenID = "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz_0",
+          # tokenSender = SenderAddress
+          tokenAmount = 0,
+          xtzSent = xtzFee,
+          xtzReceived = 0
+        )
+    }
+    
+    # OBJKT v2 wrap
+    else if ("wrap" %in% x$parameterEntry) {
+      # z <- x %>% filter(., parameterEntry == "wrap")
+      x %<>% quick_case(., entry="wrap", case="OBJKT v2 wrap") %>%
+        mutate(.,
+          # tokenAmount = as.numeric(z$parameterValue[[1]]$value),
+          # tokenID = "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz_0",
+          # tokenSender = SenderAddress
+          tokenAmount = 0,
+          xtzSent = xtzFee,
+          xtzReceived = 0
+        )
     }
     
     # OBJKT v2 unidentified
@@ -2234,6 +2298,19 @@ for (i in 1:nrow(operations_hash)) {
           tokenID = "KT1Pyd1r9F4nMaHy8pPZxPSq6VCn9hVbVrf4_0",
           tokenAmount = as.numeric(list_check(parameterValue, "nat")),
           case = "WTZ unwrap"
+        )
+    }
+    
+    # WTZ wrap
+    else if ("wrap" %in% x$parameterEntry) {
+      z <- x %>% filter(., parameterEntry == "mint")
+      x %<>%
+        filter(., parameterEntry == "wrap") %>%
+        mutate(.,
+          tokenReceiver = SenderAddress,
+          tokenID = "KT1Pyd1r9F4nMaHy8pPZxPSq6VCn9hVbVrf4_0",
+          tokenAmount = as.numeric(z$parameterValue[[1]]$nat_1),
+          case = "WTZ wrap"
         )
     }
     
