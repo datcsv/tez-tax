@@ -250,25 +250,8 @@ for (i in 1:nrow(is)) {
         }
       }
       
-      # While loop is used to account for the RCS mint assumption
       j <- j + 1
-      
-      ##########################################################################
-      # RCS mint assumption:                                                   #
-      #  (1) Assume RCS tokens lacking transaction history were minted at 5tz. #
-      #  (2) Minted RCS tokens are treated like fungible tokens.               #
-      #  (*) This assumption should be used for estimates only and is not      #
-      #      an accurate or long-term solution.                                #
-      ##########################################################################
-      if (
-        (rcs_mint) & 
-        (j == nrow(bs)) &
-        (tokenBalance > 0) &
-        (str_split(is_i$tokenID, "/")[[1]][1] == "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih")
-      ) {
-        is_i$tokenID <- "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih/0"
-        j <- 1
-      }
+
     }
     
     # If balance sheet deficit, issue warning and assume cost basis of zero
