@@ -43,7 +43,7 @@ tax_8949 <- tibble(
 )
 
 # Initialize variables
-xtz_income_data <- 0
+xtz_income <- 0
 xtz_income_data <- is[0, ]
 
 # Loop through rows of income statement to generate tax figures
@@ -250,7 +250,7 @@ for (i in 1:nrow(is)) {
     }
     
     # If balance sheet deficit, issue warning and assume cost basis of zero
-    if (tokenBalance > 0) {
+    if (token_balance > 0) {
       
       ##########################################################################
       # Token deficit assumption (In progress, not working):                   #

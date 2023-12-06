@@ -1573,17 +1573,6 @@ for (i in 1:nrow(operations_hash)) {
     ("buy" %in% x$parameterEntry)
   ){
     x %<>% quick_case(., entry="buy", case="RCS mint")
-    
-    # RCS mint assumption logic
-    if (rcs_mint) {
-      x %<>% 
-        mutate(., 
-          tokenID = "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih_0",
-          tokenReceiver = SenderAddress,
-          tokenAmount = round((xtzSent - xtzFee) / 5.00, 0)
-        )
-    }
-    
   }
   
   # Pixel Potus contracts
