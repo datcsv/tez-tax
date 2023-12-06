@@ -24,7 +24,6 @@ for (i in 1:length(wallets)) {
     address=wallets[i], limit=limit_ops, span=date_span_all, quote=currency
   )
   while ((nrow(operations_i) > 0) & (nrow(operations_i) %% limit_ops) == 0) {
-    # Plus one to level to ensure overlap between pulls
     level <- min(operations_i$level + 1)
     operations_i %<>% bind_rows(.,
       tzkt_operations(
@@ -65,7 +64,7 @@ for (i in 1:nrow(operations_hash)) {
   operations %<>% bind_rows(., operations_i)
 }
 
-# Get account operations: OBJKT v1 contract (Early auction data)
+# Get account operations: OBJKT v1 contract (Early bigmap workaround)
 contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
 for (i in 1:length(contracts)) {
   operations_i <- tzkt_operations(
@@ -91,7 +90,6 @@ for (i in 1:nrow(objkt_operations_hash)) {
     operations %<>% bind_rows(., operations_i)
   }
 }
-
 
 # Combine and clean operations data
 operations %<>%

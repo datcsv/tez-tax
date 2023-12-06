@@ -50,9 +50,6 @@ date_span <- c("2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z")
 # Path to Coinbase transaction data, if applicable (Otherwise set to NA)
 cb_path <- NA
 
-# Assume NFT tokens are collectibles (TRUE/FALSE)
-collectible <- FALSE
-
 # Legal name (to be used on tax documents)
 legal_name <- "datcsv"
 
