@@ -46,6 +46,7 @@ currency <- "usd"
 
 # Define date span [min, max]
 date_span <- c("2022-01-01T00:00:00Z", "2022-12-31T23:59:59Z")
+date_span <- c("2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z")
 
 # Path to Coinbase transaction data, if applicable (Otherwise set to NA)
 cb_path <- NA
