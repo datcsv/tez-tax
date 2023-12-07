@@ -2460,4 +2460,10 @@ for (i in 1:nrow(operations_hash)) {
 }
 
 # Adjust income statement data
-is %<>% select(., -bidKey)
+is %<>% 
+  select(., -bidKey) %>% 
+  mutate(., case = ifelse(
+    is.na(case) & parameterEntry == "update_operators",
+    "Update operator transaction",
+    case
+  ))
