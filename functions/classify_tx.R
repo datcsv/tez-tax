@@ -1792,6 +1792,24 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
+    # fxhash v2 accept collection offer
+    else if (
+      ("collection_offer_accept" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      contract_address <- x[1, ]$targetAddress
+      token_id <- x[1, ]$parameterValue[[1]]$add_operator$token_id
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(.,
+          tokenID = paste0(contract_address, "_", token_id),
+          tokenAmount = 1,
+          tokenSender = SenderAddress,
+          case = "fxhash v2 accept collection offer (trade)"
+        )
+    }
+    
     # fxhash v2 offer
     else if ("offer" %in% x$parameterEntry) {
       x %<>% mutate(.,
