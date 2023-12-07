@@ -16,12 +16,6 @@
 #                                                                              #
 ################################################################################
 
-# Non-FA2 tokens
-nfa2 <- c(
-  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9",
-  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1"
-)
-
 # HEN contracts
 hen_contracts <- c(
   "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
