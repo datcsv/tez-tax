@@ -136,7 +136,8 @@ cverso_contracts <- c(
 
 # emprops contracts
 emprops_contracts <- c(
-  "KT1P5k64GTB8PPPyB1eb2wCuVyUSdPEB5gZN"
+  "KT1P5k64GTB8PPPyB1eb2wCuVyUSdPEB5gZN",
+  "KT1JdFrjfRrhtwVUKWzFX5W1KB1F7koXThu9"
 )
 
 # fxhash contracts
@@ -1048,13 +1049,13 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-               tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
-               tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
-               case = ifelse(
-                 xtzCollect_bid != xtzReceived, 
-                 "OBJKT v2 fulfill offer (sales/royalties)", 
-                 "OBJKT v2 fulfill offer (trade)"
-               )
+          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
+          case = ifelse(
+           xtzCollect_bid != xtzReceived, 
+           "OBJKT v2 fulfill offer (sales/royalties)", 
+           "OBJKT v2 fulfill offer (trade)"
+          )
         )
     }
     
@@ -1369,9 +1370,29 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "mint") %>%
         mutate(.,
           tokenID = token_id,
-          tokenReceived = 1,
+          tokenAmount = 1,
           tokenReceiver = token_receiver,
           case = "emprops mint"
+        )
+    }
+    
+    # emprops sale
+    if (
+      ("create_sale" %in% x$parameterEntry)
+    ) {
+      x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
+      contract_address <- x_hash[1,]$storage$token_contract_address
+      token_id <- max(x[1,]$parameterValue[[1]]$token_id, na.rm=TRUE)
+      token_sender <- x[1,]$SenderAddress
+      token_receiver <- x[nrow(x),]$targetAddress
+      x %<>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(.,
+          tokenID = paste0(contract_address, "_", token_id),
+          tokenAmount = 1,
+          tokenReceiver = token_receiver,
+          tokenSender = token_sender,
+          case = "emprops sale"
         )
     }
     
@@ -1797,16 +1818,21 @@ for (i in 1:nrow(operations_hash)) {
       ("collection_offer_accept" %in% x$parameterEntry) &
       (sum(wallets %in% x$initiatorAddress) > 0)
     ) {
-      contract_address <- x[1, ]$targetAddress
-      token_id <- x[1, ]$parameterValue[[1]]$add_operator$token_id
+      z <- x %>% filter(., parameterEntry == "update_operators")
+      contract_address <- z[1, ]$targetAddress
+      token_id <- z[1, ]$parameterValue[[1]]$add_operator$token_id
       x %<>%
         filter(., parameterEntry == "transfer") %>%
         top_n(., n=-1, wt=id) %>%
         mutate(.,
           tokenID = paste0(contract_address, "_", token_id),
-          tokenAmount = 1,
-          tokenSender = SenderAddress,
-          case = "fxhash v2 accept collection offer (trade)"
+          tokenSender = initiatorAddress,
+          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, 1),
+          case = ifelse(
+           xtzCollect_bid != xtzReceived, 
+           "fxhash v2 accept collection offer (sales/royalties)",
+           "fxhash v2 accept collection offer (trade)"
+          )
         )
     }
     
