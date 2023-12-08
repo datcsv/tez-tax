@@ -137,7 +137,8 @@ cverso_contracts <- c(
 # emprops contracts
 emprops_contracts <- c(
   "KT1P5k64GTB8PPPyB1eb2wCuVyUSdPEB5gZN",
-  "KT1JdFrjfRrhtwVUKWzFX5W1KB1F7koXThu9"
+  "KT1JdFrjfRrhtwVUKWzFX5W1KB1F7koXThu9",
+  "KT1APUSYNqiwNaE1ZrZ1eiT3HsAKsiHnjTjd"
 )
 
 # fxhash contracts
@@ -1867,10 +1868,12 @@ for (i in 1:nrow(operations_hash)) {
     
     # fxhash v2 cancel offer
     else if ("offer_cancel" %in% x$parameterEntry) {
-      x %<>% mutate(.,
-        xtzReceived = 0,
-        case="fxhash v2 cancel offer"
-      )
+      x %<>%
+        top_n(., n=-1) %>%
+        mutate(.,
+          xtzReceived = 0,
+          case="fxhash v2 cancel offer"
+        )
     }
     
     # fxhash v2 listing cancel
