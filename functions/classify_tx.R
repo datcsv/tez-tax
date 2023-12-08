@@ -1777,6 +1777,11 @@ for (i in 1:nrow(operations_hash)) {
         )
 
     }
+    # fxhash cancel offer
+    else if ("cancel_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="cancel_offer", case="fxhash cancel offer")
+      x <- x[1, ]
+    }
     
     # fxhash v2 collect
     else if (
@@ -1834,6 +1839,22 @@ for (i in 1:nrow(operations_hash)) {
            "fxhash v2 accept collection offer (trade)"
           )
         )
+    }
+    
+    # fxhash v2 collection offer cancel
+    else if ("collection_offer_cancel" %in% x$parameterEntry) {
+      x %<>% quick_case(., 
+        entry="collection_offer_cancel", case="fxhash cancel collection offer"
+      )
+      x <- x[1, ]
+    }
+
+    # fxhash v2 collection offer
+    else if ("collection_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(.,
+        entry="collection_offer", case="fxhash collection offer"
+      )
+      x <- x[1, ]
     }
     
     # fxhash v2 offer
