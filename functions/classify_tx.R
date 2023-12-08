@@ -16,12 +16,6 @@
 #                                                                              #
 ################################################################################
 
-# Non-FA2 tokens
-nfa2 <- c(
-  "KT1G1cCRNBgQ48mVDjopHjEmTN5Sbtar8nn9",
-  "KT1Trhji1aVzDtGiAxiCfWNi9T74Kyi49DK1"
-)
-
 # HEN contracts
 hen_contracts <- c(
   "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9", 
@@ -142,7 +136,9 @@ cverso_contracts <- c(
 
 # emprops contracts
 emprops_contracts <- c(
-  "KT1P5k64GTB8PPPyB1eb2wCuVyUSdPEB5gZN"
+  "KT1P5k64GTB8PPPyB1eb2wCuVyUSdPEB5gZN",
+  "KT1JdFrjfRrhtwVUKWzFX5W1KB1F7koXThu9",
+  "KT1APUSYNqiwNaE1ZrZ1eiT3HsAKsiHnjTjd"
 )
 
 # fxhash contracts
@@ -1054,13 +1050,13 @@ for (i in 1:nrow(operations_hash)) {
       x %<>% 
         filter(., parameterEntry == "transfer") %>% 
         mutate(., 
-               tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
-               tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
-               case = ifelse(
-                 xtzCollect_bid != xtzReceived, 
-                 "OBJKT v2 fulfill offer (sales/royalties)", 
-                 "OBJKT v2 fulfill offer (trade)"
-               )
+          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, tokenAmount),
+          tokenSender = ifelse(xtzCollect_bid != xtzReceived, NA, token_sender),
+          case = ifelse(
+           xtzCollect_bid != xtzReceived, 
+           "OBJKT v2 fulfill offer (sales/royalties)", 
+           "OBJKT v2 fulfill offer (trade)"
+          )
         )
     }
     
@@ -1375,9 +1371,29 @@ for (i in 1:nrow(operations_hash)) {
         filter(., parameterEntry == "mint") %>%
         mutate(.,
           tokenID = token_id,
-          tokenReceived = 1,
+          tokenAmount = 1,
           tokenReceiver = token_receiver,
           case = "emprops mint"
+        )
+    }
+    
+    # emprops sale
+    if (
+      ("create_sale" %in% x$parameterEntry)
+    ) {
+      x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
+      contract_address <- x_hash[1,]$storage$token_contract_address
+      token_id <- max(x[1,]$parameterValue[[1]]$token_id, na.rm=TRUE)
+      token_sender <- x[1,]$SenderAddress
+      token_receiver <- x[nrow(x),]$targetAddress
+      x %<>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(.,
+          tokenID = paste0(contract_address, "_", token_id),
+          tokenAmount = 1,
+          tokenReceiver = token_receiver,
+          tokenSender = token_sender,
+          case = "emprops sale"
         )
     }
     
@@ -1573,17 +1589,6 @@ for (i in 1:nrow(operations_hash)) {
     ("buy" %in% x$parameterEntry)
   ){
     x %<>% quick_case(., entry="buy", case="RCS mint")
-    
-    # RCS mint assumption logic
-    if (rcs_mint) {
-      x %<>% 
-        mutate(., 
-          tokenID = "KT1HZVd9Cjc2CMe3sQvXgbxhpJkdena21pih_0",
-          tokenReceiver = SenderAddress,
-          tokenAmount = round((xtzSent - xtzFee) / 5.00, 0)
-        )
-    }
-    
   }
   
   # Pixel Potus contracts
@@ -1773,6 +1778,11 @@ for (i in 1:nrow(operations_hash)) {
         )
 
     }
+    # fxhash cancel offer
+    else if ("cancel_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(., entry="cancel_offer", case="fxhash cancel offer")
+      x <- x[1, ]
+    }
     
     # fxhash v2 collect
     else if (
@@ -1809,6 +1819,45 @@ for (i in 1:nrow(operations_hash)) {
         )
     }
     
+    # fxhash v2 accept collection offer
+    else if (
+      ("collection_offer_accept" %in% x$parameterEntry) &
+      (sum(wallets %in% x$initiatorAddress) > 0)
+    ) {
+      z <- x %>% filter(., parameterEntry == "update_operators")
+      contract_address <- z[1, ]$targetAddress
+      token_id <- z[1, ]$parameterValue[[1]]$add_operator$token_id
+      x %<>%
+        filter(., parameterEntry == "transfer") %>%
+        top_n(., n=-1, wt=id) %>%
+        mutate(.,
+          tokenID = paste0(contract_address, "_", token_id),
+          tokenSender = initiatorAddress,
+          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, 1),
+          case = ifelse(
+           xtzCollect_bid != xtzReceived, 
+           "fxhash v2 accept collection offer (sales/royalties)",
+           "fxhash v2 accept collection offer (trade)"
+          )
+        )
+    }
+    
+    # fxhash v2 collection offer cancel
+    else if ("collection_offer_cancel" %in% x$parameterEntry) {
+      x %<>% quick_case(., 
+        entry="collection_offer_cancel", case="fxhash cancel collection offer"
+      )
+      x <- x[1, ]
+    }
+
+    # fxhash v2 collection offer
+    else if ("collection_offer" %in% x$parameterEntry) {
+      x %<>% quick_case(.,
+        entry="collection_offer", case="fxhash collection offer"
+      )
+      x <- x[1, ]
+    }
+    
     # fxhash v2 offer
     else if ("offer" %in% x$parameterEntry) {
       x %<>% mutate(.,
@@ -1819,10 +1868,12 @@ for (i in 1:nrow(operations_hash)) {
     
     # fxhash v2 cancel offer
     else if ("offer_cancel" %in% x$parameterEntry) {
-      x %<>% mutate(.,
-        xtzReceived = 0,
-        case="fxhash v2 cancel offer"
-      )
+      x %<>%
+        top_n(., n=-1) %>%
+        mutate(.,
+          xtzReceived = 0,
+          case="fxhash v2 cancel offer"
+        )
     }
     
     # fxhash v2 listing cancel
@@ -2471,4 +2522,10 @@ for (i in 1:nrow(operations_hash)) {
 }
 
 # Adjust income statement data
-is %<>% select(., -bidKey)
+is %<>% 
+  select(., -bidKey) %>% 
+  mutate(., case = ifelse(
+    is.na(case) & parameterEntry == "update_operators",
+    "Update operator transaction",
+    case
+  ))

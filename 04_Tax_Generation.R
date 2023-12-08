@@ -26,10 +26,10 @@
 load(file="data/is_updated.RData")
 load(file="data/bs.RData")
 load(file="data/tax_8949.RData")
-load(file="data/xtzIncome_data.RData")
+load(file="data/xtz_income_data.RData")
 
 # Export personal income data
-write_csv(xtzIncome_data, "data/xtzIncome.csv")
+write_csv(xtz_income_data, "data/xtz_income.csv")
 
 # Create pdf directories
 tax_8949_dir <- "data/8949"
@@ -49,7 +49,7 @@ tax_8949 %<>%
   filter(., Date_Sold >= date_span[1], Date_Sold <= date_span[2]) %>%
   mutate(., Short_Term = replace_na(as.numeric(Date_Sold - Date_Acquired) <= 365, TRUE))
 
-xtzIncome_data %<>% filter(., timestamp >= date_span[1], timestamp <= date_span[2])
+xtz_income_data %<>% filter(., timestamp >= date_span[1], timestamp <= date_span[2])
 
 # Format tax form 8949 data for export
 tax_8949_intuit <- tax_8949 %>%
@@ -94,33 +94,40 @@ tax_8949_short <- tax_8949 %>% filter(., Short_Term)
 tax_8949_long <- tax_8949 %>% filter(., !Short_Term)
 
 # Generate PDF files
-if (year(date_span[2]) <= 2021) {
+tax_year <- year(date_span[2])
+if (tax_year == 2021) {
   # Define form paths
   f8949   <- "forms/2021/f8949.pdf"
   f1040sd <- "forms/2021/f1040sd.pdf"
   f1040s1 <- "forms/2021/f1040s1.pdf"
   s1_offset <- 0
-} else {
+} else if (tax_year == 2022) {
   # Define form paths
   f8949   <- "forms/2022/f8949.pdf"
   f1040sd <- "forms/2022/f1040sd.pdf"
   f1040s1 <- "forms/2022/f1040s1.pdf"
   s1_offset <- 5
+} else {
+  # Define form paths
+  f8949   <- "forms/2023/f8949.pdf"
+  f1040sd <- "forms/2023/f1040sd.pdf"
+  f1040s1 <- "forms/2023/f1040s1.pdf"
+  s1_offset <- 5
 }
 
 # Generate tax form 1040 schedule 1
-xtzIncome <- sum(xtzIncome_data$quote * (xtzIncome_data$xtzReceived - xtzIncome_data$xtzSent))
-if (xtzIncome > 100) {
-  
+xtz_income <- sum(xtz_income_data$quote * (xtz_income_data$xtzReceived - xtz_income_data$xtzSent))
+if (xtz_income > 100) {
+
   # Update fields
   f1040s1_fields <- get_fields(input_filepath=f1040s1)
   f1040s1_fields[[1]][[3]]  <- legal_name
   f1040s1_fields[[2]][[3]]  <- ssn
   f1040s1_fields[[27+s1_offset]][[3]] <- "Miscellaneous crypto income"
   f1040s1_fields[[28+s1_offset]][[3]] <- ""
-  f1040s1_fields[[29+s1_offset]][[3]] <- sprintf("%.2f", xtzIncome)
-  f1040s1_fields[[30+s1_offset]][[3]] <- sprintf("%.2f", xtzIncome)
-  f1040s1_fields[[31+s1_offset]][[3]] <- sprintf("%.2f", xtzIncome)
+  f1040s1_fields[[29+s1_offset]][[3]] <- sprintf("%.2f", xtz_income)
+  f1040s1_fields[[30+s1_offset]][[3]] <- sprintf("%.2f", xtz_income)
+  f1040s1_fields[[31+s1_offset]][[3]] <- sprintf("%.2f", xtz_income)
   
   # Generate PDF file
   set_fields(

@@ -24,7 +24,6 @@ for (i in 1:length(wallets)) {
     address=wallets[i], limit=limit_ops, span=date_span_all, quote=currency
   )
   while ((nrow(operations_i) > 0) & (nrow(operations_i) %% limit_ops) == 0) {
-    # Plus one to level to ensure overlap between pulls
     level <- min(operations_i$level + 1)
     operations_i %<>% bind_rows(.,
       tzkt_operations(
@@ -65,32 +64,30 @@ for (i in 1:nrow(operations_hash)) {
   operations %<>% bind_rows(., operations_i)
 }
 
-# Get account operations: OBJKT v1 contract (Early auction data)
-if (objkt_v1) {
-  contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
-  for (i in 1:length(contracts)) {
-    operations_i <- tzkt_operations(
-      address=contracts[i], limit=limit_ops, span=date_span_all, quote=currency
+# Get account operations: OBJKT v1 contract (Early bigmap workaround)
+contracts <- c("KT1Dno3sQZwR5wUCWxzaohwuJwG3gX1VWj1Z")
+for (i in 1:length(contracts)) {
+  operations_i <- tzkt_operations(
+    address=contracts[i], limit=limit_ops, span=date_span_all, quote=currency
+  )
+  while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
+    level <- min(operations_i$level + 1)
+    operations_i %<>% bind_rows(., 
+      tzkt_operations(address=contracts[i], level=level, limit=limit_ops)
     )
-    while (nrow(operations_i) > 0 & (nrow(operations_i) %% limit_ops) == 0) {
-      level <- min(operations_i$level + 1)
-      operations_i %<>% bind_rows(., 
-        tzkt_operations(address=contracts[i], level=level, limit=limit_ops)
-      )
-    }
-    if (i == 1) objkt_operations <- operations_i
-    else objkt_operations %<>% bind_rows(., operations_i)
   }
-  objkt_operations_hash <- objkt_operations %>% distinct(., hash)
-  for (i in 1:nrow(objkt_operations_hash)) {
-    operations_i <- filter(objkt_operations, hash == objkt_operations_hash[i, ])
-    parameter_entry <- operations_i$parameter$entrypoint
-    parameter_value <- operations_i$parameter$value
-    token_receiver <- list_check(operations_i$parameter$value, "to_")
-    if (("swap" %in% parameter_entry > 0) & (token_receiver %in% wallets)) {
-      operations_i %<>% select(., any_of(op_names))
-      operations %<>% bind_rows(., operations_i)
-    }
+  if (i == 1) objkt_operations <- operations_i
+  else objkt_operations %<>% bind_rows(., operations_i)
+}
+objkt_operations_hash <- objkt_operations %>% distinct(., hash)
+for (i in 1:nrow(objkt_operations_hash)) {
+  operations_i <- filter(objkt_operations, hash == objkt_operations_hash[i, ])
+  parameter_entry <- operations_i$parameter$entrypoint
+  parameter_value <- operations_i$parameter$value
+  token_receiver <- list_check(operations_i$parameter$value, "to_")
+  if (("swap" %in% parameter_entry > 0) & (token_receiver %in% wallets)) {
+    operations_i %<>% select(., any_of(op_names))
+    operations %<>% bind_rows(., operations_i)
   }
 }
 

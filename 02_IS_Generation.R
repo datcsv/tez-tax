@@ -63,7 +63,6 @@ for (i in 1:nrow(operations)) {
     }
     operations$hash[i] <- paste0(op_hash, "_", j)
   }
-
 }
 
 # Clean operations data
