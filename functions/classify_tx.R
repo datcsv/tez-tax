@@ -1384,8 +1384,8 @@ for (i in 1:nrow(operations_hash)) {
       x_hash <- tzkt_operations_hash(hash=x$hash[1], quote=currency)
       contract_address <- x_hash[1,]$storage$token_contract_address
       token_id <- max(x[1,]$parameterValue[[1]]$token_id, na.rm=TRUE)
-      token_sender <- x[1,]$SenderAddress
-      token_receiver <- x[nrow(x),]$targetAddress
+      token_receiver <- x[1,]$SenderAddress
+      token_sender <- x[nrow(x),]$targetAddress
       x %<>%
         top_n(., n=-1, wt=id) %>%
         mutate(.,
@@ -1828,12 +1828,11 @@ for (i in 1:nrow(operations_hash)) {
       contract_address <- z[1, ]$targetAddress
       token_id <- z[1, ]$parameterValue[[1]]$add_operator$token_id
       x %<>%
-        filter(., parameterEntry == "transfer") %>%
         top_n(., n=-1, wt=id) %>%
         mutate(.,
           tokenID = paste0(contract_address, "_", token_id),
-          tokenSender = initiatorAddress,
-          tokenAmount = ifelse(xtzCollect_bid != xtzReceived, 0, 1),
+          tokenSender = SenderAddress,
+          tokenAmount = 1,
           case = ifelse(
            xtzCollect_bid != xtzReceived, 
            "fxhash v2 accept collection offer (sales/royalties)",
@@ -1846,7 +1845,8 @@ for (i in 1:nrow(operations_hash)) {
     else if ("collection_offer_cancel" %in% x$parameterEntry) {
       x %<>% quick_case(., 
         entry="collection_offer_cancel", case="fxhash cancel collection offer"
-      )
+      ) %>%
+      mutate(., xtzReceived = 0)
       x <- x[1, ]
     }
 
