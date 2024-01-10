@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2023 datcsv                                                        #
+# Copyright 2024 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -355,7 +355,7 @@ tax_8949 %<>%
       Token_ID
     ),
     Description    = paste(Token_Quantity, Token_ID_Short)
-  ) 
+  )
 
 # Save income statement, balance sheet, and tax data
 save(is, file="data/is_updated.RData")

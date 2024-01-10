@@ -43,12 +43,12 @@ Users of 'tez-tax' should have a firm understanding of the R programming languag
 	+ Data included in the 'tax_8949' dataset are used to calculate capital gains income (i.e., Schedule D). Data included in 'xtzIncome_data' are used to calculate other income (i.e., Schedule 1). It is important to ensure that these classifications are correct.
 	
 * For U.S. users, it may be useful to generate tax documents using '04_Tax_Generation.R'. **The outputs of this step should be used for informational purposes only and are provided as-is. Only a certified tax professional can accurately assess the tax implications of trading XTZ or associated tokens on the Tezos blockchain.**
-	+ This step relies on the ['staplr' R package](https://cran.r-project.org/web/packages/staplr/index.html) which, in turn, may rely on [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/) to generate PDF outputs.
+	+ This step relies on the ['staplr' R package](https://cran.r-project.org/web/packages/staplr/index.html).
 	+ Please note that the current code assumes all transactions are short-term trades for the time being. 
 
 ## License
 
-Copyright 2023 datcsv
+Copyright 2024 datcsv
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
