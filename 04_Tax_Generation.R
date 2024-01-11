@@ -117,7 +117,7 @@ if (tax_year == 2021) {
 
 # Generate tax form 1040 schedule 1
 xtz_income <- sum(xtz_income_data$quote * (xtz_income_data$xtzReceived - xtz_income_data$xtzSent))
-if (xtz_income > 100) {
+if (xtz_income > 0) {
 
   # Update fields
   f1040s1_fields <- get_fields(input_filepath=f1040s1)
