@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2024 datcsv                                                        #
+# Copyright 2025 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -45,7 +45,7 @@ wallets <- c(
 currency <- "usd"
 
 # Define date span [min, max]
-date_span <- c("2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z")
+date_span <- c("2024-01-01T00:00:00Z", "2024-12-31T23:59:59Z")
 
 # Path to Coinbase transaction data, if applicable (Otherwise set to NA)
 cb_path <- NA

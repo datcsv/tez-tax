@@ -6,6 +6,13 @@
 
 The authors of 'tez-tax' are not tax professionals and 'tez-tax' is not a tax solution. 'tez-tax' and any code, outputs, or information derived thereof should not be considered a substitute for legal advice, tax advice, audit advice, accounting advice, or brokerage advice under the guidance of a licensed professional. 
 
+## Issues
+
+'tez-tax' is no longer actively maintained. As such, there are issues with the current version. Notable known issues:
+
+* No explicit logic has been written to account for staking.
+* Coinbase import no longer works due to changes in file structure provided by Coinbase.
+
 ## Instructions
 
 'tez-tax' is a work in progress and a number of simplifying assumptions are made during the course of the code logic. Further, the identification and classification of smart contract operations is exceedingly complex by nature. It is important to thoroughly understand and debug each step in order to ensure any provided estimates are as accurate as possible. 'tez-tax' will never provide perfectly accurate outputs and only seeks to provide potentially useful information for estimating gain or loss estimates. It is worth noting that it is not possible to comprehensively categorize all smart contract operations and is important to validate all outputs at each step of the process. 
@@ -44,7 +51,7 @@ Users of 'tez-tax' should have a firm understanding of the R programming languag
 
 ## License
 
-Copyright 2024 datcsv
+Copyright 2025 datcsv
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

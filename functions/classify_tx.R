@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2024 datcsv                                                        #
+# Copyright 2025 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -105,7 +105,10 @@ objkt_contracts <- c(
 objkt_v2_contracts <- c(
   "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC",
   "KT18p94vjkkHYY3nPmernmgVR7HdZFzE7NAk",
-  "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz"
+  "KT1TjnZYs5CGLbmV6yuW169P8Pnr9BiVwwjz",
+  "KT1CePTyk6fk4cFr6fasY5YXPGks6ttjSLp4", # 2024
+  "KT1Xjap1TwmDR1d8yEd8ErkraAj2mbdMrPZY",
+  "KT1SwbTqhSKF6Pdokiu1K4Fpi17ahPPzmt1X"
 )
 
 # akaSwap contracts

@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Copyright 2024 datcsv                                                        #
+# Copyright 2025 datcsv                                                        #
 #                                                                              #
 # Licensed under the Apache License, Version 2.0 (the "License");              #
 # you may not use this file except in compliance with the License.             #
@@ -96,22 +96,24 @@ tax_8949_long <- tax_8949 %>% filter(., !Short_Term)
 # Generate PDF files
 tax_year <- year(date_span[2])
 if (tax_year == 2021) {
-  # Define form paths
   f8949   <- "forms/2021/f8949.pdf"
   f1040sd <- "forms/2021/f1040sd.pdf"
   f1040s1 <- "forms/2021/f1040s1.pdf"
   s1_offset <- 0
 } else if (tax_year == 2022) {
-  # Define form paths
   f8949   <- "forms/2022/f8949.pdf"
   f1040sd <- "forms/2022/f1040sd.pdf"
   f1040s1 <- "forms/2022/f1040s1.pdf"
   s1_offset <- 5
-} else {
-  # Define form paths
+} else if (tax_year == 2023) {
   f8949   <- "forms/2023/f8949.pdf"
   f1040sd <- "forms/2023/f1040sd.pdf"
   f1040s1 <- "forms/2023/f1040s1.pdf"
+  s1_offset <- 5
+} else {
+  f8949   <- "forms/2024/f8949.pdf"
+  f1040sd <- "forms/2024/f1040sd.pdf"
+  f1040s1 <- "forms/2024/f1040s1.pdf"
   s1_offset <- 5
 }
 
