@@ -1,0 +1,8 @@
+*.RData
+*.Rhistory
+*.csv
+data/*
+.Rproj.user
+00_Config - Actual.R
+02a_IS_Adjustments.R
+03a_8949_Adjustment.R
